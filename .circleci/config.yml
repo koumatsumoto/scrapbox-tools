@@ -1,0 +1,36 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:13.3.0-browsers
+        environment:
+          CHROME_BIN: "/usr/bin/google-chrome"
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          # fallback
+          - v1-dependencies-
+
+      - run: yarn
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run:
+          name: build
+          command: yarn ci:build
+
+      - run:
+          name: lint
+          command: yarn ci:lint
+
+      - run:
+          name: test
+          command: yarn ci:test
