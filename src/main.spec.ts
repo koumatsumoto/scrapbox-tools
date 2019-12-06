@@ -1,6 +1,6 @@
-import { main } from './index';
+import { main } from './main';
 
-describe('index.ts', () => {
+describe('/main.ts', () => {
   it('should be executable', () => {
     expect(() => main()).not.toThrow();
   });

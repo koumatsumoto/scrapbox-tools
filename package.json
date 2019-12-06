@@ -1,21 +1,20 @@
 {
   "name": "scrapbox-extensions",
   "version": "0.0.1",
-  "main": "dist/index.js",
+  "main": "dist/main.js",
   "repository": "git@github.com:kouMatsumoto/scrapbox-extensions.git",
   "author": "kou.matsumoto <matsumoto@bitcoinbank.co.jp>",
   "license": "MIT",
   "scripts": {
-    "build": "yarn tsc:app --declaration false",
+    "build": "rollup -c",
     "check:diff": "git diff --exit-code --name-only ./src",
-    "ci:build": "yarn tsc:app --noEmit && yarn run tsc:spec --noEmit",
+    "ci": "yarn ci:build && yarn ci:lint && yarn ci:test",
+    "ci:build": "yarn build",
     "ci:lint": "yarn format && yarn check:diff",
     "ci:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit --collectCoverage",
     "format": "prettier --config .prettierrc --write 'src/**/*.{ts,js,md}'",
     "jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
-    "test:unit": "yarn jest -c jest.config.js",
-    "tsc:app": "tsc -p tsconfig.app.json",
-    "tsc:spec": "tsc -p tsconfig.spec.json"
+    "test:unit": "yarn jest -c jest.config.js"
   },
   "engines": {
     "node": ">= 13.0.0",
@@ -26,9 +25,14 @@
     "@types/node": "^12.12.14",
     "jest": "^24.9.0",
     "prettier": "^1.19.1",
+    "rollup": "^1.27.8",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-typescript": "^1.0.1",
     "ts-jest": "^24.2.0",
     "ts-loader": "^6.2.1",
     "ts-node": "^8.5.4",
+    "tslib": "^1.10.0",
     "typescript": "^3.7.3"
-  }
+  },
+  "dependencies": {}
 }

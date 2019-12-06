@@ -15,5 +15,8 @@
     "resolveJsonModule": true,
     "baseUrl": "./",
     "sourceMap": true
-  }
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
 }

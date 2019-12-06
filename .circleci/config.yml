@@ -6,7 +6,7 @@ jobs:
         environment:
           CHROME_BIN: "/usr/bin/google-chrome"
 
-    working_directory: ~/repoßß
+    working_directory: ~/repo
 
     steps:
       - checkout

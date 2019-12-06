@@ -62,3 +62,6 @@ typings/
 
 # Intelij IDE
 .idea
+
+# build result
+/dist
