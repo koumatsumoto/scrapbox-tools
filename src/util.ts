@@ -25,11 +25,13 @@ export const registerCustomCSSClass = (
   let foundElements = searchNodesFn();
   addCSSClassAll(foundElements, cssClassName);
   // for editing result
-  setInterval(() => {
+  const updateFn = () => {
     removeCSSClassAll(
       foundElements.filter((e) => !maintainConditionFn(e)),
       cssClassName,
     );
-    addCSSClassAll(searchNodesFn(), cssClassName);
-  }, cssClassUpdateInterval);
+    foundElements = searchNodesFn();
+    addCSSClassAll(foundElements, cssClassName);
+  };
+  setInterval(updateFn, cssClassUpdateInterval);
 };
