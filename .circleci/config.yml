@@ -25,11 +25,11 @@ jobs:
 
       - run:
           name: build
-          command: yarn ci:build
+          command: yarn ci:check:build
 
       - run:
           name: lint
-          command: yarn ci:lint
+          command: yarn ci:check:lint
 
       - run:
           name: test
