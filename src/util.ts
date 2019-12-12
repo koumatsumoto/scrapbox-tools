@@ -13,7 +13,7 @@ export const removeCSSClassAll = (elements: Element[], className: string) => ele
 
 export const isTagString = (val: any) => typeof val === 'string' && val[0] === '#';
 // '#text' => 'text'
-export const getTagText = (val: string) => val.slice(1);
+export const removeHead = (val: string) => val.slice(1);
 
 // function to execute once application bootstrap
 export const registerCustomCSSClass = (

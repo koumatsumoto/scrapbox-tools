@@ -1,5 +1,5 @@
 import { cssClassUpdateInterval, customCSSClassName, nodeSelector } from '../constants';
-import { getElementsByCSSClass, getTagText, isTagString } from '../util';
+import { getElementsByCSSClass, removeHead, isTagString } from '../util';
 
 /**
  * Remove hash and add custom css class to link-text in list-item
@@ -10,7 +10,7 @@ const removeHashAndAddCustomClass = () =>
   getAllPageLinkTextInListItem().forEach((node) => {
     const text = node.textContent || '';
     if (isTagString(text)) {
-      node.textContent = getTagText(text);
+      node.textContent = removeHead(text);
       node.classList.add(customCSSClassName.hashInListItem);
     }
   });
