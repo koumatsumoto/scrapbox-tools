@@ -9,13 +9,16 @@
     "build:bundle": "rollup -c",
     "check:build:tsc": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
     "check:diff": "git diff --exit-code --name-only ./src",
+    "deploy": "yarn build:bundle && yarn ts-node deploy/main.ts",
     "ci": "yarn ci:build:bundle && yarn ci:lint && yarn ci:test",
     "ci:check:build": "yarn check:build:tsc && yarn build:bundle",
     "ci:check:lint": "yarn format && yarn check:diff",
-    "ci:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit --collectCoverage",
-    "format": "prettier --config .prettierrc --write 'src/**/*.{ts,js,md}'",
+    "ci:check:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit --collectCoverage",
+    "ci:deploy": "yarn deploy",
+    "format": "prettier --config .prettierrc --write '{deploy,src}/**/*.{ts,js,md}'",
     "jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
-    "test:unit": "yarn jest -c jest.config.js"
+    "test:unit": "yarn jest -c jest.config.js",
+    "ts-node": "node --max-old-space-size=8000 $(npm bin)/ts-node"
   },
   "engines": {
     "node": ">= 13.0.0",
@@ -24,8 +27,10 @@
   "devDependencies": {
     "@types/jest": "^24.0.23",
     "@types/node": "^12.12.14",
+    "@types/puppeteer": "^2.0.0",
     "jest": "^24.9.0",
     "prettier": "^1.19.1",
+    "puppeteer": "^2.0.0",
     "rollup": "^1.27.8",
     "rollup-plugin-terser": "^5.1.2",
     "rollup-plugin-typescript": "^1.0.1",

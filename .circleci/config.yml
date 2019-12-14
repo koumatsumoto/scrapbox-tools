@@ -1,13 +1,11 @@
 version: 2
 jobs:
-  build:
+  build-and-test:
     docker:
-      - image: circleci/node:latest
+      - image: circleci/node:latest-browsers
         environment:
           CHROME_BIN: "/usr/bin/google-chrome"
-
     working_directory: ~/repo
-
     steps:
       - checkout
       - restore_cache:
@@ -15,7 +13,6 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           # fallback
           - v1-dependencies-
-
       - run: yarn
 
       - save_cache:
@@ -23,14 +20,29 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run:
-          name: build
-          command: yarn ci:check:build
+      - run: yarn ci:check:build
+      - run: yarn ci:check:lint
+      - run: yarn ci:check:test
 
-      - run:
-          name: lint
-          command: yarn ci:check:lint
+  deploy:
+    docker:
+      - image: circleci/node:latest-browsers
+        environment:
+          CHROME_BIN: "/usr/bin/google-chrome"
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback
+            - v1-dependencies-
+      - run: yarn
+      - run: yarn ci:deploy
 
-      - run:
-          name: test
-          command: yarn ci:test
+workflows:
+  version: 2
+  ci-cd:
+    jobs:
+      - build-and-test
+      - deploy

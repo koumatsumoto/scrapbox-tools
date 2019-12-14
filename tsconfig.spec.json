@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "include": [
+    "deploy/**/*.spec.ts",
     "src/**/*.spec.ts"
   ],
   "exclude": [

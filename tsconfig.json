@@ -17,6 +17,7 @@
     "sourceMap": true
   },
   "include": [
-    "src/**/*.ts"
+    "deploy/**/*.ts",
+    "src/**/*.ts",
   ]
 }

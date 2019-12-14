@@ -12,12 +12,15 @@ module.exports = {
   },
   testURL: 'http://localhost/',
   testMatch: [
+    '<rootDir>/deploy/**/*.spec.ts',
     '<rootDir>/src/**/*.spec.ts',
   ],
-  collectCoverageFrom: ['<rootDir>/src/**/*.{js,ts}'],
+  collectCoverageFrom: [
+    '<rootDir>/deploy/**/*.{js,ts}',
+    '<rootDir>/src/**/*.{js,ts}',
+  ],
   coveragePathIgnorePatterns: [
     '/node_modules/',
-    '/test-helpers/',
     '/testing/',
     '/specs/',
     '/tests/',
