@@ -7,10 +7,10 @@
   "license": "MIT",
   "scripts": {
     "build:bundle": "rollup -c",
-    "check:build:tsc": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
+    "check:build:tsc": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.json --noEmit",
     "check:diff": "git diff --exit-code --name-only ./src",
     "deploy": "yarn build:bundle && yarn ts-node deploy/main.ts",
-    "ci": "yarn ci:build:bundle && yarn ci:lint && yarn ci:test",
+    "ci:check": "yarn ci:check:build && yarn ci:check:test && yarn ci:check:lint",
     "ci:check:build": "yarn check:build:tsc && yarn build:bundle",
     "ci:check:lint": "yarn format && yarn check:diff",
     "ci:check:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit --collectCoverage",

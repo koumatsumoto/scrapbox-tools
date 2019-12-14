@@ -18,6 +18,10 @@
   },
   "include": [
     "deploy/**/*.ts",
-    "src/**/*.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
   ]
 }

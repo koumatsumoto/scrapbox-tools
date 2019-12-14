@@ -1,2 +1,3 @@
-export * from './scrapbox';
+export * from './global';
 export * from './common';
+export * from './scrapbox';
