@@ -1,10 +1,17 @@
 import '../types';
+import { Scrapbox } from '../types/scrapbox';
 
-export const setupWindowScrapbox = () => {
+export const setupWindowScrapbox = (
+  option: {
+    layout?: Scrapbox['Layout'];
+    pageTitle?: string;
+    projectName?: string;
+  } = {},
+) => {
   window.scrapbox = {
-    Layout: 'page',
+    Layout: option.layout ? option.layout : 'page',
     Page: {
-      title: '',
+      title: option.pageTitle ? option.pageTitle : '',
       lines: [],
     },
     PageMenu: {
@@ -16,7 +23,7 @@ export const setupWindowScrapbox = () => {
     PopupMenu: {
       addButton: () => {},
     },
-    Project: { name: '', pages: [] },
+    Project: { name: option.projectName ? option.projectName : '', pages: [] },
     TimeStamp: {
       addFormat: () => {},
       removeAllFormats: () => {},

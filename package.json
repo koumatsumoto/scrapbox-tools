@@ -15,7 +15,7 @@
     "ci:check:lint": "yarn format && yarn check:diff",
     "ci:check:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit --collectCoverage",
     "ci:deploy": "yarn deploy",
-    "format": "prettier --config .prettierrc --write '{deploy,src}/**/*.{ts,js,md}'",
+    "format": "prettier --config .prettierrc --write '{deploy,src}/**/*.{ts,js,css,md}'",
     "jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
     "test:unit": "yarn jest -c jest.config.js",
     "ts-node": "node --max-old-space-size=8000 $(npm bin)/ts-node"

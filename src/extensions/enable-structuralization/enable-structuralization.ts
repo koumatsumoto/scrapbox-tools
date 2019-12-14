@@ -1,6 +1,6 @@
 import { customCSSClassName } from '../../constants';
 import { isEmptyDoubleDimensionalArray } from '../../util/common';
-import { ScrapboxDomManipulator } from '../../util/scrapbox-dom';
+import { ScrapboxDomManipulator } from '../../util/scrapbox';
 import { Block, Container, InvalidBlock, Line, Meta, Page } from './classes';
 
 const cssClass = {

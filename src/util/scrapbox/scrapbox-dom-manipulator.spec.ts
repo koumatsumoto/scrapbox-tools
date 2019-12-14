@@ -6,6 +6,12 @@ describe('ScrapboxDomManipulator', () => {
     setupBodyForTest();
   });
 
+  describe('#getElementOrFail', () => {
+    it('should get elements', () => {
+      expect(ScrapboxDomManipulator.getTextInput()).toBeInstanceOf(HTMLTextAreaElement);
+    });
+  });
+
   describe('#getLines', () => {
     it('should get elements', () => {
       expect(ScrapboxDomManipulator.getLine()).not.toHaveLength(0);

@@ -1,5 +1,6 @@
+import { config } from '../../config';
 import { DoubleDimensionalArray } from '../../types';
-import { getElements } from '../common';
+import { getElementOrFail, getElements } from '../common';
 import { selectors } from './selectors';
 
 const sectionCSSClassPrefix = 'section-';
@@ -7,6 +8,19 @@ export const getSectionCSSClass = (num: number) => `${sectionCSSClassPrefix}${nu
 type Sections = DoubleDimensionalArray<Element>;
 
 export class ScrapboxDomManipulator {
+  static getTextInput() {
+    return getElementOrFail<HTMLTextAreaElement>(config.textareaSelector);
+  }
+
+  static pasteToEditor() {
+    const textarea = this.getTextInput();
+    textarea.click();
+    const success = document.execCommand('paste');
+    if (!success) {
+      alert('failed to paste');
+    }
+  }
+
   static getLine() {
     return getElements(selectors.linesInPage);
   }
