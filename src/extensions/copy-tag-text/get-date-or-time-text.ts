@@ -3,5 +3,5 @@ import { getDateText, getScrapboxPageType, getTimeText } from '../../util/scrapb
 export const getDateOrTimeText = () => {
   const type = getScrapboxPageType();
 
-  return type === 'diary' ? getDateText() : getTimeText();
+  return type === 'diary' ? getTimeText() : getDateText();
 };
