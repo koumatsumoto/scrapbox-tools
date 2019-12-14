@@ -1,5 +1,4 @@
 import { getEnv } from './environments';
-import { userPageTemplate } from './user-page-template';
 
 const domain = 'scrapbox.io';
 const origin = `https://${domain}`;
@@ -10,6 +9,7 @@ export const config = {
   browserWindowHeight: 600,
   browserUserAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36',
   userPageUrl: `${origin}/${env.project}/${env.user}`,
+  settingsPageUrl: `${origin}/${env.project}/settings`,
   origin,
   cookieToAuth: {
     /** The cookie name. */
@@ -27,6 +27,5 @@ export const config = {
     /** The cookie secure flag. */
     secure: true,
   },
-  userPageTemplate,
   selectorToTextarea: '#text-input',
 } as const;

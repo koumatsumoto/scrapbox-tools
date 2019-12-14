@@ -6,16 +6,18 @@
   "author": "kou.matsumoto <matsumoto@bitcoinbank.co.jp>",
   "license": "MIT",
   "scripts": {
-    "build:bundle": "rollup -c",
+    "build": "yarn build:scss && yarn build:ts",
+    "build:scss": "node-sass src/styles/main.scss dist/style.css && uglifycss dist/style.css --output dist/style.min.css",
+    "build:ts": "rollup -c",
     "check:build:tsc": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.json --noEmit",
     "check:diff": "git diff --exit-code --name-only ./src",
-    "deploy": "yarn build:bundle && yarn ts-node deploy/main.ts",
+    "deploy": "yarn build && yarn ts-node deploy/main.ts",
     "ci:check": "yarn ci:check:build && yarn ci:check:test && yarn ci:check:lint",
-    "ci:check:build": "yarn check:build:tsc && yarn build:bundle",
+    "ci:check:build": "yarn check:build:tsc && yarn build:ts && yarn build:scss",
     "ci:check:lint": "yarn format && yarn check:diff",
     "ci:check:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit --collectCoverage",
     "ci:deploy": "yarn deploy",
-    "format": "prettier --config .prettierrc --write '{deploy,src}/**/*.{ts,js,css,md}'",
+    "format": "prettier --config .prettierrc --write '{deploy,src}/**/*.{ts,js,scss,md}'",
     "jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
     "test:unit": "yarn jest -c jest.config.js",
     "ts-node": "node --max-old-space-size=8000 $(npm bin)/ts-node"
@@ -29,6 +31,7 @@
     "@types/node": "^12.12.14",
     "@types/puppeteer": "^2.0.0",
     "jest": "^24.9.0",
+    "node-sass": "^4.13.0",
     "prettier": "^1.19.1",
     "puppeteer": "^2.0.0",
     "rollup": "^1.27.8",
@@ -38,7 +41,8 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.5.4",
     "tslib": "^1.10.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.3",
+    "uglifycss": "^0.0.29"
   },
   "dependencies": {}
 }

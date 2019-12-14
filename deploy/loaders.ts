@@ -2,10 +2,11 @@ import * as fs from 'fs';
 
 // relative where deploy command executed
 const bundleJsFilePath = './dist/bundle.min.js';
+const cssFilePath = './dist/style.min.css';
 
-export const loadBundleJs = () =>
+const loadFile = (path: string) =>
   new Promise<string>((resolve, reject) =>
-    fs.readFile(bundleJsFilePath, 'utf8', (err, data) => {
+    fs.readFile(path, 'utf8', (err, data) => {
       if (err) {
         reject(err);
       }
@@ -13,3 +14,6 @@ export const loadBundleJs = () =>
       resolve(data);
     }),
   );
+
+export const loadJS = () => loadFile(bundleJsFilePath);
+export const loadCSS = () => loadFile(cssFilePath);

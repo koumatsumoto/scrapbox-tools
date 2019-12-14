@@ -1,19 +1,17 @@
 import * as puppeteer from 'puppeteer';
 import { config } from './config';
-import { loadBundleJs } from './load-bundle-js';
-import { getWholePageText } from './user-page-template';
 import { findOrFail, getConfiguredPage, getFullPermissionBrowserContext, setClipboardValue } from './util';
 
-export const updateScrapboxUserScript = async () => {
-  const clipboardValue = getWholePageText(await loadBundleJs());
+export const updateScrapboxPage = async (param: { url: string; text: string }) => {
+  const clipboardValue = param.text;
   const textareaSelector = config.selectorToTextarea;
 
   const browser = await puppeteer.launch();
   const context = await getFullPermissionBrowserContext(browser, config.origin);
   const page = await getConfiguredPage(context);
 
-  await page.goto(config.userPageUrl);
-  // wait for react bootstrapping
+  // wait for react bootstrapped
+  await page.goto(param.url);
   await page.waitFor(10000);
 
   const textareaElement = await findOrFail(page, textareaSelector);
