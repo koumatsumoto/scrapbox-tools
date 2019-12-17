@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build-and-test:
+  build:
     docker:
       - image: circleci/node:latest-browsers
         environment:
@@ -44,5 +44,7 @@ workflows:
   version: 2
   ci-cd:
     jobs:
-      - build-and-test
-      - deploy
+      - build
+      - deploy:
+          requires:
+            - build
