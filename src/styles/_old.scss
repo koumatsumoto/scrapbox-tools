@@ -7,10 +7,6 @@
   background: #ffffff;
 }
 
-.line .quote {
-  font-style: normal;
-}
-
 .line .meta {
   border-color: #ffffff;
 }
@@ -28,8 +24,8 @@
 }
 
 .page {
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.16);
   background-color: #ffffff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.16);
 }
 
 form {
@@ -37,8 +33,8 @@ form {
 }
 
 .page-list-item .description img.inline-icon {
-  height: 100%;
   width: 100%;
+  height: 100%;
 }
 
 /* トップに戻るリンク
@@ -52,31 +48,32 @@ form {
   width: 0%;
 }
 
-/* スリムなテロメア */
-.line .telomere .telomere-border,
-.line .telomere .telomere-border.unread {
-  transition: none;
-  box-sizing: content-box;
-  border-color: #ffffff;
-}
-.line .telomere .telomere-border:hover,
-.line .telomere .telomere-border.unread:hover {
-  box-sizing: border-box;
-  width: auto;
-  border-color: #8f9899;
-  background-color: transparent;
-}
-
 /* ↓新着以外のテロメアの色と太さ */
 .line .telomere .telomere-border {
-  background-color: #ffffff;
   width: 2px;
+  background-color: #ffffff;
 }
 
 /* ↓新着のテロメアの色と太さ */
 .line .telomere .telomere-border.unread {
-  background-color: #ffffff;
   width: 5px;
+  background-color: #ffffff;
+}
+
+/* スリムなテロメア */
+.line .telomere .telomere-border,
+.line .telomere .telomere-border.unread {
+  box-sizing: content-box;
+  border-color: #ffffff;
+  transition: none;
+}
+
+.line .telomere .telomere-border:hover,
+.line .telomere .telomere-border.unread:hover {
+  box-sizing: border-box;
+  width: auto;
+  background-color: transparent;
+  border-color: #8f9899;
 }
 
 .deco-\# {
@@ -95,20 +92,21 @@ form {
   display: none !important;
 }
 .navbar-brand::before {
-  content: '\f0c9';
+  /* stylelint-disable-next-line */
   font-family: FontAwesome;
   font-size: 28px;
   color: #bbbbbb;
+  content: '\f0c9';
 }
 
 /* 3-a. ヘッダー内のプロジェクトのページへのリンク ※要UserScript */
 .col-brand .project-home {
-  color: #dddddd; /* リンクの色 */
-  margin: 16px 0 0 28px;
-  font-size: 18px;
   display: inline-block;
   max-width: calc(100% - 80px);
+  margin: 16px 0 0 28px;
   overflow: hidden;
+  font-size: 18px;
+  color: #dddddd; /* リンクの色 */
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -135,6 +133,18 @@ form {
 .line [class^='level-'] .deco-\| {
   flex-wrap: wrap;
 }
+
+/* 並べた画像の間にスキマが欲しい場合はこの2行を追加・ぴっちり敷き詰めたい場合はこの2行は不要 */
+.line .deco-\| > span,
+.line [class^='level-'] .deco-\| > span {
+  overflow: hidden;
+}
+
+.line .deco-\| img.image,
+.line [class^='level-'] .deco-\| img.image {
+  margin: 0.2em;
+}
+
 .line .level-1 .deco-\| > span {
   width: calc(100% / 1);
 }
@@ -158,16 +168,6 @@ form {
   object-fit: cover;
 }
 
-/* 並べた画像の間にスキマが欲しい場合はこの2行を追加・ぴっちり敷き詰めたい場合はこの2行は不要 */
-.line .deco-\| > span,
-.line [class^='level-'] .deco-\| > span {
-  overflow: hidden;
-}
-.line .deco-\| img.image,
-.line [class^='level-'] .deco-\| img.image {
-  margin: 0.2em;
-}
-
 .navbar-form .dropdown.open .dropdown-menu {
   min-width: 100%;
   max-height: calc(100vh - 130px) !important;
@@ -188,7 +188,13 @@ form {
 }
 
 .editor {
+  /* stylelint-disable-next-line */
   font-family: 'NotoSansCJKjp', 'Roboto';
+}
+
+/* stylelint-disable-next-line */
+a[type='hashTag'] span:first-child {
+  display: none;
 }
 
 /* ＃で始まるタグをラベル風にする */
@@ -200,22 +206,18 @@ a.page-link[type='hashTag']:active {
   display: inline-block;
   padding: 4px 6px;
   margin: 8px 2px 8px 0;
-  background: #fff;
-  color: #f27e48 !important;
   font-size: 0.88em;
+  line-height: 16px;
+  color: #f27e48 !important;
+  background: #fff;
   border: 1px solid #f27e48;
   border-radius: 2px;
   transition: 0.24s;
-  line-height: 16px;
 }
 
 a.page-link[type='hashTag']:hover {
   color: #ea692d !important;
   background-color: #ffe3d5;
-}
-
-a[type='hashTag'] span:first-child {
-  display: none;
 }
 
 /* title */
@@ -226,40 +228,40 @@ a[type='hashTag'] span:first-child {
 /* section title and line next to title */
 .section-title,
 .line-title + .line {
-  border-top: 1px dashed #e9e9e9;
   padding-top: 4px;
+  border-top: 1px dashed #e9e9e9;
 }
 
 /* time text like as "24:00" */
 /* set by UserScript */
 .us-non-indented-text {
   display: inline-block;
-  font-size: 1.02em;
   margin-top: 4px;
+  font-size: 1.02em;
 }
 
 /* time text like as "24:00" */
 /* set by UserScript */
 .us-time-section-title {
   display: inline-block;
-  line-height: 16px;
   padding: 4px 6px;
   margin: 8px 2px 8px 0;
-  background: #fff;
-  color: #f27e48;
   font-size: 0.88em;
+  line-height: 16px;
+  color: #f27e48;
+  background: #fff;
   border: 1px solid #f27e48;
   border-radius: 2px;
 }
 
 .us-colored-square-in-list-item {
   display: inline-block !important;
-  line-height: 10px;
   padding: 4px;
   margin: 0 0 4px 0;
-  background: #fff;
-  color: #f27e48 !important;
   font-size: 0.88em;
+  line-height: 10px;
+  color: #f27e48 !important;
+  background: #fff;
   border: 1px solid #f27e48;
   border-radius: 2px;
 }

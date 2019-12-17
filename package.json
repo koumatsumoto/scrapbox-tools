@@ -17,7 +17,8 @@
     "ci:check:lint": "yarn format && yarn check:diff",
     "ci:check:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit --collectCoverage",
     "ci:deploy": "yarn deploy",
-    "format": "prettier --config .prettierrc --write '{deploy,src}/**/*.{ts,js,scss,md}'",
+    "format": "yarn lint:scss --fix && prettier --config .prettierrc --write '{deploy,src}/**/*.{ts,js,scss,md}'",
+    "lint:scss": "stylelint 'src/styles/**/*.scss'",
     "jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
     "test:unit": "yarn jest -c jest.config.js",
     "ts-node": "node --max-old-space-size=8000 $(npm bin)/ts-node"
@@ -37,6 +38,9 @@
     "rollup": "^1.27.8",
     "rollup-plugin-terser": "^5.1.2",
     "rollup-plugin-typescript": "^1.0.1",
+    "stylelint": "^12.0.0",
+    "stylelint-config-recommended-scss": "^4.1.0",
+    "stylelint-scss": "^3.13.0",
     "ts-jest": "^24.2.0",
     "ts-loader": "^6.2.1",
     "ts-node": "^8.5.4",
@@ -44,5 +48,7 @@
     "typescript": "^3.7.3",
     "uglifycss": "^0.0.29"
   },
-  "dependencies": {}
+  "dependencies": {
+    "stylelint-config-recess-order": "^2.0.3"
+  }
 }
