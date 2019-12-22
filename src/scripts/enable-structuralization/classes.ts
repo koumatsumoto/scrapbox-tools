@@ -1,5 +1,5 @@
 import { removeHead } from '../../util';
-import { getSectionCSSClass } from '../../util/scrapbox/scrapbox-dom-manipulator';
+import { getSectionCSSClass } from '../../libs/scrapbox/scrapbox-dom-manipulator';
 
 export const maxSupportedLineNumber = 20000;
 

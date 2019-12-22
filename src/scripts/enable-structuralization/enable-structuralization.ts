@@ -1,6 +1,6 @@
 import { customCSSClassName } from '../../constants';
-import { isEmptyDoubleDimensionalArray } from '../../util/common';
-import { ScrapboxDomManipulator } from '../../util/scrapbox';
+import { isEmptyDoubleDimensionalArray } from '../../libs/common';
+import { ScrapboxDomManipulator } from '../../libs/scrapbox';
 import { Block, Container, InvalidBlock, Line, Meta, Page } from './classes';
 
 const cssClass = {
@@ -51,5 +51,5 @@ export const getPage = () => {
 export const enableLineStructualization = () => {
   const page = getPage();
 
-  console.log('[extensions] page', page);
+  console.log('[scripts] page', page);
 };

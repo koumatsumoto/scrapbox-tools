@@ -1,4 +1,4 @@
-import { getElementOrFail, removeElement } from '../../util/common';
+import { getElementOrFail, removeElement } from '../../libs/common';
 
 // use for mutex
 const dialogId = 'dialog-for-user-script';

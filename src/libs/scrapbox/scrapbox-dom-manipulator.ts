@@ -1,7 +1,7 @@
-import { config } from '../../config';
 import { DoubleDimensionalArray } from '../../types';
 import { getElementOrFail, getElements } from '../common';
 import { selectors } from './selectors';
+import { config } from './config';
 
 const sectionCSSClassPrefix = 'section-';
 export const getSectionCSSClass = (num: number) => `${sectionCSSClassPrefix}${num}`;

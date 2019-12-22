@@ -1,4 +1,4 @@
-import { makeTag } from '../../util/scrapbox';
+import { makeTag } from '../../libs/scrapbox';
 import { tagOptions } from './config';
 import { openDialog } from './dialog';
 import { getDateOrTimeText } from './get-date-or-time-text';
