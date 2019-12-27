@@ -1,5 +1,5 @@
 import typescript from 'rollup-plugin-typescript';
-import { terser } from "rollup-plugin-terser";
+import { terser } from 'rollup-plugin-terser';
 
 export default {
   input: 'src/index.ts',
@@ -9,8 +9,5 @@ export default {
     // cannot use `iife` bundled code as scrapbox custom script
     format: 'esm',
   },
-  plugins: [
-    typescript(),
-    terser(),
-  ],
+  plugins: [typescript(), terser()],
 };

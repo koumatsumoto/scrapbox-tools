@@ -11,10 +11,7 @@ module.exports = {
     '^.+\\.ts$': 'ts-jest',
   },
   testURL: 'http://localhost/',
-  testMatch: [
-    '<rootDir>/deploy/**/*.spec.ts',
-    '<rootDir>/src/**/*.spec.ts',
-  ],
+  testMatch: ['<rootDir>/deploy/**/*.spec.ts', '<rootDir>/src/**/*.spec.ts'],
   collectCoverageFrom: [
     '<rootDir>/deploy/**/*.{js,ts}',
     '<rootDir>/src/**/*.{js,ts}',
