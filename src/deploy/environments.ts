@@ -1,4 +1,6 @@
 type AllowedEnv = {
+  // whether script run on local environment
+  LOCAL?: 'yes';
   // scrapbox project name
   PROJECT?: string;
   // scrapbox user name
@@ -23,8 +25,9 @@ export const getEnv = () => {
   }
 
   return {
+    local: env.LOCAL === 'yes',
     project: env.PROJECT,
     user: env.USER,
     token: env.TOKEN,
-  };
+  } as const;
 };

@@ -34,3 +34,10 @@ export type Scrapbox = {
     removeAllFormats: () => void;
   };
 };
+
+// assuming, window.scrapbox exists when use type Scrapbox
+declare global {
+  interface Window {
+    scrapbox: Scrapbox;
+  }
+}

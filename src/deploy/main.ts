@@ -1,15 +1,18 @@
+// load .env file for development in local
+require('dotenv').config();
+
 import { config } from './config';
 import { loadCSS, loadJS } from './loaders';
 import { getSettingsPageText, getUserPageText } from './templates';
-import { updateScrapboxPage } from './update-scrapbox-page';
+import { updatePage } from './update-page';
 
 (async () => {
   const userPageText = getUserPageText(await loadJS());
   const settingsPageText = getSettingsPageText(await loadCSS());
 
   // deploy user script and user css
-  await updateScrapboxPage({ url: config.userPageUrl, text: userPageText });
-  await updateScrapboxPage({ url: config.settingsPageUrl, text: settingsPageText });
+  await updatePage({ url: config.userPageUrl, text: userPageText });
+  await updatePage({ url: config.settingsPageUrl, text: settingsPageText });
 })()
   .then(() => {
     console.log('deploy completed');

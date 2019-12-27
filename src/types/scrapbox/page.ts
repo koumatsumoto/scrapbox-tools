@@ -60,13 +60,23 @@ export type DecoFormulaNode = {
   children: DecoFormulaNodeUnit['content'];
 };
 
+export type GyazoNode = {
+  type: 'gyazo';
+  unit: {
+    whole: string;
+    content: string;
+  };
+  // maybe same value of GyazoNode.unit.content
+  children: string;
+};
+
 export type IndentNode = {
   type: 'indent';
   unit: IndentNodeUnit;
   children: ScrapboxNode | ScrapboxNode[];
 };
 
-export type ScrapboxNode = SimpleTextNode | LinkNode | HashTagNode | HashTagAndSimpleTextNodes | DecoFormulaNode | IndentNode;
+export type ScrapboxNode = SimpleTextNode | LinkNode | HashTagNode | HashTagAndSimpleTextNodes | DecoFormulaNode | IndentNode | GyazoNode;
 
 export type TitleLine = {
   id: string;
@@ -85,7 +95,7 @@ export type TitleLine = {
 export type NonTitleLine = {
   id: string;
   text: string;
-  userId: string;
+  userId?: string;
   created: number;
   updated: number;
   section: {
@@ -93,13 +103,16 @@ export type NonTitleLine = {
     start: boolean;
     end: boolean;
   };
-  nodes: ScrapboxNode | ScrapboxNode[];
+  codeBlock?: { lang: 'js' | string; filename: 'script.js' | string; indent: 1 | number; start: boolean; end: boolean };
+  nodes?: ScrapboxNode | ScrapboxNode[];
 };
 
 export type NonIndentedFormulaLine = NonTitleLine & { formulaLine: true };
 
+export type PageLine = TitleLine | NonTitleLine | NonIndentedFormulaLine;
+
 export type ScrapboxPage = {
   title: TitleLine['text'];
   // first item is title line
-  lines: (TitleLine | NonTitleLine | NonIndentedFormulaLine)[];
+  lines: PageLine[];
 };

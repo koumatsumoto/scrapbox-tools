@@ -5,6 +5,7 @@ const origin = `https://${domain}`;
 const env = getEnv();
 
 export const config = {
+  local: env.local,
   browserWindowWidth: 800,
   browserWindowHeight: 600,
   browserUserAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36',

@@ -34,6 +34,8 @@ export const getConfiguredPage = async (context: BrowserContext) => {
   });
   await page.setUserAgent(config.browserUserAgent);
   await page.setCookie(config.cookieToAuth);
+  // see: https://github.com/puppeteer/puppeteer#debugging-tips
+  page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
 
   return page;
 };

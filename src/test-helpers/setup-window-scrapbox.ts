@@ -1,18 +1,19 @@
 import '../types';
-import { Scrapbox } from '../types/scrapbox';
+import { PageLine, Scrapbox } from '../types/scrapbox';
 
-export const setupWindowScrapbox = (
-  option: {
-    layout?: Scrapbox['Layout'];
-    pageTitle?: string;
-    projectName?: string;
-  } = {},
-) => {
+export type SetupWindowScrapboxOption = {
+  layout?: Scrapbox['Layout'];
+  pageTitle?: string;
+  projectName?: string;
+  pageLines?: PageLine[];
+};
+
+export const setupWindowScrapbox = (option: SetupWindowScrapboxOption = {}) => {
   window.scrapbox = {
     Layout: option.layout ? option.layout : 'page',
     Page: {
       title: option.pageTitle ? option.pageTitle : '',
-      lines: [],
+      lines: option.pageLines ? option.pageLines : [],
     },
     PageMenu: {
       addItem: () => {},
