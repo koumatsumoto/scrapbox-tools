@@ -1,4 +1,4 @@
-const loadScript = async (src: string) =>
+export const loadScript = async (src: string) =>
   new Promise((resolve, reject) => {
     const elem = document.createElement('script');
     elem.setAttribute('src', src);

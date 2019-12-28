@@ -6174,17 +6174,10 @@ rxjs@^5.5.6:
   dependencies:
     symbol-observable "1.0.1"
 
-rxjs@^6.5.2:
+rxjs@^6.5.2, rxjs@^6.5.3:
   version "6.5.4"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.4.tgz#e0777fe0d184cec7872df147f303572d414e211c"
   integrity sha512-naMQXcgEo3csAEGvw/NydRA0fuS2nDZJiw1YUWFKU7aPPAPGZEsD4Iimit96qwCieH6y614MCLYwdkrWx7z/7Q==
-  dependencies:
-    tslib "^1.9.0"
-
-rxjs@^7.0.0-alpha.1:
-  version "7.0.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.0.0-alpha.1.tgz#7af41b76bfe15fe002db3c1d484b92ea0ef89b39"
-  integrity sha512-wQB1ZRQysSXSXzPHhhsw+OaVmNnVSylgR3UkUvVEfexkDmfHEs9bpDz1oiMfIG9JL1hPXL1ABtrL0H6XhstbWg==
   dependencies:
     tslib "^1.9.0"
 
