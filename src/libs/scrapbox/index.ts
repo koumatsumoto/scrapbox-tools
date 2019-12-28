@@ -4,3 +4,4 @@ export * from './get-scrapbox';
 export * from './getters';
 export * from './scrapbox-dom-manipulator';
 export * from './tag-operations';
+export * from './util';
