@@ -232,28 +232,6 @@ a.page-link[type='hashTag']:hover {
   border-top: 1px dashed #e9e9e9;
 }
 
-/* time text like as "24:00" */
-/* set by UserScript */
-.us-non-indented-text {
-  display: inline-block;
-  margin-top: 4px;
-  font-size: 1.02em;
-}
-
-/* time text like as "24:00" */
-/* set by UserScript */
-.us-time-section-title {
-  display: inline-block;
-  padding: 4px 6px;
-  margin: 8px 2px 8px 0;
-  font-size: 0.88em;
-  line-height: 16px;
-  color: #f27e48;
-  background: #fff;
-  border: 1px solid #f27e48;
-  border-radius: 2px;
-}
-
 .us-colored-square-in-list-item {
   display: inline-block !important;
   padding: 4px;
