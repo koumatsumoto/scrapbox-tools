@@ -15,6 +15,17 @@ module.exports = {
           configFile: 'tsconfig.app.json',
         },
       },
+      {
+        test: /\.(html)$/,
+        use: [
+          {
+            loader: 'html-loader',
+            options: {
+              minimize: true,
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {

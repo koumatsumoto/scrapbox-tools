@@ -9,6 +9,7 @@ module.exports = {
   },
   transform: {
     '^.+\\.ts$': 'ts-jest',
+    '^.+\\.html$': 'html-loader-jest',
   },
   testURL: 'http://localhost/',
   testMatch: ['<rootDir>/deploy/**/*.spec.ts', '<rootDir>/src/**/*.spec.ts'],
