@@ -21,7 +21,7 @@
     "format": "yarn lint:scss --fix && prettier --config .prettierrc --write '{deploy,src,.circleci,sandbox}/**/*.{ts,js,scss,html,md,yml}' ./*.{js,json}",
     "lint:scss": "stylelint 'src/styles/**/*.scss'",
     "jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
-    "start:dev": "yarn build:dev && concurrently ':build:dev:scss:watch' 'yarn :build:dev:ts:watch' 'browser-sync start --config bs-config.js'",
+    "start:dev": "yarn build:dev && concurrently 'yarn :build:dev:scss:watch' 'yarn :build:dev:ts:watch' 'browser-sync start --config bs-config.js'",
     "test:unit": "yarn jest -c jest.config.js",
     "ts-node": "node --max-old-space-size=8000 node_modules/.bin/ts-node --project tsconfig.json",
     ":build:dev:scss": "node-sass src/styles/main.scss dist/style.css",

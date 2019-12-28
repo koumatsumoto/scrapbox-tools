@@ -7,8 +7,8 @@ export type SupportedType = 'view_modules' | string;
 export type SupportedPropertyName = 'type' | 'size' | string;
 
 export class MyIcon extends HTMLElement {
-  static elementName = 'my-icon';
-  static defaultSize = '24';
+  static readonly elementName = 'my-icon';
+  static readonly defaultSize = '24';
 
   get size() {
     return this.getAttribute('size') as string;

@@ -3,7 +3,7 @@ import { openDialogAndSelectTags } from '../../scripts/copy-tag-text';
 const html = require('./my-console-button.component.html');
 
 export class MyConsoleButton extends HTMLElement {
-  static elementName = 'my-console-button';
+  static readonly elementName = 'my-console-button';
 
   constructor() {
     super();

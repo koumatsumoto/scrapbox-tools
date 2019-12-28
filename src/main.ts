@@ -1,16 +1,19 @@
 /**
  * Common variables and functions (Scrapbox loads each scripts into global environment)
  */
-import { copyTagText, highlightTagsInListItem } from './scripts';
-import { appendConsoleButton, defineCustomElements } from './components';
+import { enableConsoleButton, highlightTagsInListItem, useDebugBoard } from './scripts';
 import { runOnDocumentReady } from './libs/common';
+import { componentManager } from './scripts';
+import { defineCustomElements } from './components';
 
 export const main = () =>
   runOnDocumentReady(() => {
-    // define and construct custom elements
+    // register custom web components to browser
     defineCustomElements();
-    appendConsoleButton();
+    // components will be connect to DOM
+    componentManager.setupComponents();
 
     highlightTagsInListItem();
-    copyTagText();
+    useDebugBoard();
+    enableConsoleButton();
   });
