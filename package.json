@@ -6,12 +6,10 @@
   "author": "kou.matsumoto <matsumoto@bitcoinbank.co.jp>",
   "license": "MIT",
   "scripts": {
-    "build:dev": "yarn build:dev:scss && yarn build:dev:ts",
-    "build:dev:scss": "node-sass src/styles/main.scss dist/style.css -w &",
-    "build:dev:ts": "rollup --config rollup.config.dev.js -w &",
+    "build:dev": "yarn :build:dev:scss & yarn :build:dev:ts &",
     "build:prod": "yarn build:prod:scss && yarn build:prod:ts",
     "build:prod:scss": "node-sass src/styles/main.scss dist/style.css && uglifycss dist/style.css --output dist/style.min.css",
-    "build:prod:ts": "rollup --config rollup.config.prod.js",
+    "build:prod:ts": "webpack --config webpack.config.prod.js",
     "check:build:tsc": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.json --noEmit",
     "check:diff": "git diff --exit-code --name-only ./src",
     "ci:check": "yarn ci:check:build && yarn ci:check:test && yarn ci:check:lint",
@@ -25,7 +23,9 @@
     "lint:scss": "stylelint 'src/styles/**/*.scss'",
     "jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
     "test:unit": "yarn jest -c jest.config.js",
-    "ts-node": "node --max-old-space-size=8000 node_modules/.bin/ts-node --project tsconfig.json"
+    "ts-node": "node --max-old-space-size=8000 node_modules/.bin/ts-node --project tsconfig.json",
+    ":build:dev:scss": "node-sass src/styles/main.scss dist/style.css && node-sass src/styles/main.scss dist/style.css -w",
+    ":build:dev:ts": "webpack --config webpack.config.dev.js"
   },
   "engines": {
     "node": ">= 13.0.0",
@@ -42,19 +42,19 @@
     "node-sass": "^4.13.0",
     "prettier": "^1.19.1",
     "puppeteer": "^2.0.0",
-    "rollup": "^1.27.8",
-    "rollup-plugin-terser": "^5.1.2",
-    "rollup-plugin-typescript": "^1.0.1",
-    "rollup-watch": "^4.3.1",
     "stylelint": "^12.0.0",
     "stylelint-config-recess-order": "^2.0.3",
     "stylelint-config-recommended-scss": "^4.1.0",
     "stylelint-scss": "^3.13.0",
+    "terser-webpack-plugin": "^2.3.1",
     "ts-jest": "^24.2.0",
     "ts-loader": "^6.2.1",
     "ts-node": "^8.5.4",
     "tslib": "^1.10.0",
     "typescript": "^3.7.3",
-    "uglifycss": "^0.0.29"
+    "uglifycss": "^0.0.29",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
   }
 }

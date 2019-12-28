@@ -1,4 +1,5 @@
 {
+  "exclude": ["dist", "node_modules"],
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
@@ -8,14 +9,13 @@
     "typeRoots": ["./node_modules/@types"],
     "rootDir": "./",
     "outDir": "dist",
-    "declaration": true,
+    "declaration": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "baseUrl": "./",
-    "sourceMap": true
-  },
-  "include": ["src/types/**/*.ts", "src/**/*.ts"],
-  "exclude": ["dist", "node_modules"]
+    "sourceMap": true,
+    "inlineSources": true
+  }
 }
