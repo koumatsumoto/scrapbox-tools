@@ -2,22 +2,30 @@ const html = require('./my-debug-board.component.html');
 
 export class MyDebugBoard extends HTMLElement {
   static readonly elementName = 'my-debug-board';
-  private displayElement: HTMLDivElement | null = null;
+  private screenElement: HTMLDivElement | null = null;
+  private closeButton: HTMLButtonElement | null = null;
 
   constructor() {
     super();
-    this.innerHTML = `${html}`;
-  }
-
-  connectedCallback() {
-    this.displayElement = this.querySelector<HTMLDivElement>('div');
+    this.setupElements();
   }
 
   updateText(text: string) {
-    if (!this.displayElement) {
+    if (!this.screenElement) {
       return;
     }
 
-    this.displayElement.textContent = text;
+    this.screenElement.textContent = text;
+  }
+
+  private setupElements() {
+    this.innerHTML = `${html}`;
+    this.screenElement = this.querySelector<HTMLDivElement>('div')!;
+    this.closeButton = this.querySelector<HTMLButtonElement>('button')!;
+    this.closeButton.addEventListener('click', () => this.destroy(), { once: true });
+  }
+
+  private destroy() {
+    this.parentNode!.removeChild(this);
   }
 }

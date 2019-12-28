@@ -1,14 +1,25 @@
-const svg = {
-  viewModules: (size: string | number) =>
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M5 11h3c.55 0 1-.45 1-1V6c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm0 7h3c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm6 0h3c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1h-3c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm6 0h3c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1h-3c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm-6-7h3c.55 0 1-.45 1-1V6c0-.55-.45-1-1-1h-3c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1zm5-5v4c0 .55.45 1 1 1h3c.55 0 1-.45 1-1V6c0-.55-.45-1-1-1h-3c-.55 0-1 .45-1 1z"/></svg>`,
-};
+const iconSvg = {
+  apps: require('./svg/apps.svg') as string,
+  clear: require('./svg/clear.svg') as string,
+  view_modules: require('./svg/view_module.svg') as string,
+  widgets: require('./svg/widgets.svg') as string,
+} as const;
+const initialHTML = iconSvg.apps;
 
-export type SupportedType = 'view_modules' | string;
+export type SupportedIcon = keyof typeof iconSvg | string;
 export type SupportedPropertyName = 'type' | 'size' | string;
+const defaultSize = '24';
+
+// TODO: should memoize
+const registerSVG = (svg: string, parent: HTMLElement) => {
+  const doc = new DOMParser().parseFromString(svg, 'application/xml');
+  const elem = parent.ownerDocument!.importNode(doc.documentElement, true);
+  parent.appendChild(elem);
+};
 
 export class MyIcon extends HTMLElement {
   static readonly elementName = 'my-icon';
-  static readonly defaultSize = '24';
+  private svg: SVGElement | null = null;
 
   get size() {
     return this.getAttribute('size') as string;
@@ -20,19 +31,22 @@ export class MyIcon extends HTMLElement {
   }
 
   get type() {
-    return this.getAttribute('type') as SupportedType;
+    return (this.getAttribute('type') || '') as SupportedIcon;
   }
 
-  set type(newValue: SupportedType) {
+  set type(newValue: SupportedIcon) {
     this.setAttribute('type', newValue);
+    this.render();
   }
 
-  constructor() {
+  constructor(size?: string, type?: SupportedIcon) {
     super();
+    // initial rendering to create svg child element
+    this.render();
 
-    this.size = this.size || MyIcon.defaultSize;
-    this.applySize(this.size);
-
+    this.size = size || this.size || defaultSize;
+    this.type = type || this.type || '';
+    // re-render after type updated
     this.render();
   }
 
@@ -52,18 +66,23 @@ export class MyIcon extends HTMLElement {
   }
 
   private render() {
-    switch (this.type) {
-      case 'view_modules': {
-        return (this.innerHTML = svg.viewModules(this.size));
-      }
-      default: {
-        return (this.innerHTML = '');
-      }
+    if (this.svg) {
+      this.removeChild(this.svg);
     }
+
+    const svgFragment = (iconSvg as any)[this.type] || initialHTML;
+    registerSVG(svgFragment, this);
+    this.svg = this.firstChild as SVGElement;
+    this.applySize(this.size);
   }
 
   private applySize(val: string) {
-    this.style.width = `${val}px`;
-    this.style.height = `${val}px`;
+    const px = `${val}px`;
+    this.style.width = px;
+    this.style.height = px;
+    if (this.svg) {
+      this.svg.setAttribute('width', px);
+      this.svg.setAttribute('height', px);
+    }
   }
 }
