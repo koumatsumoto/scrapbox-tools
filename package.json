@@ -36,6 +36,7 @@
     "@types/node": "^12.12.14",
     "@types/puppeteer": "^2.0.0",
     "browser-sync": "^2.26.7",
+    "date-fns": "^2.8.1",
     "dotenv": "^8.2.0",
     "jest": "^24.9.0",
     "node-sass": "^4.13.0",
@@ -46,6 +47,7 @@
     "rollup-plugin-typescript": "^1.0.1",
     "rollup-watch": "^4.3.1",
     "stylelint": "^12.0.0",
+    "stylelint-config-recess-order": "^2.0.3",
     "stylelint-config-recommended-scss": "^4.1.0",
     "stylelint-scss": "^3.13.0",
     "ts-jest": "^24.2.0",
@@ -54,9 +56,5 @@
     "tslib": "^1.10.0",
     "typescript": "^3.7.3",
     "uglifycss": "^0.0.29"
-  },
-  "dependencies": {
-    "date-fns": "^2.8.1",
-    "stylelint-config-recess-order": "^2.0.3"
   }
 }
