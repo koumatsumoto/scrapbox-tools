@@ -18,22 +18,21 @@ export const getDeviceMotionStream = () => {
   return subject.asObservable();
 };
 
-/**
- *
- * @param source - for testing
- */
 export const getDeviceMotionWithChangeStream = (
   option: {
-    precision: Precision;
-    scale: Scale;
-  } = { precision: 8, scale: 10000 },
+    precision?: Precision;
+    scale?: Scale;
+  } = {},
+  // for testing
   source: Observable<DeviceMotionData> = getDeviceMotionStream(),
 ) => {
+  const precision = option.precision || 8;
+  const scale = option.scale || 10000;
   const { bufferCount, filter, map, scan, skip } = getRx().operators;
 
   return source.pipe(
     filter(isEntireDeviceMotionData),
-    map((e) => simplifyValue(e, option.precision)),
+    map((e) => simplifyValue(e, precision)),
     scan<EntireDeviceMotionData, EntireDeviceMotionDataWithChange, null>((state, val) => {
       if (state === null) {
         // should be skipped, change is wrong
@@ -54,7 +53,7 @@ export const getDeviceMotionWithChangeStream = (
     map((changes: EntireDeviceMotionDataWithChange[]) => {
       const avg = calculateAverage(changes.map((c) => c.change));
 
-      return equalize(avg, option.scale);
+      return equalize(avg, scale);
     }),
   );
 };
