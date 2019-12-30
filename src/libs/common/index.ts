@@ -1,4 +1,5 @@
 export * from './add-class';
+export * from './arithmetic';
 export * from './devicemotion';
 export * from './element-operations';
 export * from './get-elements';

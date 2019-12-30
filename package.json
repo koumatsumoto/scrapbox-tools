@@ -33,9 +33,7 @@
     "node": ">= 13.0.0",
     "yarn": ">=1.19.0"
   },
-  "dependencies": {
-    "rxjs": "^6.5.3"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^24.0.23",
     "@types/node": "^12.12.14",
@@ -50,6 +48,7 @@
     "node-sass": "^4.13.0",
     "prettier": "^1.19.1",
     "puppeteer": "^2.0.0",
+    "rxjs": "7.0.0-alpha.0",
     "stylelint": "^12.0.0",
     "stylelint-config-recess-order": "^2.0.3",
     "stylelint-config-recommended-scss": "^4.1.0",

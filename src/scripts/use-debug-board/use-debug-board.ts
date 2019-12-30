@@ -1,12 +1,12 @@
-import { getDeviceMotionStream } from '../../libs/common';
 import { componentManager } from '../component-manager';
 import { MyDebugBoard } from '../../components';
+import { getDeviceMotionWithChangeStream } from '../../libs/common';
 
 export const useDebugBoard = () => {
-  const motion$ = getDeviceMotionStream();
   const debugBoard = componentManager.getInstance(MyDebugBoard);
+  const motionWithChange$ = getDeviceMotionWithChangeStream();
 
-  motion$.subscribe((e: DeviceMotionEvent) => {
-    debugBoard.updateText(JSON.stringify(e));
+  motionWithChange$.subscribe((data) => {
+    debugBoard.updateText(JSON.stringify(data, null, 2));
   });
 };

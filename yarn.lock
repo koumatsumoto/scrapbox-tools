@@ -6167,6 +6167,13 @@ rx@4.1.0:
   resolved "https://registry.yarnpkg.com/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
   integrity sha1-pfE/957zt0D+MKqAP7CfmIBdR4I=
 
+rxjs@7.0.0-alpha.0:
+  version "7.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.0.0-alpha.0.tgz#8123daf3a9fa994536ca0089dbc448f7cde98403"
+  integrity sha512-dX5CjwuWIuo4uHI5u1ou8w/2qMZyt025qiLoiYgSoYKiLS4czmJhSlptXGUi/2KAVJlHpMHiKNyhnVODg68xVw==
+  dependencies:
+    tslib "^1.9.0"
+
 rxjs@^5.5.6:
   version "5.5.12"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.5.12.tgz#6fa61b8a77c3d793dbaf270bee2f43f652d741cc"
@@ -6174,7 +6181,7 @@ rxjs@^5.5.6:
   dependencies:
     symbol-observable "1.0.1"
 
-rxjs@^6.5.2, rxjs@^6.5.3:
+rxjs@^6.5.2:
   version "6.5.4"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.4.tgz#e0777fe0d184cec7872df147f303572d414e211c"
   integrity sha512-naMQXcgEo3csAEGvw/NydRA0fuS2nDZJiw1YUWFKU7aPPAPGZEsD4Iimit96qwCieH6y614MCLYwdkrWx7z/7Q==

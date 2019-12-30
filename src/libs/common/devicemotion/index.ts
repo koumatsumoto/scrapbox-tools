@@ -1,1 +1,1 @@
-export { getDeviceMotionStream } from './get-devicemotion-stream';
+export { getDeviceMotionStream, getDeviceMotionWithChangeStream } from './get-devicemotion-stream';
