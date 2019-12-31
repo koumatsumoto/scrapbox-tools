@@ -91,3 +91,10 @@ export type DeviceOrientation = {
   readonly beta: number;
   readonly gamma: number;
 };
+
+export type OrientationAndMotion = {
+  orientation: DeviceOrientation;
+  acceleration: DeviceMotionAsTuple['acceleration'];
+  accelerationIncludingGravity: DeviceMotionAsTuple['accelerationIncludingGravity'];
+  rotationRate: DeviceMotionAsTuple['rotationRate'];
+};

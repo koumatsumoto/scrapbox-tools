@@ -19,16 +19,12 @@ describe('getDeviceMotionDataStream', () => {
       const interval = 10;
       const v = (val: number) => ({ ...createTestingDeviceMotionValue(val), interval });
       // averaged
-      $.next(v(10));
-      $.next(v(30)); // average 20
-      // averaged
-      $.next(v(10));
-      $.next(v(50)); // average 30
+      $.next(v(20));
+      $.next(v(30)); // average 30
     });
 
     getDeviceMotionStream(
       {
-        averageDenominator: 2,
         precision: 0,
       },
       $.asObservable(),

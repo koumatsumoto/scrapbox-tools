@@ -5,9 +5,9 @@ import * as RxType from 'rxjs';
 import * as operatorsType from 'rxjs/operators';
 
 export type RxJS = {
+  Subject: typeof RxType.Subject;
   animationFrameScheduler: typeof RxType.animationFrameScheduler;
   combineLatest: typeof RxType.combineLatest;
-  Subject: typeof RxType.Subject;
   operators: {
     debounceTime: typeof operatorsType.debounceTime;
     bufferCount: typeof operatorsType.bufferCount;
@@ -15,6 +15,7 @@ export type RxJS = {
     map: typeof operatorsType.map;
     scan: typeof operatorsType.scan;
     skip: typeof operatorsType.skip;
+    withLatestFrom: typeof operatorsType.withLatestFrom;
   };
 };
 
