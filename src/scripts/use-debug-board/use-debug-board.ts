@@ -1,15 +1,18 @@
 import { componentManager } from '../component-manager';
 import { MyDebugBoard } from '../../components';
-import { getOrientationAndMotionStream } from '../../libs/common/deviceorientation-and-devicemotion';
+import { getOrientationAndMotionStream, OrientationAndMotion } from '../../libs/common/deviceorientation-and-devicemotion';
+import { makeReadableTextContent } from './internal/make-readable-text-content';
 
 export const useDebugBoard = () => {
   const debugBoard = componentManager.getInstance(MyDebugBoard);
 
-  let orientationAndMotion: any = {};
+  let orientationAndMotion: OrientationAndMotion | undefined;
   getOrientationAndMotionStream().subscribe((d) => (orientationAndMotion = d));
 
   const loop = () => {
-    debugBoard.updateText(JSON.stringify(orientationAndMotion, null, 2));
+    if (orientationAndMotion) {
+      debugBoard.updateText(makeReadableTextContent(orientationAndMotion));
+    }
     window.requestAnimationFrame(loop);
   };
   loop();
