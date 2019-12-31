@@ -1,7 +1,7 @@
 import { DeviceMotionValue, DeviceMotion, DeviceMotionWithChange, DeviceMotionAsTuple } from '../../types';
 import { floorToInt } from '../../../arithmetic';
 
-export const diff = (prev: DeviceMotion, curr: DeviceMotion): DeviceMotionValue => ({
+export const calculateMotionChange = (prev: DeviceMotionValue, curr: DeviceMotionValue): DeviceMotionValue => ({
   acceleration: {
     x: curr.acceleration.x - prev.acceleration.x,
     y: curr.acceleration.y - prev.acceleration.y,

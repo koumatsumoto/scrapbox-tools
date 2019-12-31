@@ -1,9 +1,8 @@
 import { Observable } from 'rxjs';
 import { getRx } from '../../rxjs';
-import { isEntireDeviceMotion } from './internal/is-entire-device-motion';
 import { DeviceMotion, PartialDeviceMotion, Precision } from '../types';
 import { ThresholdOption } from './internal/normalize';
-import { asTuple, normalizeByThreshold, toInteger, withChange } from './internal/rx-operators';
+import { asTuple, normalizeByThreshold, onlyEntire, toInteger, withChange } from './internal/rx-operators';
 
 export const getPartialDeviceMotionStream = () => {
   const Subject = getRx().Subject;
@@ -16,19 +15,17 @@ export const getPartialDeviceMotionStream = () => {
   return subject.asObservable();
 };
 
-export const getEntireDeviceMotionStream = () => {
-  const { filter } = getRx().operators;
-
-  return getPartialDeviceMotionStream().pipe(filter(isEntireDeviceMotion)) as Observable<DeviceMotion>;
+export const getDeviceMotionStream = () => {
+  return getPartialDeviceMotionStream().pipe(onlyEntire()) as Observable<DeviceMotion>;
 };
 
-export const getDeviceMotionStream = (
+export const deprecatedGetDeviceMotionStream = (
   option: {
     precision?: Precision;
     threshold?: ThresholdOption;
   } = {},
   // for testing
-  source: Observable<DeviceMotion> = getEntireDeviceMotionStream(),
+  source: Observable<DeviceMotion> = getDeviceMotionStream(),
 ) => {
   return source.pipe(toInteger(option.precision), withChange(), asTuple(), normalizeByThreshold(option.threshold));
 };

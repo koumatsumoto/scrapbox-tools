@@ -92,9 +92,50 @@ export type DeviceOrientation = {
   readonly gamma: number;
 };
 
+export type DeviceOrientationValue = {
+  readonly alpha: number;
+  readonly beta: number;
+  readonly gamma: number;
+};
+
 export type OrientationAndMotion = {
   orientation: DeviceOrientation;
   acceleration: DeviceMotionAsTuple['acceleration'];
   accelerationIncludingGravity: DeviceMotionAsTuple['accelerationIncludingGravity'];
   rotationRate: DeviceMotionAsTuple['rotationRate'];
+};
+
+// TODO: add mid
+export type SummaryValue = {
+  readonly max: number;
+  readonly min: number;
+  readonly avg: number;
+};
+
+export type MotionSummary = {
+  readonly acceleration: {
+    readonly x: SummaryValue;
+    readonly y: SummaryValue;
+    readonly z: SummaryValue;
+  };
+  readonly accelerationIncludingGravity: {
+    readonly x: SummaryValue;
+    readonly y: SummaryValue;
+    readonly z: SummaryValue;
+  };
+  readonly rotationRate: {
+    readonly alpha: SummaryValue;
+    readonly beta: SummaryValue;
+    readonly gamma: SummaryValue;
+  };
+};
+
+export type OrientationAndMotionSummary = {
+  orientation: DeviceOrientation;
+  motion: {
+    interval: DeviceMotion['interval'];
+    acceleration: MotionSummary['acceleration'];
+    accelerationIncludingGravity: MotionSummary['accelerationIncludingGravity'];
+    rotationRate: MotionSummary['rotationRate'];
+  };
 };

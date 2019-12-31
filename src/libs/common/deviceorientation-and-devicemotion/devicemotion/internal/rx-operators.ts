@@ -1,10 +1,11 @@
 import { Observable } from 'rxjs';
-import { DeviceMotion, DeviceMotionAsTuple, DeviceMotionWithChange, Precision } from '../../types';
-import { diff, makeTuple } from './make-change';
+import { DeviceMotion, DeviceMotionAsTuple, DeviceMotionValue, DeviceMotionWithChange, PartialDeviceMotion, Precision } from '../../types';
+import { calculateMotionChange, makeTuple } from './make-change';
 import { getRx } from '../../../rxjs';
-import { calculateAverage } from './calculate-average';
+import { calculateMotionAverage } from './calculate-average';
 import { toInt } from './to-int';
 import { normalize, ThresholdOption } from './normalize';
+import { isEntireDeviceMotion } from './is-entire-device-motion';
 
 // TODO: use pairwise
 export const withChange = () => (source: Observable<DeviceMotion>) => {
@@ -21,7 +22,7 @@ export const withChange = () => (source: Observable<DeviceMotion>) => {
       } else {
         return {
           data: val,
-          change: diff(state.data, val),
+          change: calculateMotionChange(state.data, val),
         };
       }
     }, null),
@@ -32,12 +33,12 @@ export const withChange = () => (source: Observable<DeviceMotion>) => {
 /**
  * @param denominator - default value is 4, used as buffer count
  */
-export const toAverage = (denominator: number = 4) => (source: Observable<DeviceMotion>) => {
+export const toAverage = (denominator: number = 4) => (source: Observable<DeviceMotionValue>) => {
   const { bufferCount, map } = getRx().operators;
 
   return source.pipe(
     bufferCount(denominator),
-    map((changes: DeviceMotion[]) => calculateAverage(changes)),
+    map((items: DeviceMotionValue[]) => calculateMotionAverage(items)),
   );
 };
 
@@ -57,4 +58,10 @@ export const normalizeByThreshold = (threshold?: ThresholdOption) => (source: Ob
   const { map } = getRx().operators;
 
   return source.pipe(map((v) => normalize(v, threshold)));
+};
+
+export const onlyEntire = () => (source: Observable<PartialDeviceMotion>) => {
+  const { filter } = getRx().operators;
+
+  return source.pipe(filter(isEntireDeviceMotion));
 };

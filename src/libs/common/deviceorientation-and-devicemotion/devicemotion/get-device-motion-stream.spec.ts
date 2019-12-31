@@ -1,4 +1,4 @@
-import { getDeviceMotionStream, getPartialDeviceMotionStream } from './get-device-motion-stream';
+import { deprecatedGetDeviceMotionStream, getDeviceMotionStream, getPartialDeviceMotionStream } from './get-device-motion-stream';
 import { Subject } from 'rxjs';
 import { DeviceMotion } from '../types';
 import { createTestingDeviceMotionValue, doNextTick } from '../test-helpers';
@@ -11,7 +11,13 @@ describe('getPartialDeviceMotionStream', () => {
   });
 });
 
-describe('getDeviceMotionDataStream', () => {
+describe('getDeviceMotionStream', () => {
+  it('should be callable', () => {
+    expect(() => getDeviceMotionStream()).not.toThrow();
+  });
+});
+
+describe('getDeviceMotionStream', () => {
   it('should emit expected value', (done: Function) => {
     const $ = new Subject<DeviceMotion>();
 
@@ -23,7 +29,7 @@ describe('getDeviceMotionDataStream', () => {
       $.next(v(30)); // average 30
     });
 
-    getDeviceMotionStream(
+    deprecatedGetDeviceMotionStream(
       {
         precision: 0,
       },

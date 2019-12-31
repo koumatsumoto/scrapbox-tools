@@ -5,6 +5,7 @@ import * as RxType from 'rxjs';
 import * as operatorsType from 'rxjs/operators';
 
 export type RxJS = {
+  Observable: typeof RxType.Observable;
   Subject: typeof RxType.Subject;
   animationFrameScheduler: typeof RxType.animationFrameScheduler;
   combineLatest: typeof RxType.combineLatest;

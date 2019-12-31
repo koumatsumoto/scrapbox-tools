@@ -1,9 +1,9 @@
-import { diff, getChangePerMillisecond } from './make-change';
+import { calculateMotionChange, getChangePerMillisecond } from './make-change';
 
-describe('getChange', () => {
+describe('calculateMotionChange', () => {
   it('should calculate values as expected', () => {
     expect(
-      diff(
+      calculateMotionChange(
         {
           acceleration: {
             x: 0,
@@ -20,7 +20,6 @@ describe('getChange', () => {
             beta: 0,
             gamma: 0,
           },
-          interval: 0,
         },
         {
           acceleration: {
@@ -38,7 +37,6 @@ describe('getChange', () => {
             beta: 10,
             gamma: 100,
           },
-          interval: 0,
         },
       ),
     ).toEqual({
