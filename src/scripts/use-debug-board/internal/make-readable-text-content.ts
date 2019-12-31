@@ -10,8 +10,8 @@ orientation: {
 }
 acceleration: {
   x: [${obj.acceleration.x[0]}, ${obj.acceleration.x[1]}]
-  x: [${obj.acceleration.y[0]}, ${obj.acceleration.y[1]}]
-  x: [${obj.acceleration.z[0]}, ${obj.acceleration.z[1]}]
+  y: [${obj.acceleration.y[0]}, ${obj.acceleration.y[1]}]
+  z: [${obj.acceleration.z[0]}, ${obj.acceleration.z[1]}]
 }
 rotationRate: {
   alpha: [${obj.rotationRate.alpha[0]}, ${obj.rotationRate.alpha[1]}],
