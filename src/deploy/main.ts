@@ -11,8 +11,10 @@ import { updatePage } from './update-page';
   const settingsPageText = getSettingsPageText(await loadCSS());
 
   // deploy user script and user css
-  await updatePage({ url: config.userPageUrl, text: userPageText });
-  await updatePage({ url: config.settingsPageUrl, text: settingsPageText });
+  await Promise.all([
+    updatePage({ url: config.userPageUrl, text: userPageText }),
+    updatePage({ url: config.settingsPageUrl, text: settingsPageText }),
+  ]);
 })()
   .then(() => {
     console.log('deploy completed');
