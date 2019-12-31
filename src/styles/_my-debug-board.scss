@@ -6,20 +6,23 @@ $base-z-index: 10000;
 $button-z-index: 10001;
 $button-icon-color: #37474f;
 
-my-debug-board {
-  %container-layout {
-    min-width: 300px;
-    max-width: 80vw;
-    min-height: 200px;
-    max-height: 72vh;
-  }
+$size: (
+  'outermost-contair-min-width': 300px,
+  'outermost-contair-max-width': 80vw,
+  'outermost-contair-min-height': 200px,
+  'outermost-contair-max-height': 72vh,
+);
 
-  @extend %container-layout;
+my-debug-board {
   position: fixed;
   right: 24px;
   bottom: 120px;
   z-index: $base-z-index;
   display: flex;
+  min-width: map_get($size, 'outermost-contair-min-width');
+  max-width: map_get($size, 'outermost-contair-max-width');
+  min-height: map_get($size, 'outermost-contair-min-height');
+  max-height: map_get($size, 'outermost-contair-max-height');
   padding: 8px;
   // for close button
   overflow: visible;
@@ -27,12 +30,18 @@ my-debug-board {
   box-shadow: $shadow;
 
   div {
-    @extend %container-layout;
+    display: none;
+    flex: 1 1 auto;
     overflow: auto;
     font-size: map_get($font-size, 'small');
     color: map_get($material-colors, 'blue-grey-700');
     white-space: pre;
     background: white;
+
+    // added when text is set
+    &.-has-value {
+      display: block;
+    }
   }
 
   .close-button {

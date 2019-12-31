@@ -1,8 +1,11 @@
 const html = require('./my-debug-board.component.html');
 
+const cssClassNameWhenTextBlockHasValue = '-has-value';
+
 export class MyDebugBoard extends HTMLElement {
   static readonly elementName = 'my-debug-board';
-  private screenElement: HTMLDivElement | null = null;
+  private leftTextBlock: HTMLDivElement | null = null;
+  private rightTextBlock: HTMLDivElement | null = null;
   private closeButton: HTMLButtonElement | null = null;
 
   constructor() {
@@ -10,17 +13,26 @@ export class MyDebugBoard extends HTMLElement {
     this.setupElements();
   }
 
-  updateText(text: string) {
-    if (!this.screenElement) {
+  setText(text: string, column: 'left' | 'right' = 'left') {
+    const target = column === 'left' ? this.leftTextBlock : this.rightTextBlock;
+
+    if (!target) {
       return;
     }
 
-    this.screenElement.textContent = text;
+    target.textContent = text;
+    if (text.length) {
+      target.classList.add(cssClassNameWhenTextBlockHasValue);
+    } else {
+      target.classList.remove(cssClassNameWhenTextBlockHasValue);
+    }
   }
 
   private setupElements() {
     this.innerHTML = `${html}`;
-    this.screenElement = this.querySelector<HTMLDivElement>('div')!;
+    const textBlocks = this.querySelectorAll<HTMLDivElement>('div');
+    this.leftTextBlock = textBlocks[0]!;
+    this.rightTextBlock = textBlocks[1]!;
     this.closeButton = this.querySelector<HTMLButtonElement>('button')!;
     this.closeButton.addEventListener('click', () => this.destroy(), { once: true });
   }
