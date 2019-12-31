@@ -2,9 +2,9 @@ import { DeviceMotionAsTuple, ValueAndChange } from '../../types';
 import { roundToInt } from '../../../arithmetic';
 
 const defaultThreshold = {
-  acceleration: 10000000,
-  accelerationIncludingGravity: 10000000,
-  rotationRate: 100000000,
+  acceleration: 10 ** 6,
+  accelerationIncludingGravity: 10 ** 6,
+  rotationRate: 10 ** 7,
 } as const;
 
 export type ThresholdOption = {
