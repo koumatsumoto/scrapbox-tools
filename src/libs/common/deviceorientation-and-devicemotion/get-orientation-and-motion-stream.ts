@@ -1,9 +1,12 @@
 import { getDeviceMotionStream } from './devicemotion';
 import { getDeviceOrientationStream } from './deviceorientation/get-device-orientation-stream';
 import { Observable } from 'rxjs';
-import { DeviceMotion, DeviceOrientation, OrientationAndMotionSummary } from './types';
+import { DeviceMotion, DeviceOrientation, OrientationAndMotionSummary, Precision } from './types';
 import { getRx } from '../rxjs';
 import { summarizeMotions } from './devicemotion/internal/summarize';
+import { fixValue } from './fix-value';
+import { forDebug } from './for-debug';
+import { toManipulation } from './make-manipulation';
 
 const defaultOption = {
   interval: 200,
@@ -54,4 +57,28 @@ export const getOrientationAndMotionStream = (
 
     return () => clearInterval(id);
   });
+};
+
+export const getOrientationAndMotionSummary = (
+  option: {
+    interval: number;
+    precision: Precision;
+  } = {
+    interval: 200,
+    precision: 0,
+  },
+) => {
+  return getOrientationAndMotionStream(option).pipe(fixValue(option.precision), toManipulation());
+};
+
+export const getOrientationAndMotionDebugString = (
+  option: {
+    interval: number;
+    precision: Precision;
+  } = {
+    interval: 200,
+    precision: 0,
+  },
+) => {
+  return getOrientationAndMotionStream(option).pipe(fixValue(option.precision), forDebug());
 };

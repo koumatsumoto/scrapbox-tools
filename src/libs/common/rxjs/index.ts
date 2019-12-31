@@ -14,6 +14,7 @@ export type RxJS = {
     bufferCount: typeof operatorsType.bufferCount;
     filter: typeof operatorsType.filter;
     map: typeof operatorsType.map;
+    pairwise: typeof operatorsType.pairwise;
     scan: typeof operatorsType.scan;
     skip: typeof operatorsType.skip;
     withLatestFrom: typeof operatorsType.withLatestFrom;
