@@ -13,8 +13,8 @@ export const useDebugBoard = () => {
   const loop = () => {
     if (data && debugText) {
       const json = JSON.stringify(data, null, 2);
-      debugBoard.setText(json, 'left');
-      debugBoard.setText(debugText, 'right');
+      debugBoard.setText(json, 'left-top');
+      debugBoard.setText(debugText, 'right-top');
     }
     window.requestAnimationFrame(loop);
   };
