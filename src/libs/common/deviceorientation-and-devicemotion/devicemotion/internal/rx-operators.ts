@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
-import { DeviceMotion, DeviceMotionAsTuple, DeviceMotionWithChange, Precision } from '../types';
+import { DeviceMotion, DeviceMotionAsTuple, DeviceMotionWithChange, Precision } from '../../types';
 import { diff, makeTuple } from './make-change';
-import { getRx } from '../../rxjs';
+import { getRx } from '../../../rxjs';
 import { calculateAverage } from './calculate-average';
 import { toInt } from './to-int';
 import { normalize, ThresholdOption } from './normalize';

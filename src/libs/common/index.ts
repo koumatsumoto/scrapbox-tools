@@ -1,6 +1,6 @@
 export * from './add-class';
 export * from './arithmetic';
-export * from './devicemotion';
+export * from './deviceorientation-and-devicemotion/devicemotion';
 export * from './element-operations';
 export * from './get-elements';
 export * from './is-empty';

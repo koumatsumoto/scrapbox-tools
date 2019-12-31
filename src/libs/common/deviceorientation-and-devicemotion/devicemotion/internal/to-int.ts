@@ -1,4 +1,4 @@
-import { DeviceMotion, Precision } from '../types';
+import { DeviceMotion, Precision } from '../../types';
 
 const ti = (v: number, exponentiation: number) => {
   return Number.parseInt((v * exponentiation).toFixed(0));

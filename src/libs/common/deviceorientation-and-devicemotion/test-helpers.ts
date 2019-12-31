@@ -1,4 +1,4 @@
-import { DeviceMotionValue, PartialDeviceMotion, DeviceMotion } from './types';
+import { DeviceMotionValue, PartialDeviceMotion, DeviceMotion, PartialDeviceOrientation } from './types';
 import { DeepPartial } from '../../../types';
 
 /**
@@ -61,3 +61,16 @@ export const createTestingDeviceMotion = (v: number, interval: number): DeviceMo
 
 // to test rx streams
 export const doNextTick = (fn: Function) => setTimeout(fn);
+
+/**
+ * For Testing
+ */
+export const createTestingPartialDeviceOrientation = (param: Partial<PartialDeviceOrientation> = {}): PartialDeviceOrientation => {
+  return {
+    alpha: 1,
+    beta: 1,
+    gamma: 1,
+    absolute: true,
+    ...param,
+  };
+};

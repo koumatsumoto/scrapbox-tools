@@ -7,17 +7,17 @@ export type PartialDeviceMotion = {
     readonly x: number | null;
     readonly y: number | null;
     readonly z: number | null;
-  };
+  } | null;
   readonly accelerationIncludingGravity: {
     readonly x: number | null;
     readonly y: number | null;
     readonly z: number | null;
-  };
+  } | null;
   readonly rotationRate: {
     readonly alpha: number | null;
     readonly beta: number | null;
     readonly gamma: number | null;
-  };
+  } | null;
 };
 
 /**
@@ -75,3 +75,19 @@ export type DeviceMotionAsTuple = {
 
 // Allowed precision in this library
 export type Precision = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+
+// data provided from window deviceorientation event
+export type PartialDeviceOrientation = {
+  readonly absolute: boolean;
+  readonly alpha: number | null;
+  readonly beta: number | null;
+  readonly gamma: number | null;
+};
+
+// in full-supported device
+export type DeviceOrientation = {
+  readonly absolute: boolean;
+  readonly alpha: number;
+  readonly beta: number;
+  readonly gamma: number;
+};

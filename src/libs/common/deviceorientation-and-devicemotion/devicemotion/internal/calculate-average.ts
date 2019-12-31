@@ -1,5 +1,5 @@
-import { DeviceMotion, DeviceMotionValue } from '../types';
-import { toInt } from '../../arithmetic';
+import { DeviceMotion, DeviceMotionValue } from '../../types';
+import { floorToInt } from '../../../arithmetic';
 
 export const calculateAverage = (changes: DeviceMotion[]): DeviceMotion => {
   const count = changes.length;
@@ -67,19 +67,19 @@ export const calculateAverageAsInt = (changes: DeviceMotionValue[]): DeviceMotio
 
   return {
     acceleration: {
-      x: toInt(summary.acceleration.x / count),
-      y: toInt(summary.acceleration.y / count),
-      z: toInt(summary.acceleration.z / count),
+      x: floorToInt(summary.acceleration.x / count),
+      y: floorToInt(summary.acceleration.y / count),
+      z: floorToInt(summary.acceleration.z / count),
     },
     accelerationIncludingGravity: {
-      x: toInt(summary.accelerationIncludingGravity.x / count),
-      y: toInt(summary.accelerationIncludingGravity.y / count),
-      z: toInt(summary.accelerationIncludingGravity.z / count),
+      x: floorToInt(summary.accelerationIncludingGravity.x / count),
+      y: floorToInt(summary.accelerationIncludingGravity.y / count),
+      z: floorToInt(summary.accelerationIncludingGravity.z / count),
     },
     rotationRate: {
-      alpha: toInt(summary.rotationRate.alpha / count),
-      beta: toInt(summary.rotationRate.beta / count),
-      gamma: toInt(summary.rotationRate.gamma / count),
+      alpha: floorToInt(summary.rotationRate.alpha / count),
+      beta: floorToInt(summary.rotationRate.beta / count),
+      gamma: floorToInt(summary.rotationRate.gamma / count),
     },
   };
 };

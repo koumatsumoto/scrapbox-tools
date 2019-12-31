@@ -5,6 +5,7 @@ import * as RxType from 'rxjs';
 import * as operatorsType from 'rxjs/operators';
 
 export type RxJS = {
+  combineLatest: typeof RxType.combineLatest;
   Subject: typeof RxType.Subject;
   operators: {
     debounceTime: typeof operatorsType.debounceTime;

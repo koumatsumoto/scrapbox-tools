@@ -1,4 +1,4 @@
-import { PartialDeviceMotion, DeviceMotion } from '../types';
+import { PartialDeviceMotion, DeviceMotion } from '../../types';
 
 export const isEntireDeviceMotion = (e: PartialDeviceMotion): e is DeviceMotion => {
   const a = e.acceleration;

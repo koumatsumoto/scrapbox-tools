@@ -1,5 +1,5 @@
-import { DeviceMotionValue, DeviceMotion, DeviceMotionWithChange, DeviceMotionAsTuple } from '../types';
-import { toInt } from '../../arithmetic';
+import { DeviceMotionValue, DeviceMotion, DeviceMotionWithChange, DeviceMotionAsTuple } from '../../types';
+import { floorToInt } from '../../../arithmetic';
 
 export const diff = (prev: DeviceMotion, curr: DeviceMotion): DeviceMotionValue => ({
   acceleration: {
@@ -19,7 +19,7 @@ export const diff = (prev: DeviceMotion, curr: DeviceMotion): DeviceMotionValue 
   },
 });
 
-const calc = (a: number, b: number, c: number) => toInt((a - b) / c);
+const calc = (a: number, b: number, c: number) => floorToInt((a - b) / c);
 
 export const makeTuple = (v: DeviceMotionWithChange): DeviceMotionAsTuple => ({
   acceleration: {

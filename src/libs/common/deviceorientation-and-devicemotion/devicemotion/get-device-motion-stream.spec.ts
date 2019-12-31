@@ -1,7 +1,7 @@
-import { getDeviceMotionDataStream, getPartialDeviceMotionStream } from './get-device-motion-stream';
+import { getDeviceMotionStream, getPartialDeviceMotionStream } from './get-device-motion-stream';
 import { Subject } from 'rxjs';
-import { DeviceMotion } from './types';
-import { createTestingDeviceMotionValue, doNextTick } from './test-helpers';
+import { DeviceMotion } from '../types';
+import { createTestingDeviceMotionValue, doNextTick } from '../test-helpers';
 
 describe('getPartialDeviceMotionStream', () => {
   it('should get an observable', () => {
@@ -26,7 +26,7 @@ describe('getDeviceMotionDataStream', () => {
       $.next(v(50)); // average 30
     });
 
-    getDeviceMotionDataStream(
+    getDeviceMotionStream(
       {
         averageDenominator: 2,
         precision: 0,

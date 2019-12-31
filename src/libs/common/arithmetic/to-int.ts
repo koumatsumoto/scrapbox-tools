@@ -1,2 +1,8 @@
-// improve performance
-export const toInt = (v: number) => Number.parseInt((v as any) as string);
+/**
+ * NOTE: an argument is passed to Number.parseInt as string, to improve performance
+ *
+ * @param x
+ */
+export const floorToInt = (x: number) => Number.parseInt((x as any) as string);
+
+export const roundToInt = (x: number) => Math.round(x);

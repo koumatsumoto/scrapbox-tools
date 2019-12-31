@@ -1,9 +1,19 @@
-import { toInt } from './to-int';
+import { floorToInt, roundToInt } from './to-int';
 
 describe('toInt', () => {
-  it('should calculate well', () => {
-    expect(toInt(0.99)).toBe(0);
-    expect(toInt(1)).toBe(1);
-    expect(toInt(1.01)).toBe(1);
+  describe('floorToInt', () => {
+    it('should calculate values as expected', () => {
+      expect(floorToInt(0.99)).toBe(0);
+      expect(floorToInt(1)).toBe(1);
+      expect(floorToInt(1.01)).toBe(1);
+    });
+  });
+
+  describe('roundToInt', () => {
+    it('should calculate values as expected', () => {
+      expect(roundToInt(0.99)).toBe(1);
+      expect(roundToInt(1)).toBe(1);
+      expect(roundToInt(1.01)).toBe(1);
+    });
   });
 });

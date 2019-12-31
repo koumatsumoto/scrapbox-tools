@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
-import { getRx } from '../rxjs';
+import { getRx } from '../../rxjs';
 import { isEntireDeviceMotion } from './internal/is-entire-device-motion';
-import { DeviceMotion, PartialDeviceMotion, Precision } from './types';
+import { DeviceMotion, PartialDeviceMotion, Precision } from '../types';
 import { ThresholdOption } from './internal/normalize';
 import { asTuple, normalizeByThreshold, toAverage, toDebug, toInteger, withChange } from './internal/rx-operators';
 
@@ -10,7 +10,7 @@ export const getPartialDeviceMotionStream = () => {
   const subject = new Subject<PartialDeviceMotion>();
 
   window.addEventListener('devicemotion', (e: DeviceMotionEvent) => {
-    subject.next(e as PartialDeviceMotion);
+    subject.next(e);
   });
 
   return subject.asObservable();
@@ -22,7 +22,7 @@ export const getEntireDeviceMotionStream = () => {
   return getPartialDeviceMotionStream().pipe(filter(isEntireDeviceMotion)) as Observable<DeviceMotion>;
 };
 
-export const getDeviceMotionDataStream = (
+export const getDeviceMotionStream = (
   option: {
     averageDenominator?: number;
     precision?: Precision;

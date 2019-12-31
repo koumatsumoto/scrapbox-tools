@@ -11,7 +11,9 @@ my-debug-board {
   z-index: $base-z-index;
   display: flex;
   min-width: 300px;
+  max-width: 80vw;
   min-height: 200px;
+  max-height: 60vh;
   background: white;
   box-shadow: $shadow;
 

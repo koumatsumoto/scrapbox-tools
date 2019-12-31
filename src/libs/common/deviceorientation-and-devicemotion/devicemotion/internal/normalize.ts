@@ -1,5 +1,5 @@
-import { DeviceMotionAsTuple, ValueAndChange } from '../types';
-import { toInt } from '../../arithmetic';
+import { DeviceMotionAsTuple, ValueAndChange } from '../../types';
+import { floorToInt } from '../../../arithmetic';
 
 const defaultThreshold = {
   acceleration: 10000000,
@@ -13,7 +13,7 @@ export type ThresholdOption = {
   rotationRate: number;
 };
 
-const calc = (v: [number, number], threshold: number) => [toInt(v[0] / threshold), toInt(v[1] / threshold)] as ValueAndChange;
+const calc = (v: [number, number], threshold: number) => [floorToInt(v[0] / threshold), floorToInt(v[1] / threshold)] as ValueAndChange;
 export const normalize = (v: DeviceMotionAsTuple, t: ThresholdOption = defaultThreshold): DeviceMotionAsTuple => ({
   acceleration: {
     x: calc(v.acceleration.x, t.acceleration),
