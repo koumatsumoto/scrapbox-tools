@@ -1,6 +1,6 @@
-import { DeviceMotionData, EntireDeviceMotionData } from '../types';
+import { PartialDeviceMotion, DeviceMotion } from '../types';
 
-export const isEntireDeviceMotionData = (e: DeviceMotionData): e is EntireDeviceMotionData => {
+export const isEntireDeviceMotion = (e: PartialDeviceMotion): e is DeviceMotion => {
   const a = e.acceleration;
   if (a === null || a.x === null || a.y === null || a.z === null) {
     return false;

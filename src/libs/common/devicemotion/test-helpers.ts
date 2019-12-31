@@ -1,10 +1,10 @@
-import { DeviceMotionChange, DeviceMotionData, EntireDeviceMotionData } from './types';
+import { DeviceMotionValue, PartialDeviceMotion, DeviceMotion } from './types';
 import { DeepPartial } from '../../../types';
 
 /**
  * For Testing
  */
-export const createTestingDeviceMotionData = (param: DeepPartial<DeviceMotionData> = {}): DeviceMotionData => {
+export const createTestingPartialDeviceMotion = (param: DeepPartial<PartialDeviceMotion> = {}): PartialDeviceMotion => {
   return {
     acceleration: {
       ...{
@@ -34,7 +34,7 @@ export const createTestingDeviceMotionData = (param: DeepPartial<DeviceMotionDat
   };
 };
 
-export const createTestingDeviceMotionChange = (v: number): DeviceMotionChange => ({
+export const createTestingDeviceMotionValue = (v: number): DeviceMotionValue => ({
   acceleration: {
     x: v,
     y: v,
@@ -51,3 +51,13 @@ export const createTestingDeviceMotionChange = (v: number): DeviceMotionChange =
     gamma: v,
   },
 });
+
+export const createTestingDeviceMotion = (v: number, interval: number): DeviceMotion => {
+  return {
+    ...createTestingDeviceMotionValue(v),
+    interval,
+  };
+};
+
+// to test rx streams
+export const doNextTick = (fn: Function) => setTimeout(fn);

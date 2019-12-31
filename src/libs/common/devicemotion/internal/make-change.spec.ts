@@ -1,9 +1,9 @@
-import { getChange, getChangePerMillisecond } from './get-change';
+import { diff, getChangePerMillisecond } from './make-change';
 
 describe('getChange', () => {
   it('should calculate values as expected', () => {
     expect(
-      getChange(
+      diff(
         {
           acceleration: {
             x: 0,
