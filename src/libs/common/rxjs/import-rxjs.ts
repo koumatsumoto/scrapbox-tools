@@ -1,5 +1,9 @@
+/**
+ * window.rxjs is loaded by external script
+ **/
+import * as RxType from 'rxjs';
+import * as operatorsType from 'rxjs/operators';
 import { loadScript } from '../load-scripts/load-scripts';
-import { RxJS } from './index';
 
 export const importRxJS = () =>
   new Promise<RxJS>(async (resolve, reject) => {
@@ -15,3 +19,29 @@ export const importRxJS = () =>
       reject(e);
     }
   });
+
+type RxJS = {
+  Observable: typeof RxType.Observable;
+  Subject: typeof RxType.Subject;
+  animationFrameScheduler: typeof RxType.animationFrameScheduler;
+  combineLatest: typeof RxType.combineLatest;
+  operators: {
+    debounceTime: typeof operatorsType.debounceTime;
+    bufferCount: typeof operatorsType.bufferCount;
+    filter: typeof operatorsType.filter;
+    map: typeof operatorsType.map;
+    pairwise: typeof operatorsType.pairwise;
+    scan: typeof operatorsType.scan;
+    skip: typeof operatorsType.skip;
+    withLatestFrom: typeof operatorsType.withLatestFrom;
+  };
+};
+
+declare global {
+  interface Window {
+    rxjs: RxJS;
+  }
+}
+
+// lazy load
+export const getRx = () => window.rxjs as RxJS;

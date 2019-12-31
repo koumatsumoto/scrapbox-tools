@@ -59,9 +59,6 @@ export const createTestingDeviceMotion = (v: number, interval: number): DeviceMo
   };
 };
 
-// to test rx streams
-export const doNextTick = (fn: Function) => setTimeout(fn);
-
 /**
  * For Testing
  */

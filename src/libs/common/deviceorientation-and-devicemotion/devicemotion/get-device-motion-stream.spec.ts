@@ -1,7 +1,8 @@
 import { deprecatedGetDeviceMotionStream, getDeviceMotionStream, getPartialDeviceMotionStream } from './get-device-motion-stream';
 import { Subject } from 'rxjs';
 import { DeviceMotion } from '../types';
-import { createTestingDeviceMotionValue, doNextTick } from '../test-helpers';
+import { createTestingDeviceMotionValue } from '../test-helpers';
+import { nextTick } from '../../test-helpers';
 
 describe('getPartialDeviceMotionStream', () => {
   it('should get an observable', () => {
@@ -21,7 +22,7 @@ describe('getDeviceMotionStream', () => {
   it('should emit expected value', (done: Function) => {
     const $ = new Subject<DeviceMotion>();
 
-    doNextTick(() => {
+    nextTick(() => {
       const interval = 10;
       const v = (val: number) => ({ ...createTestingDeviceMotionValue(val), interval });
       // averaged
