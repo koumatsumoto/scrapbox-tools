@@ -58,14 +58,3 @@ export const normalizeByThreshold = (threshold?: ThresholdOption) => (source: Ob
 
   return source.pipe(map((v) => normalize(v, threshold)));
 };
-
-export const toDebug = () => (source: Observable<DeviceMotionAsTuple>) => {
-  const { map } = getRx().operators;
-
-  return source.pipe(
-    map((v) => ({
-      acceleration: v.acceleration,
-      rotationRate: v.rotationRate,
-    })),
-  );
-};
