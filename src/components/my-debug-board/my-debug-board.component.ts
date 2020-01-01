@@ -23,7 +23,7 @@ export class MyDebugBoard extends HTMLElement {
 
   setText(text: string, col: keyof TextBlocks = 'left-top') {
     const target = this.textBlocks[col];
-    const section = col === 'left-top' || 'left-bot' ? this.leftSection : this.rightSection;
+    const section = col === 'left-top' || col === 'left-bot' ? this.leftSection : this.rightSection;
     if (!target || !section) {
       return;
     }

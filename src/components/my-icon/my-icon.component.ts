@@ -1,7 +1,7 @@
 const iconSvg = {
   apps: require('./svg/apps.svg') as string,
   clear: require('./svg/clear.svg') as string,
-  view_modules: require('./svg/view_module.svg') as string,
+  'view-modules': require('./svg/view_module.svg') as string,
   widgets: require('./svg/widgets.svg') as string,
 } as const;
 const initialHTML = iconSvg.apps;

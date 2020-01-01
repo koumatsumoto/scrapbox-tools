@@ -9,7 +9,7 @@ type AllowedEnv = {
   TOKEN?: string;
 };
 
-const isValid = (val: any): val is string => typeof val === 'string' && 0 < val.length;
+const isValid = (val: unknown): val is string => typeof val === 'string' && 0 < val.length;
 
 export const getEnv = () => {
   const env = process.env as AllowedEnv;

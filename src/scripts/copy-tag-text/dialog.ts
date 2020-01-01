@@ -24,6 +24,14 @@ const isDialogExist = () => document.querySelector(`#${dialogId}`);
 
 type CustomDialogResult<T> = { ok: false } | { ok: true; data: T };
 
+export const retrieveFormValues = (dialog: HTMLDialogElement) => {
+  const form = getElementOrFail<HTMLFormElement>('form', dialog);
+  const formData = new FormData(form);
+  const checked = formData.getAll(inputName) as string[];
+
+  return checked.filter((str) => 0 < str.length);
+};
+
 const waitForDialogClose = (dialog: HTMLDialogElement): Promise<CustomDialogResult<string[]>> => {
   return new Promise((resolve, reject) => {
     try {
@@ -58,14 +66,6 @@ export const appendDialogToDOMOrFail = (checkboxValues: string[]) => {
   document.body.appendChild(dialog);
 
   return dialog;
-};
-
-export const retrieveFormValues = (dialog: HTMLDialogElement) => {
-  const form = getElementOrFail<HTMLFormElement>('form', dialog);
-  const formData = new FormData(form);
-  const checked = formData.getAll(inputName) as string[];
-
-  return checked.filter((str) => 0 < str.length);
 };
 
 export const openDialog = async (param: { tagOptions: string[] }) => {

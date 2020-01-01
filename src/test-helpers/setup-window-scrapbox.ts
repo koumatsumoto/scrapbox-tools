@@ -8,6 +8,10 @@ export type SetupWindowScrapboxOption = {
   pageLines?: PageLine[];
 };
 
+const empty: () => void = () => {
+  // do nothing
+};
+
 export const setupWindowScrapbox = (option: SetupWindowScrapboxOption = {}) => {
   window.scrapbox = {
     Layout: option.layout ? option.layout : 'page',
@@ -16,18 +20,18 @@ export const setupWindowScrapbox = (option: SetupWindowScrapboxOption = {}) => {
       lines: option.pageLines ? option.pageLines : [],
     },
     PageMenu: {
-      addItem: () => {},
-      addMenu: () => {},
-      addSeparator: () => {},
-      removeAllItems: () => {},
+      addItem: empty,
+      addMenu: empty,
+      addSeparator: empty,
+      removeAllItems: empty,
     },
     PopupMenu: {
-      addButton: () => {},
+      addButton: empty,
     },
     Project: { name: option.projectName ? option.projectName : '', pages: [] },
     TimeStamp: {
-      addFormat: () => {},
-      removeAllFormats: () => {},
+      addFormat: empty,
+      removeAllFormats: empty,
     },
   };
 };

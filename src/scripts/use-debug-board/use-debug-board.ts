@@ -9,8 +9,8 @@ import {
 export const useDebugBoard = () => {
   const debugBoard = componentManager.getInstance(MyDebugBoard);
 
-  let d1: any;
-  let d2: any;
+  let d1: unknown;
+  let d2: unknown;
   let debugText = '';
   getOrientationAndMotionSingleManipulation().subscribe((d) => (d1 = d));
   getDeviceOrientationManipulationSetStream().subscribe((d) => (d2 = d));

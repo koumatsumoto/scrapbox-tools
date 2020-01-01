@@ -1,4 +1,3 @@
-import { customCSSClassName } from '../config';
 import { isEmptyDoubleDimensionalArray } from '../../libs/common';
 import { ScrapboxDomManipulator } from '../../libs/scrapbox';
 import { Block, Container, InvalidBlock, Line, Meta, Page } from './classes';

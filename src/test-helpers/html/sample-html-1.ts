@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const sampleBodyHTML1 = `
 <div id="app-container">
   <div class="app">

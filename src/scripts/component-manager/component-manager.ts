@@ -33,7 +33,7 @@ export class ComponentManager {
     this.components.set(MyDebugBoard, debugBoard);
 
     // append to dom
-    for (let c of this.components.values()) {
+    for (const c of this.components.values()) {
       document.body.appendChild(c);
     }
 

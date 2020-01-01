@@ -1,1 +1,1 @@
-export const toFixed = (n: number, precision: number = 0) => Number.parseFloat(n.toFixed(precision));
+export const toFixed = (n: number, precision = 0) => Number.parseFloat(n.toFixed(precision));

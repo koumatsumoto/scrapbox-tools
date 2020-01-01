@@ -3,7 +3,7 @@ import { MyIcon } from './my-icon/my-icon.component';
 import { MyDebugBoard } from './my-debug-board/my-debug-board.component';
 
 let customElementsDefined = false;
-export const defineCustomElements = () => {
+export const defineCustomElements = (): void => {
   if (customElementsDefined) {
     return;
   }

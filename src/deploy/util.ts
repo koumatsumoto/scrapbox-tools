@@ -52,7 +52,7 @@ export const findOrFail = async (page: puppeteer.Page, selector: string) => {
   return element;
 };
 
-export const tryInputAction = async (page: puppeteer.Page, action: () => Promise<any>) => {
+export const tryInputAction = async (page: puppeteer.Page, action: () => Promise<unknown>) => {
   await page.waitFor(1000);
   await action();
   await page.waitFor(1000);

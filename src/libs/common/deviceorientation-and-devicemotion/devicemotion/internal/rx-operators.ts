@@ -33,7 +33,7 @@ export const withChange = () => (source: Observable<DeviceMotion>) => {
 /**
  * @param denominator - default value is 4, used as buffer count
  */
-export const toAverage = (denominator: number = 4) => (source: Observable<DeviceMotionValue>) => {
+export const toAverage = (denominator = 4) => (source: Observable<DeviceMotionValue>) => {
   const { bufferCount, map } = getRx().operators;
 
   return source.pipe(

@@ -17,6 +17,8 @@ export const highlightTagsInListItem = () =>
         elem.classList.add(customCSSClassName.hashInListItem);
       }
     },
-    onRemove: () => {},
+    onRemove: () => {
+      // do nothing
+    },
     checkInterval: 1000 * 5,
   });
