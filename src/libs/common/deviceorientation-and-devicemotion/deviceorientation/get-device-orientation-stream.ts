@@ -1,6 +1,6 @@
+import { Observable } from 'rxjs';
 import { getRx } from '../../rxjs';
 import { DeviceOrientation, PartialDeviceOrientation } from '../types';
-import { Observable } from 'rxjs';
 import { extract, onlyEntire } from './internal/rx-operators';
 
 export const getPartialDeviceOrientationStream = () => {

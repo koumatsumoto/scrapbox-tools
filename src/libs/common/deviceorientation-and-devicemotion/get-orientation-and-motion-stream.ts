@@ -1,8 +1,8 @@
+import { Observable, Subscription } from 'rxjs';
+import { asSet, getRx } from '../rxjs';
 import { getDeviceMotionStream } from './devicemotion';
 import { getDeviceOrientationStream } from './deviceorientation/get-device-orientation-stream';
-import { Observable, Subscription } from 'rxjs';
 import { DeviceMotion, DeviceOrientation, OrientationAndMotionSummary, Precision } from './types';
-import { asSet, getRx } from '../rxjs';
 import { summarizeMotions } from './devicemotion/internal/summarize';
 import { fixValue } from './fix-value';
 import { forDebug } from './for-debug';

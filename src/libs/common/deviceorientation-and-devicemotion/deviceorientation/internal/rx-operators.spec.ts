@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
-import { extract, onlyEntire, roundDecimal } from './rx-operators';
 import { createTestingPartialDeviceOrientation } from '../../test-helpers';
 import { DeviceOrientation } from '../../types';
+import { extract, onlyEntire, roundDecimal } from './rx-operators';
 
 describe('rx-operators', () => {
   describe('extract', () => {

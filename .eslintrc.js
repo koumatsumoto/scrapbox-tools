@@ -7,6 +7,9 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:import/typescript',
     'plugin:prettier/recommended',
     'prettier/@typescript-eslint',
   ],
@@ -26,5 +29,19 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': 'off',
     // for webpack html-loader
     '@typescript-eslint/no-var-requires': 'off',
+    'import/no-duplicates': 'error',
+    'import/order': [
+      'error',
+      {
+        groups: [['builtin', 'external'], 'parent', 'sibling', 'index'],
+      },
+    ],
+  },
+  settings: {
+    'import/extensions': ['.js', '.ts'],
+    'import/ignore': ['.html', '.svg'],
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts'],
+    },
   },
 };

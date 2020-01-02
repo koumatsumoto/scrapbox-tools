@@ -1,6 +1,6 @@
-import { OrientationAndMotionSummary } from './types';
 import { Observable } from 'rxjs';
 import { getRx } from '../rxjs';
+import { OrientationAndMotionSummary } from './types';
 
 export const makeReadableText = (obj: OrientationAndMotionSummary) =>
   `

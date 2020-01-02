@@ -1,8 +1,7 @@
-import { Browser, BrowserContext } from 'puppeteer';
 import * as puppeteer from 'puppeteer';
 import { config } from './config';
 
-export const getFullPermissionBrowserContext = async (browser: Browser, origin: string) => {
+export const getFullPermissionBrowserContext = async (browser: puppeteer.Browser, origin: string) => {
   const context = browser.defaultBrowserContext();
   await context.overridePermissions(origin, [
     'geolocation',
@@ -25,7 +24,7 @@ export const getFullPermissionBrowserContext = async (browser: Browser, origin: 
   return context;
 };
 
-export const getConfiguredPage = async (context: BrowserContext) => {
+export const getConfiguredPage = async (context: puppeteer.BrowserContext) => {
   const page = await context.newPage();
   await page.setViewport({
     width: config.browserWindowWidth,

@@ -1,5 +1,5 @@
-import { summarizeMotions } from './summarize';
 import { createTestingDeviceMotionValue } from '../../test-helpers';
+import { summarizeMotions } from './summarize';
 
 describe('summarizeMotions', () => {
   it('should return null if empty array', () => {

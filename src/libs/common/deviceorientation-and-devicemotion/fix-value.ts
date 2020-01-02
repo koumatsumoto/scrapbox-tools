@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
-import { OrientationAndMotionSummary, Precision } from './types';
 import { getRx } from '../rxjs';
 import { toFixed } from '../arithmetic';
+import { OrientationAndMotionSummary, Precision } from './types';
 
 export const fixValue = (precision: Precision = 0) => (
   source: Observable<OrientationAndMotionSummary>,

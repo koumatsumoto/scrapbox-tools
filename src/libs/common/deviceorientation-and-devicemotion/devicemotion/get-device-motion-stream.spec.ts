@@ -1,8 +1,8 @@
-import { deprecatedGetDeviceMotionStream, getDeviceMotionStream, getPartialDeviceMotionStream } from './get-device-motion-stream';
 import { Subject } from 'rxjs';
 import { DeviceMotion } from '../types';
 import { createTestingDeviceMotionValue } from '../test-helpers';
 import { nextTick } from '../../test-helpers';
+import { deprecatedGetDeviceMotionStream, getDeviceMotionStream, getPartialDeviceMotionStream } from './get-device-motion-stream';
 
 describe('getPartialDeviceMotionStream', () => {
   it('should get an observable', () => {

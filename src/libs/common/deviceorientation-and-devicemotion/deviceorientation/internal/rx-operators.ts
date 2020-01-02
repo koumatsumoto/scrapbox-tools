@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
 import { getRx } from '../../../rxjs';
 import { DeviceOrientation, PartialDeviceOrientation } from '../../types';
-import { isEntireDeviceOrientation } from './is-entire-device-orientation';
 import { roundToInt } from '../../../arithmetic';
+import { isEntireDeviceOrientation } from './is-entire-device-orientation';
 
 /**
  * strip unnecessary properties

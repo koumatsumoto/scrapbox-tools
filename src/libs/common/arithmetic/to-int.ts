@@ -3,6 +3,6 @@
  *
  * @param x
  */
-export const floorToInt = (x: number) => Number.parseInt((x as any) as string);
+export const floorToInt = (x: number) => Number.parseInt((x as unknown) as string);
 
 export const roundToInt = (x: number) => Math.round(x);

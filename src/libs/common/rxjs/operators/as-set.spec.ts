@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
-import { asSet } from './as-set';
-import { nextTick } from '../../test-helpers';
 import { skip } from 'rxjs/operators';
+import { nextTick } from '../../test-helpers';
+import { asSet } from './as-set';
 
 describe('asSet', () => {
   it('should emit after 3 items arrived', (done: Function) => {

@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
-import { OrientationAndMotionSummary } from './types';
 import { getRx } from '../rxjs';
+import { OrientationAndMotionSummary } from './types';
 
 type Intensity = 0 | 1 | 2 | 3;
 type HorizontalManipulation = {

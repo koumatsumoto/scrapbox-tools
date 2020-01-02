@@ -1,8 +1,8 @@
 export const registerElementManagement = (param: {
   searchFn: () => HTMLElement[];
   watchCondition: (e: HTMLElement) => boolean;
-  onFirstCheck: (e: HTMLElement) => any;
-  onRemove: (e: HTMLElement) => any;
+  onFirstCheck: (e: HTMLElement) => unknown;
+  onRemove: (e: HTMLElement) => unknown;
   checkInterval: number;
 }) => {
   let manageTarget = param.searchFn();

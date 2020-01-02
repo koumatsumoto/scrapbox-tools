@@ -1,5 +1,5 @@
-import { DeviceMotionValue, PartialDeviceMotion, DeviceMotion, PartialDeviceOrientation } from './types';
 import { DeepPartial } from '../../../types';
+import { DeviceMotionValue, PartialDeviceMotion, DeviceMotion, PartialDeviceOrientation } from './types';
 
 /**
  * For Testing

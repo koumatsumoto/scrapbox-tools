@@ -2,7 +2,6 @@ import { makeTag } from '../../libs/scrapbox';
 import { tagOptions } from './config';
 import { openDialog } from './dialog';
 import { getDateOrTimeText } from './get-date-or-time-text';
-import { MyConsoleButton } from '../../components';
 
 export const openDialogAndSelectTags = async () => {
   try {
