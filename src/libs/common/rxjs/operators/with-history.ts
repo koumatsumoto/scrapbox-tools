@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { getRx } from '../index';
 
-export const asSet = (n: number) => <T>(source: Observable<T>) => {
+export const withHistory = (n: number) => <T>(source: Observable<T>) => {
   const { Observable } = getRx();
 
   return new Observable<T[]>((subscriber) => {

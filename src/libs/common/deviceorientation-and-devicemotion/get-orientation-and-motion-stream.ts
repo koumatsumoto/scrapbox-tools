@@ -1,5 +1,5 @@
 import { Observable, Subscription } from 'rxjs';
-import { asSet, getRx } from '../rxjs';
+import { withHistory, getRx } from '../rxjs';
 import { getDeviceMotionStream } from './devicemotion';
 import { getDeviceOrientationStream } from './deviceorientation/get-device-orientation-stream';
 import { DeviceMotion, DeviceOrientation, OrientationAndMotionSummary, Precision } from './types';
@@ -81,7 +81,7 @@ export const getOrientationAndMotionSingleManipulation = () => {
 };
 
 export const getDeviceOrientationManipulationSetStream = () => {
-  return getOrientationAndMotionStream().pipe(fixValue(), toManipulation(), asSet(5));
+  return getOrientationAndMotionStream().pipe(fixValue(), toManipulation(), withHistory(5));
 };
 
 export const getOrientationAndMotionDebugString = () => {

@@ -1,9 +1,9 @@
 import { Subject } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { nextTick } from '../../test-helpers';
-import { asSet } from './as-set';
+import { withHistory } from './with-history';
 
-describe('asSet', () => {
+describe('withHistory', () => {
   it('should emit after 3 items arrived', (done: Function) => {
     const $ = new Subject<number>();
 
@@ -13,7 +13,7 @@ describe('asSet', () => {
       $.next(3);
     });
 
-    $.pipe(asSet(3)).subscribe((v) => {
+    $.pipe(withHistory(3)).subscribe((v) => {
       expect(v).toEqual([1, 2, 3]);
       done();
     });
@@ -29,7 +29,7 @@ describe('asSet', () => {
       $.next(4);
     });
 
-    $.pipe(asSet(3), skip(1)).subscribe((v) => {
+    $.pipe(withHistory(3), skip(1)).subscribe((v) => {
       expect(v).toEqual([2, 3, 4]);
       done();
     });

@@ -4,7 +4,7 @@ import { DeviceMotion, PartialDeviceMotion, Precision } from '../types';
 import { ThresholdOption } from './internal/normalize';
 import { asTuple, normalizeByThreshold, onlyEntire, toInteger, withChange } from './internal/rx-operators';
 
-export const getPartialDeviceMotionStream = () => {
+export const getDeviceMotionEventStream = () => {
   const Subject = getRx().Subject;
   const subject = new Subject<PartialDeviceMotion>();
 
@@ -16,7 +16,7 @@ export const getPartialDeviceMotionStream = () => {
 };
 
 export const getDeviceMotionStream = () => {
-  return getPartialDeviceMotionStream().pipe(onlyEntire()) as Observable<DeviceMotion>;
+  return getDeviceMotionEventStream().pipe(onlyEntire()) as Observable<DeviceMotion>;
 };
 
 export const deprecatedGetDeviceMotionStream = (

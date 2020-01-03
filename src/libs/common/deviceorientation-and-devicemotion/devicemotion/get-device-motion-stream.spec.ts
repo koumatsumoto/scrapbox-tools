@@ -2,11 +2,11 @@ import { Subject } from 'rxjs';
 import { DeviceMotion } from '../types';
 import { createTestingDeviceMotionValue } from '../test-helpers';
 import { nextTick } from '../../test-helpers';
-import { deprecatedGetDeviceMotionStream, getDeviceMotionStream, getPartialDeviceMotionStream } from './get-device-motion-stream';
+import { deprecatedGetDeviceMotionStream, getDeviceMotionStream, getDeviceMotionEventStream } from './get-device-motion-stream';
 
 describe('getPartialDeviceMotionStream', () => {
   it('should get an observable', () => {
-    const $ = getPartialDeviceMotionStream();
+    const $ = getDeviceMotionEventStream();
     expect(typeof $.subscribe).toBe('function');
     expect(typeof $.pipe).toBe('function');
   });
