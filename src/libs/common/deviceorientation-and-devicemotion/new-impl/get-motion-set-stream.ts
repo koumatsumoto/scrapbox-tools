@@ -4,9 +4,11 @@ import { getDeviceOrientationStream } from '../deviceorientation/get-device-orie
 import { getDeviceMotionStream } from '../devicemotion';
 import { getRx, withHistory } from '../../rxjs';
 import { roundToInt } from '../../arithmetic';
-import { aggregate, classificate, MotionClassification } from './aggregate';
-import { CommandTypes } from './to-command';
-import { makeTip } from './make-tip';
+import { combine } from './movement/combine';
+import { ActionTypes } from './types';
+import { isTap } from './action/tap';
+import { classify, Movement } from './movement/classify-movement';
+import { simplifyMovements } from './action/util';
 
 export const get4MotionWithOrientationStream = (
   orientation$: Observable<DeviceOrientation> = getDeviceOrientationStream(),
@@ -18,8 +20,8 @@ export const get4MotionWithOrientationStream = (
 };
 
 // to check data by same sid
-let singletonToDebug: Observable<{ sid: number; direction: string; data: MotionClassification }>;
-export const getMotionAggregationsStream = () => {
+let singletonToDebug: Observable<{ sid: number; direction: string; data: Movement }>;
+export const getMovementStream = () => {
   const { map } = getRx().operators;
   let sid = 0;
 
@@ -30,8 +32,8 @@ export const getMotionAggregationsStream = () => {
   singletonToDebug = get4MotionWithOrientationStream().pipe(
     map(([motions, orientation]) => {
       const gammas = motions.map((m) => m.rotationRate.gamma);
-      const aggregation = aggregate(gammas);
-      const data = classificate(aggregation);
+      const aggregation = combine(orientation.gamma, gammas);
+      const data = classify(aggregation);
 
       const direction = orientation.gamma > 0 ? 'right' : 'left';
 
@@ -49,7 +51,7 @@ export const getMotionAggregationsStream = () => {
 export const debug3 = () => {
   const { filter, map } = getRx().operators;
 
-  return getMotionAggregationsStream().pipe(
+  return getMovementStream().pipe(
     filter((d) => d.data.rate > 0),
     map((d) => {
       const di = d.data.direction === 'up' ? 'u' : 'd';
@@ -69,7 +71,7 @@ export const debug4 = () => {
   return get4MotionWithOrientationStream().pipe(
     map(([motions, orientation]) => {
       const gammas = motions.map((m) => m.rotationRate.gamma);
-      const aggregation = aggregate(gammas);
+      const aggregation = combine(orientation.gamma, gammas);
 
       return {
         gamma: roundToInt(orientation.gamma),
@@ -80,48 +82,45 @@ export const debug4 = () => {
 };
 
 type CommandData = {
-  command: CommandTypes;
-  sid: number;
+  command: ActionTypes;
+  // [first, last]
+  sid?: [number, number];
 };
 
 export const getMotionCommandStream = () => {
   const { Observable } = getRx();
   const { map } = getRx().operators;
-  const minimumRequiredCount = 8;
+  const minimumRequiredCount = 3;
 
   return new Observable<CommandData>((subscriber) => {
-    let commandSubmittedId = -1;
-    getMotionAggregationsStream()
+    let actionSubmittedId = -1;
+    getMovementStream()
       .pipe(
-        withHistory(minimumRequiredCount),
+        withHistory(8),
         map((items) => {
           // targets at least 1 item
-          const targets = items.filter((m) => m.sid > commandSubmittedId);
-          const latest = targets[targets.length - 1];
-          const sid = latest.sid;
-
+          const targets = items.filter((m) => m.sid > actionSubmittedId);
           if (targets.length < minimumRequiredCount) {
             return {
               command: 'waiting',
-              sid,
             };
           }
 
-          const command = makeTip(targets.map((m) => m.data));
-          switch (command) {
-            case 'shake expecting next':
-            case 'tip expecting next': {
-              break;
-            }
-            default: {
-              commandSubmittedId = sid;
-              break;
-            }
+          const first = targets[0];
+          const last = targets[targets.length - 1];
+          const tap = isTap(targets.map((m) => m.data));
+          let actionType: ActionTypes = 'none';
+          if (tap) {
+            actionType = 'tap';
+            actionSubmittedId = last.sid;
+          } else {
+            actionSubmittedId = first.sid;
           }
 
           return {
-            command,
-            sid,
+            command: actionType,
+            sid: [first.sid, last.sid],
+            debug: simplifyMovements(targets.map((m) => m.data)),
           };
         }),
       )
@@ -136,7 +135,7 @@ export const getCommandHistoryStream = () => {
 
   return getMotionCommandStream().pipe(
     withHistory(32),
-    map((values) => values.map((v) => v.command)),
+    map((values) => values.map((v) => v.command).reverse()),
   );
 };
 
@@ -145,12 +144,12 @@ export const getLastCommandStream = () => {
 
   return getMotionCommandStream().pipe(
     filter((c) => {
-      if (c.command === 'nothing' || c.command === 'waiting') {
+      if (c.command === 'none' || c.command === 'waiting') {
         return false;
       } else {
         return true;
       }
     }),
-    pairwise(),
+    // pairwise(),
   );
 };
