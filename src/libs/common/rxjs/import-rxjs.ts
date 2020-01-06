@@ -22,8 +22,9 @@ type RxJS = {
   animationFrameScheduler: typeof RxType.animationFrameScheduler;
   combineLatest: typeof RxType.combineLatest;
   operators: {
-    debounceTime: typeof operatorsType.debounceTime;
     bufferCount: typeof operatorsType.bufferCount;
+    debounceTime: typeof operatorsType.debounceTime;
+    distinctUntilChanged: typeof operatorsType.distinctUntilChanged;
     filter: typeof operatorsType.filter;
     map: typeof operatorsType.map;
     pairwise: typeof operatorsType.pairwise;

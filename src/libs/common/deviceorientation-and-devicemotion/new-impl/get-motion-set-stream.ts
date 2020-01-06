@@ -3,49 +3,33 @@ import { DeviceMotion, DeviceOrientation } from '../types';
 import { getDeviceOrientationStream } from '../deviceorientation/get-device-orientation-stream';
 import { getDeviceMotionStream } from '../devicemotion';
 import { getRx, withHistory } from '../../rxjs';
-import { roundToInt } from '../../arithmetic';
 import { combine } from './movement/combine';
 import { ActionTypes } from './types';
 import { isTap } from './action/tap';
 import { classify, Movement } from './movement/classify-movement';
-import { simplifyMovements } from './action/util';
+import { checkEnterMotionType, isLongHold, isShortHold } from './action/hold';
 
-export const get4MotionWithOrientationStream = (
+export const getMovementStream = (
   orientation$: Observable<DeviceOrientation> = getDeviceOrientationStream(),
   motion$: Observable<DeviceMotion> = getDeviceMotionStream(),
-) => {
-  const { bufferCount, withLatestFrom } = getRx().operators;
+): Observable<{ sid: number; data: Movement }> => {
+  const { bufferCount, map, withLatestFrom } = getRx().operators;
 
-  return motion$.pipe(bufferCount(4), withLatestFrom(orientation$));
-};
-
-// to check data by same sid
-let singletonToDebug: Observable<{ sid: number; direction: string; data: Movement }>;
-export const getMovementStream = () => {
-  const { map } = getRx().operators;
   let sid = 0;
-
-  if (singletonToDebug) {
-    return singletonToDebug;
-  }
-
-  singletonToDebug = get4MotionWithOrientationStream().pipe(
+  return motion$.pipe(
+    bufferCount(4),
+    withLatestFrom(orientation$),
     map(([motions, orientation]) => {
       const gammas = motions.map((m) => m.rotationRate.gamma);
       const aggregation = combine(orientation.gamma, gammas);
       const data = classify(aggregation);
 
-      const direction = orientation.gamma > 0 ? 'right' : 'left';
-
       return {
         sid: sid++,
-        direction,
         data,
       };
     }),
   );
-
-  return singletonToDebug;
 };
 
 export const debug3 = () => {
@@ -62,70 +46,89 @@ export const debug3 = () => {
   );
 };
 
-/**
- * orientation and motion aggregation raw data for gamma
- */
-export const debug4 = () => {
-  const { map } = getRx().operators;
-
-  return get4MotionWithOrientationStream().pipe(
-    map(([motions, orientation]) => {
-      const gammas = motions.map((m) => m.rotationRate.gamma);
-      const aggregation = combine(orientation.gamma, gammas);
-
-      return {
-        gamma: roundToInt(orientation.gamma),
-        aggregation,
-      };
-    }),
-  );
-};
-
-type CommandData = {
-  command: ActionTypes;
+type Action = {
+  type: ActionTypes;
   // [first, last]
-  sid?: [number, number];
+  sid?: number[];
 };
 
-export const getMotionCommandStream = () => {
+export const getActionStream = () => {
   const { Observable } = getRx();
   const { map } = getRx().operators;
-  const minimumRequiredCount = 3;
+  const movementCount = 10;
+  const firstIndex = 0;
+  const lastIndex = movementCount - 1;
 
-  return new Observable<CommandData>((subscriber) => {
-    let actionSubmittedId = -1;
+  return new Observable<Action>((subscriber) => {
     getMovementStream()
       .pipe(
-        withHistory(8),
+        withHistory(movementCount),
         map((items) => {
-          // targets at least 1 item
-          const targets = items.filter((m) => m.sid > actionSubmittedId);
-          if (targets.length < minimumRequiredCount) {
-            return {
-              command: 'waiting',
-            };
+          const movements = items.map((m) => m.data);
+          const sid = [items[0].sid, items[items.length - 1].sid];
+
+          // check long hold
+          if (movements[lastIndex].rate === 0 && movements[firstIndex].rate === 0) {
+            if (isLongHold(movements)) {
+              return {
+                type: 'long hold',
+                sid,
+              };
+            }
           }
 
-          const first = targets[0];
-          const last = targets[targets.length - 1];
-          const tap = isTap(targets.map((m) => m.data));
-          let actionType: ActionTypes = 'none';
-          if (tap) {
-            actionType = 'tap';
-            actionSubmittedId = last.sid;
-          } else {
-            actionSubmittedId = first.sid;
+          const array: Movement[] = [];
+          for (let i = 1; array.length <= 5; i++) {
+            array.unshift(movements[movements.length - i]);
+
+            switch (array.length) {
+              case 3: {
+                if (isTap(array)) {
+                  return {
+                    type: 'tap',
+                    sid,
+                  };
+                }
+
+                break;
+              }
+              case 6: {
+                if (isShortHold(array)) {
+                  return {
+                    type: 'short hold',
+                    sid,
+                  };
+                }
+
+                break;
+              }
+              case 7: {
+                const type = checkEnterMotionType(array);
+                if (type && type === 'slow') {
+                  return {
+                    type: 'start motion slowly',
+                    sid,
+                  };
+                } else if (type && type === 'quick') {
+                  return {
+                    type: 'start motion quickly',
+                    sid,
+                  };
+                }
+
+                break;
+              }
+            }
           }
 
           return {
-            command: actionType,
-            sid: [first.sid, last.sid],
-            debug: simplifyMovements(targets.map((m) => m.data)),
+            type: 'moving',
+            sid,
           };
         }),
       )
       .subscribe((value) => {
-        subscriber.next(value as CommandData);
+        subscriber.next(value as Action);
       });
   });
 };
@@ -133,23 +136,40 @@ export const getMotionCommandStream = () => {
 export const getCommandHistoryStream = () => {
   const { map } = getRx().operators;
 
-  return getMotionCommandStream().pipe(
+  return getActionStream().pipe(
     withHistory(32),
-    map((values) => values.map((v) => v.command).reverse()),
+    map((values) => values.map((v) => v.type).reverse()),
   );
 };
 
 export const getLastCommandStream = () => {
-  const { filter, pairwise } = getRx().operators;
+  const { distinctUntilChanged, map } = getRx().operators;
 
-  return getMotionCommandStream().pipe(
-    filter((c) => {
-      if (c.command === 'none' || c.command === 'waiting') {
-        return false;
-      } else {
-        return true;
-      }
-    }),
-    // pairwise(),
+  return getActionStream().pipe(
+    map((v) => v.type),
+    distinctUntilChanged(),
+    withHistory(8),
+    map((values) => values.reverse()),
   );
+};
+
+type Command = {
+  type: string;
+  // [first, last]
+  sid?: number[];
+};
+
+export const getCommandStream = () => {
+  const { Observable } = getRx();
+  const { map } = getRx().operators;
+  const actionCount = 6;
+
+  return new Observable<Action>((subscriber) => {
+    getActionStream().pipe(
+      withHistory(actionCount),
+      map((action) => {
+        // not implemented
+      }),
+    );
+  });
 };
