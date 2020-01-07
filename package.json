@@ -9,6 +9,7 @@
     "build:dev": "concurrently 'yarn :build:dev:scss' 'yarn :build:dev:ts'",
     "build:prod": "yarn build:prod:scss && yarn build:prod:ts",
     "build:prod:scss": "node-sass src/styles/main.scss dist/style.css && uglifycss dist/style.css --output dist/style.min.css",
+    "build:km-public:prod:scss": "node-sass src/styles/km-public.scss dist/km-public.css && uglifycss dist/km-public.css --output dist/km-public.min.css",
     "build:prod:ts": "webpack --config webpack.config.prod.js",
     "check:build:tsc": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.json --noEmit",
     "check:diff": "git diff --exit-code --name-only ./src",

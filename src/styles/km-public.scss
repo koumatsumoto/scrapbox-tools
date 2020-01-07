@@ -1,0 +1,15 @@
+@import 'base';
+@import 'text';
+@import 'icons';
+@import 'tags';
+
+.telomere {
+  display: none !important;
+}
+
+// the line of tags
+.line.section-0:nth-of-type(2) {
+  margin: -2px -0 12px !important;
+  border-bottom: 2px solid map_get($material-colors, blue-grey-50) !important;
+  border-radius: 2px !important;
+}

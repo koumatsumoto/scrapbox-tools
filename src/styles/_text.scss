@@ -1,0 +1,42 @@
+@import 'variables';
+
+// Noto Sans JP
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+JP:400,500,700,900&display=swap&subset=japanese');
+// Kosugi Maru
+@import url('https://fonts.googleapis.com/css?family=Kosugi+Maru&display=swap&subset=cyrillic,japanese');
+// Source Code Pro
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
+
+.line {
+  font-family: 'Noto Sans JP', sans-serif !important;
+
+  // outermost, first child of .line
+  // text.code-block
+  .code-block {
+    font-family: 'Source Code Pro', sans-serif !important;
+    background: map_get($material-colors, 'grey-800') !important;
+
+    // label like as "bash", "style.css"
+    .code-block-start {
+      color: map_get($material-colors, 'grey-100') !important;
+      background: map_get($material-colors, 'grey-700') !important;
+    }
+
+    // normal code text
+    .code-body {
+      color: map_get($material-colors, 'grey-100') !important;
+    }
+
+    .hljs-comment {
+      color: map_get($material-colors, 'grey-600') !important;
+    }
+  }
+
+  a[type='hashTag'] {
+    font-family: 'Kosugi Maru', sans-serif !important;
+  }
+
+  .text {
+    color: map_get($material-colors, 'blue-grey-800') !important;
+  }
+}

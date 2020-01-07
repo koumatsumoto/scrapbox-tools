@@ -1,7 +1,29 @@
 $material-colors: (
   /**
+   * text color of code-block
+   */ 'grey-100': #f5f5f5,
+  /**
+   * background of body
+   */ 'grey-200': #eeeeee,
+  /**
+   * text color of code comment (hljs-comment)
+   */ 'grey-600': #757575,
+  /**
+   * background color of code-block-start (label for code-block)
+   */
+    'grey-700': #616161,
+  /**
+   * background color of code-block
+   */ 'grey-800': #424242,
+  /**
+   * border of tags line after title
+   */ 'blue-grey-50': #eceff1,
+  /**
    * text color in debugboard
-   */ 'blue-grey-700': #455a64
+   */ 'blue-grey-700': #455a64,
+  /**
+   * base text color
+   */ 'blue-grey-800': #37474f
 );
 
 $font-size: (/**
