@@ -5,9 +5,9 @@ import { getDeviceMotionStream } from '../devicemotion';
 import { getRx, withHistory } from '../../rxjs';
 import { combine } from './movement/combine';
 import { ActionTypes } from './types';
-import { isTap } from './action/tap';
 import { classify, Movement } from './movement/classify-movement';
-import { checkEnterMotionType, isLongHold, isShortHold } from './action/hold';
+import { checkHoldAndEntering } from './action/hold';
+import { isQuickReverse } from './action/reverse';
 
 export const getMovementStream = (
   orientation$: Observable<DeviceOrientation> = getDeviceOrientationStream(),
@@ -56,8 +56,6 @@ export const getActionStream = () => {
   const { Observable } = getRx();
   const { map } = getRx().operators;
   const movementCount = 10;
-  const firstIndex = 0;
-  const lastIndex = movementCount - 1;
 
   return new Observable<Action>((subscriber) => {
     getMovementStream()
@@ -67,58 +65,19 @@ export const getActionStream = () => {
           const movements = items.map((m) => m.data);
           const sid = [items[0].sid, items[items.length - 1].sid];
 
-          // check long hold
-          if (movements[lastIndex].rate === 0 && movements[firstIndex].rate === 0) {
-            if (isLongHold(movements)) {
-              return {
-                type: 'long hold',
-                sid,
-              };
-            }
+          const type = checkHoldAndEntering(movements);
+          if (type) {
+            return {
+              type,
+              sid,
+            };
           }
 
-          const array: Movement[] = [];
-          for (let i = 1; array.length <= 5; i++) {
-            array.unshift(movements[movements.length - i]);
-
-            switch (array.length) {
-              case 3: {
-                if (isTap(array)) {
-                  return {
-                    type: 'tap',
-                    sid,
-                  };
-                }
-
-                break;
-              }
-              case 6: {
-                if (isShortHold(array)) {
-                  return {
-                    type: 'short hold',
-                    sid,
-                  };
-                }
-
-                break;
-              }
-              case 7: {
-                const type = checkEnterMotionType(array);
-                if (type && type === 'slow') {
-                  return {
-                    type: 'start motion slowly',
-                    sid,
-                  };
-                } else if (type && type === 'quick') {
-                  return {
-                    type: 'start motion quickly',
-                    sid,
-                  };
-                }
-
-                break;
-              }
-            }
+          if (isQuickReverse(movements.slice(-2))) {
+            return {
+              type: 'quick reverse',
+              sid,
+            };
           }
 
           return {
