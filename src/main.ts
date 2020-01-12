@@ -1,7 +1,7 @@
 /**
  * Common variables and functions (Scrapbox loads each scripts into global environment)
  */
-import { componentManager, enableConsoleButton, highlightTagsInListItem, useDebugBoard } from './scripts';
+import { componentManager, enableConsoleButton, highlightTagsInListItem } from './scripts';
 import { importRxJS, runOnDocumentReady } from './libs/common';
 import { defineCustomElements } from './components';
 
@@ -15,7 +15,6 @@ export const main = () => {
     componentManager.setupComponents();
 
     highlightTagsInListItem();
-    useDebugBoard();
     enableConsoleButton();
   });
 };

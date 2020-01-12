@@ -1,10 +1,5 @@
 import { componentManager } from '../component-manager';
 import { MyDebugBoard } from '../../components';
-import {
-  debug3,
-  getCommandHistoryStream,
-  getLastCommandStream,
-} from '../../libs/common/deviceorientation-and-devicemotion/new-impl/get-motion-set-stream';
 
 export const useDebugBoard = () => {
   const debugBoard = componentManager.getInstance(MyDebugBoard);
@@ -13,9 +8,6 @@ export const useDebugBoard = () => {
   let data2: string[];
   let data3: unknown[];
   let data4: unknown;
-  getLastCommandStream().subscribe((d) => (data1 = d));
-  getCommandHistoryStream().subscribe((d) => (data2 = d));
-  debug3().subscribe((d) => (data3 = d));
 
   const loop = () => {
     if (data1) {
