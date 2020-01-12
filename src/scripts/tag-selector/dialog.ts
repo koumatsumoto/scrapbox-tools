@@ -1,24 +1,41 @@
 import { getElementOrFail, removeElement } from '../../libs/common';
+import { TagOption } from './config';
 
 // use for mutex
 const dialogId = 'dialog-for-user-script';
 const inputName = 'tags';
 
+/**
+ * create html like below
+ *
+ * ```
+ * <div class="tag-group">
+ *   <input>...
+ * </div>
+ * ```
+ */
 let labelId = 0;
-const makeCheckboxesHTML = (values: string[]) =>
-  values
-    .map((v) => {
-      const id = `usd-${labelId++}`;
+const makeCheckboxesHTML = (tagOptions: TagOption[]) => {
+  return tagOptions
+    .map((group) => {
+      const inputs = group
+        .map((obj) => {
+          const id = `usd-${labelId++}`;
 
-      return `<input id="${id}" type="checkbox" name="${inputName}" value="${v}"><label for="${id}">${v}</label>`;
+          return `<input id="${id}" type="checkbox" name="${inputName}" value="${obj.value}"><label for="${id}">${obj}</label>`;
+        })
+        .join('');
+
+      return `<div class="tag-group">${inputs}</div>`;
     })
     .join('');
+};
 
 const menuHTML = `<menu><button value="cancel">Cancel</button><button value="default">Copy</button></menu>`;
 
 const makeFormHTML = (checkboxesHTML: string, menuHTML: string) => `<form method="dialog"><div>${checkboxesHTML}</div>${menuHTML}</form>`;
 
-export const makeDialogInnerHTML = (checkboxValues: string[]) => makeFormHTML(makeCheckboxesHTML(checkboxValues), menuHTML);
+export const makeDialogInnerHTML = (checkboxValues: TagOption[]) => makeFormHTML(makeCheckboxesHTML(checkboxValues), menuHTML);
 
 const isDialogExist = () => document.querySelector(`#${dialogId}`);
 
@@ -55,7 +72,7 @@ const waitForDialogClose = (dialog: HTMLDialogElement): Promise<CustomDialogResu
   });
 };
 
-export const appendDialogToDOMOrFail = (checkboxValues: string[]) => {
+export const appendDialogToDOMOrFail = (checkboxValues: TagOption[]) => {
   if (isDialogExist()) {
     throw new Error('dialog already exists');
   }
@@ -68,7 +85,7 @@ export const appendDialogToDOMOrFail = (checkboxValues: string[]) => {
   return dialog;
 };
 
-export const openDialog = async (param: { tagOptions: string[] }) => {
+export const openDialog = async (param: { tagOptions: TagOption[] }) => {
   const dialog = appendDialogToDOMOrFail(param.tagOptions);
   dialog.showModal();
 

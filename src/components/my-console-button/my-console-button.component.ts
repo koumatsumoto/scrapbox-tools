@@ -1,4 +1,4 @@
-import { openDialogAndSelectTags } from '../../scripts/copy-tag-text';
+import { openDialogAndSelectTags } from '../../scripts/tag-selector';
 
 const html = require('./my-console-button.component.html');
 
