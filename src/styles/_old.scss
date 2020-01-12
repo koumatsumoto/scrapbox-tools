@@ -214,21 +214,3 @@ form {
   border: 1px solid #f27e48;
   border-radius: 2px;
 }
-
-// link色
-a.page-link,
-a.page-link:link,
-a.page-link:visited,
-a.page-link:hover,
-a.page-link:active {
-  color: #486fce !important;
-  text-decoration: none;
-}
-
-a.empty-page-link,
-a.empty-page-link:link,
-a.empty-page-link:visited,
-a.empty-page-link:hover,
-a.empty-page-link:active {
-  color: #17b0d4 !important;
-}
