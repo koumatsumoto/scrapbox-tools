@@ -33,6 +33,7 @@ module.exports = {
     'import/order': [
       'error',
       {
+        alphabetize: { order: 'asc' },
         groups: [['builtin', 'external'], 'parent', 'sibling', 'index'],
       },
     ],

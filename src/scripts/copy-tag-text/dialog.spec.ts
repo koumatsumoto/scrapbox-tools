@@ -1,5 +1,5 @@
-import { checkHTML, setupBodyForTest } from '../../test-helpers';
 import { getElements } from '../../libs/common';
+import { checkHTML, setupBodyForTest } from '../../test-helpers';
 import { appendDialogToDOMOrFail, makeDialogInnerHTML, openDialog, retrieveFormValues } from './dialog';
 
 describe('dialogs', () => {

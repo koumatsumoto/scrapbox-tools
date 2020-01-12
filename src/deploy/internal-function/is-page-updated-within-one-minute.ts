@@ -1,7 +1,7 @@
 import * as puppeteer from 'puppeteer';
-import { getLastUpdatedDate } from './get-last-updated-date';
 const addMinutes = require('date-fns/addMinutes');
 const isAfter = require('date-fns/isAfter');
+import { getLastUpdatedDate } from './get-last-updated-date';
 
 export const isPageUpdatedWithinOneMinute = async (page: puppeteer.Page) => {
   const lastUpdatedTime = await getLastUpdatedDate(page);

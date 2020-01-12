@@ -1,6 +1,6 @@
-import { customCSSClassName, nodeSelector } from '../config';
 import { getElements, registerElementManagement, removeHead } from '../../libs/common';
 import { isTagString } from '../../libs/scrapbox';
+import { customCSSClassName, nodeSelector } from '../config';
 
 /**
  * Remove hash and add custom css class to link-text in list-item

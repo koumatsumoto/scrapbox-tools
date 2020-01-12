@@ -1,5 +1,5 @@
-import { setupWindowScrapbox } from '../../test-helpers';
 import { scrapboxCustomFormat } from '../../libs/scrapbox';
+import { setupWindowScrapbox } from '../../test-helpers';
 import { getDateOrTimeText } from './get-date-or-time-text';
 
 describe('getDateOrTimeText', () => {

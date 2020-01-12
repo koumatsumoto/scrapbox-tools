@@ -1,7 +1,7 @@
 import { DoubleDimensionalArray } from '../../types';
 import { getElementOrFail, getElements } from '../common';
-import { selectors } from './selectors';
 import { config } from './config';
+import { selectors } from './selectors';
 
 const sectionCSSClassPrefix = 'section-';
 export const getSectionCSSClass = (num: number) => `${sectionCSSClassPrefix}${num}`;

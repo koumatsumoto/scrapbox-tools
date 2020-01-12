@@ -1,5 +1,5 @@
-import { componentManager } from '../component-manager';
 import { MyDebugBoard } from '../../components';
+import { componentManager } from '../component-manager';
 
 export const useDebugBoard = () => {
   const debugBoard = componentManager.getInstance(MyDebugBoard);

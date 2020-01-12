@@ -1,7 +1,7 @@
 import * as puppeteer from 'puppeteer';
 import { config } from './config';
-import { findOrFail, getConfiguredPage, getFullPermissionBrowserContext, setClipboardValue } from './util';
 import { isPageUpdatedWithinOneMinute } from './internal-function';
+import { findOrFail, getConfiguredPage, getFullPermissionBrowserContext, setClipboardValue } from './util';
 
 export const updatePage = async (param: { url: string; text: string }) => {
   const clipboardValue = param.text;

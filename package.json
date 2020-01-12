@@ -12,7 +12,7 @@
     "build:km-public:prod:scss": "node-sass src/styles/km-public.scss dist/km-public.css && uglifycss dist/km-public.css --output dist/km-public.min.css",
     "build:prod:ts": "webpack --config webpack.config.prod.js",
     "check:build:tsc": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.json --noEmit",
-    "check:diff": "git diff --exit-code --name-only ./src",
+    "check:diff": "git diff --exit-code --name-only .",
     "ci:check": "yarn ci:check:build && yarn ci:check:test && yarn ci:check:lint",
     "ci:check:build": "yarn check:build:tsc && yarn build:prod:ts && yarn build:prod:scss",
     "ci:check:lint": "yarn format && yarn check:diff",

@@ -1,5 +1,5 @@
-import { getSectionCSSClass } from '../../libs/scrapbox';
 import { removeHead } from '../../libs/common';
+import { getSectionCSSClass } from '../../libs/scrapbox';
 
 export const maxSupportedLineNumber = 20000;
 
