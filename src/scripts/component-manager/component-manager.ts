@@ -29,8 +29,6 @@ export class ComponentManager {
     // instantiate components and hold its reference
     const consoleButton = new MyConsoleButton();
     this.components.set(MyConsoleButton, consoleButton);
-    const debugBoard = new MyDebugBoard();
-    this.components.set(MyDebugBoard, debugBoard);
 
     // append to dom
     for (const c of this.components.values()) {
