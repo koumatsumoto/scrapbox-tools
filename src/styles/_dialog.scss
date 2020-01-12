@@ -1,3 +1,5 @@
+@import 'variables';
+
 #dialog-for-user-script {
   width: 80vw;
   min-height: 40vh;
@@ -11,8 +13,10 @@
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 
   .tag-group {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid map_get($material-colors, 'blue-grey-50');
   }
 
   /* used as layout container */
@@ -48,7 +52,7 @@
     font: inherit;
     font-size: 14px;
     line-height: 32px;
-    color: #a7a7a7;
+    color: map_get($material-colors, 'grey-600');
     text-align: left;
     white-space: nowrap;
     vertical-align: middle;
@@ -73,7 +77,7 @@
     left: 8px;
     display: inline-block;
     padding: 0;
-    margin: 0 0.6em 0 0;
+    margin-right: 8px;
     /* stylelint-disable-next-line */
     font-family: 'FontAwesome';
     font-size: 12px;
@@ -81,7 +85,7 @@
     font-weight: 900;
     font-variant: normal;
     content: '\f067';
-    opacity: 0.72;
+    opacity: 0.54;
     transition: transform 0.12s ease-in-out;
     transform: translate(0, -50%);
     text-rendering: auto;
