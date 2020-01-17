@@ -1,7 +1,10 @@
 @import 'variables';
 @import 'base';
-@import 'text';
+@import 'dialog';
 @import 'icons';
+@import 'my-console-button';
+@import 'text';
+@import './parts/for-list-layout/quick-launch';
 
 .telomere {
   display: none !important;
@@ -32,10 +35,6 @@ body:not(#{map_get($custom-css-class-names, 'apply-login-css-class')}) {
     .title {
       display: none;
     }
-  }
-
-  .page-sort-menu {
-    display: none !important;
   }
 
   // file control menu in page
