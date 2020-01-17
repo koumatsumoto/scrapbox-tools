@@ -1,0 +1,6 @@
+// this file is imported at './variables'
+// don't import this file directly, instead import once './variables'
+
+$custom-css-class-names: (
+  'apply-login-css-class': '.--us-logged-in',
+);
