@@ -1,4 +1,4 @@
-import { getScrapbox } from './get-scrapbox';
+import { getScrapbox } from './public-api/scrapbox';
 
 export const getPageLastUpdatedTime = () => {
   const scrapbox = getScrapbox();

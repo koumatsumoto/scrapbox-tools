@@ -65,3 +65,4 @@ typings/
 
 # build result
 /dist
+/src/*.js

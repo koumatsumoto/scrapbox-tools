@@ -3,7 +3,7 @@
  */
 import { defineCustomElements } from './components';
 import { importRxJS, runOnDocumentReady } from './libs/common';
-import { applyLoginCSSClass, componentManager, enableConsoleButton, highlightTagsInListItem } from './scripts';
+import { applyLoginCSSClass, componentManager, enableConsoleButton, enablePrivateApi, highlightTagsInListItem } from './scripts';
 
 export const main = () => {
   runOnDocumentReady(async () => {
@@ -20,4 +20,6 @@ export const main = () => {
 
   // add custom css class to body tag
   applyLoginCSSClass();
+  // enable private api
+  enablePrivateApi();
 };
