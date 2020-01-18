@@ -1,25 +1,32 @@
 import { createJoinRoomMessage, extractMessage } from './websocket-client-internal-functions';
+import { ConnectionOpenMessage } from './websocket-client-types';
 
 const endpoint = 'wss://scrapbox.io/socket.io/?EIO=3&transport=websocket';
 
 export class WebsocketClient {
   private readonly socket: WebSocket;
+  // need buffer if try to send until connection opened
+  private sendBuffer: Function[] = [];
 
-  constructor(private readonly option: { projectId: string }) {
+  constructor() {
     this.socket = new WebSocket(endpoint);
     this.initialize();
   }
 
-  sendCommit(message: string) {
+  commit(message: string) {
     this.send(message);
   }
 
-  private sendJoinRoom() {
-    this.send(createJoinRoomMessage({ projectId: this.option.projectId }));
+  joinRoom(param: { projectId: string; pageId: string }) {
+    this.send(createJoinRoomMessage(param));
   }
 
   private send(message: string) {
-    // TODO: validate connection status, this.socket.OPEN
+    if (this.socket.readyState !== WebSocket.OPEN) {
+      this.sendBuffer.push(() => this.socket.send(message));
+
+      return;
+    }
 
     this.socket.send(message);
   }
@@ -30,7 +37,6 @@ export class WebsocketClient {
   private initialize() {
     this.socket.addEventListener('open', (event: Event) => {
       console.log('[websocket-client] connection opened ', event);
-      this.sendJoinRoom();
     });
 
     this.socket.addEventListener('message', (event: MessageEvent) => {
@@ -38,10 +44,14 @@ export class WebsocketClient {
         throw new Error('unexpected data received');
       }
 
-      console.log('[debug] ws message', event.data);
       const message = event.data;
       const [protocol, data] = extractMessage(message);
-      console.log('[debug] extracted', data);
+      console.log('[websocket-client] message', protocol, data);
+
+      // message just after connection opened
+      if (protocol === '0') {
+        this.handleOpen(data as ConnectionOpenMessage);
+      }
     });
 
     this.socket.addEventListener('close', (event: CloseEvent) => {
@@ -52,5 +62,16 @@ export class WebsocketClient {
     this.socket.addEventListener('error', (event: any) => {
       console.error('[websocket-client] connection errored ', event);
     });
+  }
+
+  private handleOpen(message: ConnectionOpenMessage) {
+    // setup ping
+    setInterval(() => {
+      this.send('2');
+    }, message.pingInterval);
+
+    // consume buffer
+    this.sendBuffer.forEach((f) => f());
+    this.sendBuffer = [];
   }
 }

@@ -1,8 +1,16 @@
 // only actually used values
-export type Protocol = '40' | '42' | '420' | '421' | '422' | '423' | '430' | '431' | '432' | '433';
+export type Protocol = '0' | '40' | '42' | '420' | '421' | '422' | '423' | '430' | '431' | '432' | '433';
 
+export type ConnectionOpenMessage = {
+  sid: string;
+  upgrades: [];
+  pingInterval: number;
+  pingTimeout: number;
+};
 export type ConnectionResultReceiveMessage = [{ data: { success: boolean; pageId: null; projectId: string } }];
-export type ReceivedMessage = ConnectionResultReceiveMessage | null;
+export type ReceivedMessage = ConnectionOpenMessage | ConnectionResultReceiveMessage | null;
+
+export type ProtocolAndPayload = ['0', ConnectionOpenMessage] | [Protocol, ReceivedMessage];
 
 export type CommitChanges = [
   {

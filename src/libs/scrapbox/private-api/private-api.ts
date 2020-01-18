@@ -8,7 +8,8 @@ export class PrivateApi {
 export const getPrivateApi = async () => {
   const apiClient = new ApiClient();
   const [page, project] = await Promise.all([apiClient.getCurrentPage(), apiClient.getCurrentProject()]);
-  const websocketClient = new WebsocketClient({ projectId: project.id });
+  const websocketClient = new WebsocketClient();
+  websocketClient.joinRoom({ projectId: project.id, pageId: page.id });
 
   return new PrivateApi(apiClient, websocketClient);
 };

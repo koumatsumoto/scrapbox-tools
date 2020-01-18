@@ -1,12 +1,12 @@
-import { CommitChanges, ReceivedMessage } from './websocket-client-types';
+import { CommitChanges, Protocol, ProtocolAndPayload, ReceivedMessage } from './websocket-client-types';
 
-export const createJoinRoomMessage = (param: { projectId: string }) => {
+export const createJoinRoomMessage = (param: { projectId: string; pageId: string }) => {
   const payload = [
     'socket.io-request',
     {
       method: 'room:join',
       data: {
-        pageId: null,
+        pageId: param.pageId,
         projectId: param.projectId,
         projectUpdatesStream: false,
       },
@@ -45,7 +45,7 @@ export const createCommitMessage = (param: {
 };
 
 // 430[{...}}] => 430, [{}]
-export const extractMessage = (message: string): [string, ReceivedMessage] => {
+export const extractMessage = (message: string): ProtocolAndPayload => {
   let protocol = '';
   while (message.length) {
     const head = message[0];
@@ -54,9 +54,9 @@ export const extractMessage = (message: string): [string, ReceivedMessage] => {
       protocol += head;
       message = message.substr(1);
     } else {
-      return [protocol, JSON.parse(message) as ReceivedMessage];
+      return [protocol as Protocol, JSON.parse(message) as ReceivedMessage];
     }
   }
 
-  return [protocol, null];
+  return [protocol as Protocol, null];
 };

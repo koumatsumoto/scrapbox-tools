@@ -2,11 +2,12 @@
  * Common variables and functions (Scrapbox loads each scripts into global environment)
  */
 import { defineCustomElements } from './components';
-import { importRxJS, runOnDocumentReady } from './libs/common';
+import { importRxJS } from './libs/common';
+import { runOnScrapboxReady } from './libs/scrapbox/public-api';
 import { applyLoginCSSClass, componentManager, enableConsoleButton, enablePrivateApi, highlightTagsInListItem } from './scripts';
 
 export const main = () => {
-  runOnDocumentReady(async () => {
+  runOnScrapboxReady(async () => {
     await importRxJS();
 
     // register custom web components to browser
@@ -16,10 +17,10 @@ export const main = () => {
 
     highlightTagsInListItem();
     enableConsoleButton();
-  });
 
-  // add custom css class to body tag
-  applyLoginCSSClass();
-  // enable private api
-  enablePrivateApi();
+    // add custom css class to body tag
+    applyLoginCSSClass();
+    // enable private api
+    enablePrivateApi();
+  });
 };
