@@ -1,5 +1,5 @@
-import { createJoinRoomMessage, extractMessage } from './websocket-client-internal-functions';
-import { ConnectionOpenMessage } from './websocket-client-types';
+import { createCommitMessage, createJoinRoomMessage, extractMessage } from './websocket-client-internal-functions';
+import { CommitChange, ConnectionOpenMessage } from './websocket-client-types';
 
 const endpoint = 'wss://scrapbox.io/socket.io/?EIO=3&transport=websocket';
 
@@ -13,8 +13,8 @@ export class WebsocketClient {
     this.initialize();
   }
 
-  commit(message: string) {
-    this.send(message);
+  commit(param: { projectId: string; userId: string; pageId: string; parentId: string; changes: CommitChange[] }) {
+    this.send(createCommitMessage(param));
   }
 
   joinRoom(param: { projectId: string; pageId: string }) {

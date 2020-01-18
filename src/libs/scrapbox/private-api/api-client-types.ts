@@ -27,6 +27,18 @@ export type PageResponse = {
   lastAccessed: number;
 };
 
+export interface User {
+  id: string;
+  name: string;
+  displayName: string;
+  photo: string;
+  email: string;
+  pro: boolean;
+  provider: 'google' | string;
+  created: number;
+  updated: number;
+}
+
 export type ProjectResponse = {
   id: string;
   name: string;
@@ -57,3 +69,11 @@ export type ProjectResponse = {
   backuped: number;
   isMember: boolean;
 };
+
+export interface MeResponse extends User {
+  config: {
+    userScript: boolean;
+  };
+  isGuest: boolean;
+  csrfToken: string;
+}
