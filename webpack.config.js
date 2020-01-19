@@ -1,9 +1,18 @@
+const path = require('path');
+
 module.exports = {
   mode: 'development',
-  entry: './src/index.ts',
+  entry: {
+    bundle: path.join(__dirname, 'src/index.ts'),
+    // load in puppeteer page context
+    'run-in-puppeteer-page': path.join(
+      __dirname,
+      'src/deploy/browser-script/main.ts',
+    ),
+  },
   output: {
-    path: `${__dirname}/dist`,
-    filename: 'bundle.js',
+    path: path.join(__dirname, 'dist'),
+    filename: '[name].js',
   },
   module: {
     rules: [
