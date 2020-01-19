@@ -1,13 +1,13 @@
 export {};
 
-type MyScripts = {
+export type MyScripts = {
   updateSourceCode: (codeName: string, newSourceCode: string) => Promise<void>;
 };
 
 // extensions
 declare global {
   interface Window {
-    waitForMyScriptsReady: () => Promise<void>;
+    waitForMyScriptsReady: () => Promise<MyScripts>;
     __myScripts?: MyScripts;
   }
 }

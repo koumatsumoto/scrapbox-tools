@@ -1,23 +1,19 @@
 /**
  * scripts to enable private-api in browser context
  */
-import './global-type';
+import { waitUntil } from '../../libs/common';
 import { getPrivateApi } from '../../libs/scrapbox/private-api';
 import { findNextLineId, runOnScrapboxReady } from '../../libs/scrapbox/public-api';
+import { MyScripts } from './global-type';
 
 const main = async () => {
-  (window as any).waitForMyScriptsReady = () => {
-    return new Promise<void>((resolve, reject) => {
-      const id = window.setInterval(() => {
-        if (window.__myScripts) {
-          window.clearInterval(id);
-          resolve();
-        }
-      }, 100);
+  (window as any).waitForMyScriptsReady = async (): Promise<MyScripts> => {
+    const checkInterval = 100;
+    const timeout = 1000 * 10;
 
-      // timeout for wait
-      setTimeout(reject, 1000 * 10);
-    });
+    await waitUntil(() => !!window.__myScripts, checkInterval, timeout);
+
+    return window.__myScripts!;
   };
 
   runOnScrapboxReady(async () => {

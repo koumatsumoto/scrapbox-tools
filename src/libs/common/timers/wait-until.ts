@@ -4,6 +4,13 @@ export const waitUntil = (condition: () => boolean, checkIntervalMs: number, tim
       window.setTimeout(reject, timeoutMs);
     }
 
+    // first checking
+    if (condition()) {
+      resolve(true);
+
+      return;
+    }
+
     const handler = window.setInterval(() => {
       if (condition()) {
         window.clearInterval(handler);
