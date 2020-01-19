@@ -1,9 +1,9 @@
 import * as puppeteer from 'puppeteer';
-import { config } from './config';
-import { isPageUpdatedWithinOneMinute } from './internal-function';
-import { findOrFail, getConfiguredPage, getFullPermissionBrowserContext, setClipboardValue } from './util';
+import { config } from '../config';
+import { findOrFail, getConfiguredPage, getFullPermissionBrowserContext, setClipboardValue } from '../util';
+import { isPageUpdatedWithinOneMinute } from './internal';
 
-export const updatePage = async (param: { url: string; text: string }) => {
+export const deployByBrowserManipulation = async (param: { url: string; text: string }) => {
   const clipboardValue = param.text;
   const textareaSelector = config.selectorToTextarea;
 
@@ -35,5 +35,6 @@ export const updatePage = async (param: { url: string; text: string }) => {
   await Promise.all([textareaElement.press('Control'), textareaElement.press('v')]);
   await page.waitFor(1000 * 10);
 
+  await page.close();
   await browser.close();
 };

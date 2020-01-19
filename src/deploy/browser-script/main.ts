@@ -1,28 +1,17 @@
 /**
- * to enable private-api in browser context
+ * scripts to enable private-api in browser context
  */
+import './global-type';
 import { getPrivateApi } from '../../libs/scrapbox/private-api';
 import { findNextLineId, runOnScrapboxReady } from '../../libs/scrapbox/public-api';
 
-type MyScripts = {
-  updateSourceCode: (codeName: string, newSourceCode: string) => Promise<void>;
-};
-
-// extensions
-declare global {
-  interface Window {
-    waitForMyScriptsReady: () => Promise<void>;
-    __myScripts?: MyScripts;
-  }
-}
-
 const main = async () => {
   (window as any).waitForMyScriptsReady = () => {
-    return new Promise<MyScripts>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const id = window.setInterval(() => {
         if (window.__myScripts) {
           window.clearInterval(id);
-          resolve(window.__myScripts);
+          resolve();
         }
       }, 100);
 

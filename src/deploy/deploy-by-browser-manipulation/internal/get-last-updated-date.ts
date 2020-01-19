@@ -1,5 +1,5 @@
 import * as puppeteer from 'puppeteer';
-import '../../types/scrapbox';
+import '../../../types/scrapbox';
 
 export const getLastUpdatedDate = async (page: puppeteer.Page) =>
   page.evaluate(() => {

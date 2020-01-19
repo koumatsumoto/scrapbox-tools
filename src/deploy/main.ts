@@ -2,18 +2,17 @@
 require('dotenv').config();
 
 import { config } from './config';
-import { loadCSS, loadJS } from './loaders';
-import { getSettingsPageText, getUserPageText } from './templates';
-import { updatePage } from './update-page';
+import { deployByPrivateApi } from './deploy-by-private-api/deploy-by-private-api';
+import { loadUserCSS, loadUserScript } from './file-loaders';
 
 (async () => {
-  const userPageText = getUserPageText(await loadJS());
-  const settingsPageText = getSettingsPageText(await loadCSS());
+  const userPageText = await loadUserScript();
+  const settingsPageText = await loadUserCSS();
 
   // deploy user script and user css
   await Promise.all([
-    updatePage({ url: config.userPageUrl, text: userPageText }),
-    updatePage({ url: config.settingsPageUrl, text: settingsPageText }),
+    deployByPrivateApi({ url: config.userPageUrl, codeName: 'script.js', text: userPageText }),
+    deployByPrivateApi({ url: config.userPageUrl, codeName: 'style.css', text: settingsPageText }),
   ]);
 })()
   .then(() => {

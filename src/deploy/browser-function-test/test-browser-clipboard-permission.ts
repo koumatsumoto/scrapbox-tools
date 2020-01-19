@@ -6,7 +6,7 @@ import {
   getFullPermissionBrowserContext,
   setClipboardValue,
   tryInputAction,
-} from './util';
+} from '../util';
 
 export const testBrowserClipboardPermission = async () => {
   const url = 'https://www.google.co.jp';
