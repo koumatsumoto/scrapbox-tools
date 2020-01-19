@@ -1,4 +1,4 @@
-import { generateId, ID } from '../../others';
+import { generateId, ID } from '../../public-api';
 import {
   CommitChange,
   DeleteCommitChange,

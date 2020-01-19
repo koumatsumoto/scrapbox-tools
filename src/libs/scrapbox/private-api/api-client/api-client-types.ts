@@ -1,4 +1,4 @@
-import { ID } from '../../others';
+import { ID } from '../../public-api';
 
 export type PageResponse = {
   id: string;

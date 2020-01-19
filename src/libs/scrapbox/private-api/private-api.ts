@@ -1,4 +1,4 @@
-import { ID } from '../others';
+import { ID } from '../public-api';
 import { ApiClient } from './api-client/api-client';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
 import { createDeletionChange, createInsertionChange, createUpdationChange } from './websocket-clinet/websocket-client-internal-functions';

@@ -1,5 +1,5 @@
 // only actually used values
-import { ID } from '../../others';
+import { ID } from '../../public-api';
 
 export type Protocol = '0' | '40' | '42' | '420' | '421' | '422' | '423' | '430' | '431' | '432' | '433';
 

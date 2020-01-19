@@ -1,3 +1,5 @@
+import { ID } from '../../libs/scrapbox/public-api';
+
 export type LinkNodeUnit = {
   // page name to link
   page: string;
@@ -79,7 +81,7 @@ export type IndentNode = {
 export type ScrapboxNode = SimpleTextNode | LinkNode | HashTagNode | HashTagAndSimpleTextNodes | DecoFormulaNode | IndentNode | GyazoNode;
 
 export type TitleLine = {
-  id: string;
+  id: ID;
   text: string;
   userId: string;
   created: number;
@@ -93,7 +95,7 @@ export type TitleLine = {
 };
 
 export type NonTitleLine = {
-  id: string;
+  id: ID;
   text: string;
   userId?: string;
   created: number;
