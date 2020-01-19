@@ -1,4 +1,4 @@
-import { getCurrentPageName, getCurrentProjectName } from '../public-api/scrapbox';
+import { getCurrentPageName, getCurrentProjectName } from '../../public-api/scrapbox';
 import { MeResponse, PageResponse, ProjectResponse } from './api-client-types';
 
 const baseURL = 'https://scrapbox.io/api';

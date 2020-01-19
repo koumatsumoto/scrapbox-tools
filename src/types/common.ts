@@ -10,3 +10,6 @@ export type DeepPartial<T> = {
 };
 export type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 export type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
+
+// branded type
+export type Brand<K, T> = K & { __brand: T };

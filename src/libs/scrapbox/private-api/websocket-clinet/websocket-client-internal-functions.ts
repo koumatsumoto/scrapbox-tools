@@ -1,4 +1,12 @@
-import { CommitChange, Protocol, ProtocolAndPayload, ReceivedMessage } from './websocket-client-types';
+import { generateId, ID } from '../../others';
+import {
+  CommitChange,
+  InsertCommitChange,
+  Protocol,
+  ProtocolAndPayload,
+  ReceivedMessage,
+  UpdateCommitChange,
+} from './websocket-client-types';
 
 export const createJoinRoomMessage = (param: { projectId: string; pageId: string }) => {
   const payload = [
@@ -44,7 +52,17 @@ export const createCommitMessage = (param: {
   return `${protocol}${JSON.stringify(payload)}`;
 };
 
-export const createUpdateSingleLineChange = (param: { id: string; text: string }): CommitChange => {
+export const createInsertionChange = (param: { userId: ID; position: ID | '_end'; text: string }): InsertCommitChange => {
+  return {
+    _insert: param.position,
+    lines: {
+      id: generateId(param.userId),
+      text: param.text,
+    },
+  };
+};
+
+export const createUpdationChange = (param: { id: string; text: string }): UpdateCommitChange => {
   return {
     _update: param.id,
     lines: {

@@ -1,3 +1,5 @@
+import { ID } from '../../others';
+
 export type PageResponse = {
   id: string;
   title: string;
@@ -28,7 +30,7 @@ export type PageResponse = {
 };
 
 export interface User {
-  id: string;
+  id: ID;
   name: string;
   displayName: string;
   photo: string;
@@ -50,17 +52,7 @@ export type ProjectResponse = {
   googleAnalyticsCode: null;
   created: number;
   updated: number;
-  users: {
-    id: string;
-    name: string;
-    displayName: string;
-    photo: string;
-    email: string;
-    pro: boolean;
-    provider: 'google' | string;
-    created: number;
-    updated: number;
-  }[];
+  users: User[];
   admins: [];
   owner: string;
   trialing: boolean;
