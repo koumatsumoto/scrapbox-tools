@@ -1,6 +1,7 @@
 import { generateId, ID } from '../../others';
 import {
   CommitChange,
+  DeleteCommitChange,
   InsertCommitChange,
   Protocol,
   ProtocolAndPayload,
@@ -62,12 +63,19 @@ export const createInsertionChange = (param: { userId: ID; position: ID | '_end'
   };
 };
 
-export const createUpdationChange = (param: { id: string; text: string }): UpdateCommitChange => {
+export const createUpdationChange = (param: { id: ID; text: string }): UpdateCommitChange => {
   return {
     _update: param.id,
     lines: {
       text: param.text,
     },
+  };
+};
+
+export const createDeletionChange = (param: { id: ID }): DeleteCommitChange => {
+  return {
+    _delete: param.id,
+    lines: -1,
   };
 };
 

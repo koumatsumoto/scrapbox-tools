@@ -1,7 +1,7 @@
 import { ID } from '../others';
 import { ApiClient } from './api-client/api-client';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
-import { createInsertionChange, createUpdationChange } from './websocket-clinet/websocket-client-internal-functions';
+import { createDeletionChange, createInsertionChange, createUpdationChange } from './websocket-clinet/websocket-client-internal-functions';
 
 export class PrivateApi {
   constructor(private readonly userId: ID, private readonly apiClient: ApiClient, private readonly websocketClient: WebsocketClient) {}
@@ -22,7 +22,7 @@ export class PrivateApi {
     });
   }
 
-  async updateSingleLine(param: { projectId: string; pageId: string; commitId: string; lineId: string; text: string }) {
+  async updateSingleLine(param: { projectId: string; pageId: string; commitId: string; lineId: ID; text: string }) {
     this.websocketClient.commit({
       userId: this.userId,
       projectId: param.projectId,
@@ -32,6 +32,20 @@ export class PrivateApi {
         createUpdationChange({
           id: param.lineId,
           text: param.text,
+        }),
+      ],
+    });
+  }
+
+  async deleteSingleLine(param: { projectId: string; pageId: string; commitId: string; lineId: ID }) {
+    this.websocketClient.commit({
+      userId: this.userId,
+      projectId: param.projectId,
+      pageId: param.pageId,
+      parentId: param.commitId,
+      changes: [
+        createDeletionChange({
+          id: param.lineId,
         }),
       ],
     });
@@ -48,10 +62,21 @@ export class PrivateApi {
     });
   }
 
-  async updateSingleLineOfCurrentPage(param: { lineId: string; text: string }) {
+  async updateSingleLineOfCurrentPage(param: { lineId: ID; text: string }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
     this.updateSingleLine({
+      ...param,
+      projectId: project.id,
+      pageId: page.id,
+      commitId: page.commitId,
+    });
+  }
+
+  async deleteSingleLineFromCurrentPage(param: { lineId: ID }) {
+    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
+
+    this.deleteSingleLine({
       ...param,
       projectId: project.id,
       pageId: page.id,

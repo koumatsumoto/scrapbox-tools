@@ -17,7 +17,7 @@ export type ProtocolAndPayload = ['0', ConnectionOpenMessage] | [Protocol, Recei
 export type InsertCommitChange = {
   // point to insert, all after here go down one line.
   // use '_end' value if insert to last line.
-  _insert: string | '_end';
+  _insert: ID | '_end';
   lines: {
     id: ID;
     text: string;
@@ -26,13 +26,18 @@ export type InsertCommitChange = {
 
 export type UpdateCommitChange = {
   // target line id
-  _update: string;
+  _update: ID;
   lines: {
     text: string;
   };
 };
 
-export type CommitChange = InsertCommitChange | UpdateCommitChange;
+export type DeleteCommitChange = {
+  _delete: ID;
+  lines: -1;
+};
+
+export type CommitChange = InsertCommitChange | UpdateCommitChange | DeleteCommitChange;
 
 export type CommitSendMessage = [
   'socket.io-request',
@@ -45,7 +50,7 @@ export type CommitSendMessage = [
       changes: CommitChange[];
       cursor: null;
       pageId: string;
-      userId: string;
+      userId: ID;
       projectId: string;
       freeze: true;
     };
