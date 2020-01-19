@@ -7,7 +7,7 @@ export class PrivateApi {
   constructor(private readonly userId: ID, private readonly apiClient: ApiClient, private readonly websocketClient: WebsocketClient) {}
 
   async insertSingleLine(param: { projectId: string; pageId: string; commitId: string; position?: ID; text: string }) {
-    this.websocketClient.commit({
+    return this.websocketClient.commit({
       userId: this.userId,
       projectId: param.projectId,
       pageId: param.pageId,
@@ -23,7 +23,7 @@ export class PrivateApi {
   }
 
   async updateSingleLine(param: { projectId: string; pageId: string; commitId: string; lineId: ID; text: string }) {
-    this.websocketClient.commit({
+    return this.websocketClient.commit({
       userId: this.userId,
       projectId: param.projectId,
       pageId: param.pageId,
@@ -38,7 +38,7 @@ export class PrivateApi {
   }
 
   async deleteSingleLine(param: { projectId: string; pageId: string; commitId: string; lineId: ID }) {
-    this.websocketClient.commit({
+    return this.websocketClient.commit({
       userId: this.userId,
       projectId: param.projectId,
       pageId: param.pageId,
@@ -54,7 +54,7 @@ export class PrivateApi {
   async insertSingleLineIntoCurrentPage(param: { position?: ID; text: string }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
-    this.insertSingleLine({
+    return this.insertSingleLine({
       ...param,
       projectId: project.id,
       pageId: page.id,
@@ -65,7 +65,7 @@ export class PrivateApi {
   async updateSingleLineOfCurrentPage(param: { lineId: ID; text: string }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
-    this.updateSingleLine({
+    return this.updateSingleLine({
       ...param,
       projectId: project.id,
       pageId: page.id,
@@ -76,7 +76,7 @@ export class PrivateApi {
   async deleteSingleLineFromCurrentPage(param: { lineId: ID }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
-    this.deleteSingleLine({
+    return this.deleteSingleLine({
       ...param,
       projectId: project.id,
       pageId: page.id,
@@ -89,7 +89,7 @@ export const getPrivateApi = async () => {
   const apiClient = new ApiClient();
   const [user, project, page] = await Promise.all([apiClient.getMe(), apiClient.getCurrentProject(), apiClient.getCurrentPage()]);
   const websocketClient = new WebsocketClient();
-  websocketClient.joinRoom({ projectId: project.id, pageId: page.id });
+  await websocketClient.joinRoom({ projectId: project.id, pageId: page.id });
 
   return new PrivateApi(user.id, apiClient, websocketClient);
 };

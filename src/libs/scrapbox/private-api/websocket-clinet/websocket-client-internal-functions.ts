@@ -1,6 +1,5 @@
 import { generateId, ID } from '../../public-api';
 import {
-  CommitChange,
   DeleteCommitChange,
   InsertCommitChange,
   Protocol,
@@ -8,50 +7,6 @@ import {
   ReceivedMessage,
   UpdateCommitChange,
 } from './websocket-client-types';
-
-export const createJoinRoomMessage = (param: { projectId: string; pageId: string }) => {
-  const payload = [
-    'socket.io-request',
-    {
-      method: 'room:join',
-      data: {
-        pageId: param.pageId,
-        projectId: param.projectId,
-        projectUpdatesStream: false,
-      },
-    },
-  ];
-
-  return `420${JSON.stringify(payload)}`;
-};
-
-export const createCommitMessage = (param: {
-  projectId: string;
-  userId: string;
-  pageId: string;
-  parentId: string;
-  changes: CommitChange[];
-}) => {
-  const protocol = '421';
-  const payload = [
-    'socket.io-request',
-    {
-      method: 'commit',
-      data: {
-        kind: 'page',
-        parentId: param.parentId,
-        changes: param.changes,
-        cursor: null,
-        pageId: param.pageId,
-        userId: param.userId,
-        projectId: param.projectId,
-        freeze: true,
-      },
-    },
-  ];
-
-  return `${protocol}${JSON.stringify(payload)}`;
-};
 
 export const createInsertionChange = (param: { userId: ID; position: ID | '_end'; text: string }): InsertCommitChange => {
   return {
@@ -81,17 +36,18 @@ export const createDeletionChange = (param: { id: ID }): DeleteCommitChange => {
 
 // 430[{...}}] => 430, [{}]
 export const extractMessage = (message: string): ProtocolAndPayload => {
-  let protocol = '';
+  // protocol and arbitrary number
+  let header = '';
   while (message.length) {
     const head = message[0];
     // remove head if it is numeric char (part of protocol)
     if (Number.isInteger(Number.parseInt(head))) {
-      protocol += head;
+      header += head;
       message = message.substr(1);
     } else {
-      return [protocol as Protocol, JSON.parse(message) as ReceivedMessage];
+      return [header as Protocol, JSON.parse(message) as ReceivedMessage];
     }
   }
 
-  return [protocol as Protocol, null];
+  return [header as Protocol, null];
 };
