@@ -16,8 +16,11 @@ const loadFile = (path: string) =>
     }),
   );
 
+const deployTime = new Date().toISOString();
+const versionString = `/* ${deployTime} */`;
+
 // first space is needed for scrapbox code block
-export const loadUserScript = async () => ` ${await loadFile(bundleJsFilePath)}`;
-export const loadUserCSS = async () => ` ${await loadFile(cssFilePath)}`;
+export const loadUserScript = async () => ` ${versionString}${await loadFile(bundleJsFilePath)}`;
+export const loadUserCSS = async () => ` ${versionString}${await loadFile(cssFilePath)}`;
 // script to be evaluated in browser
 export const loadBrowserScript = () => loadFile(browserScriptPath);
