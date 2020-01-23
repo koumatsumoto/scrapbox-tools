@@ -1,61 +1,15 @@
-import { ID } from '../public-api';
+import { generateId, ID } from '../public-api';
 import { ApiClient } from './api-client/api-client';
-import {
-  CommitChange,
-  createDeletionChange,
-  createDescriptionChange,
-  createInsertionChange,
-  createTitleChange,
-  createUpdationChange,
-} from './websocket-clinet/internal/commit-change';
-import { WebsocketClient } from './websocket-clinet/websocket-client';
-
-type InsertChangeParam = { type: 'insert'; position?: ID; text: string };
-type UpdateChangeParam = { type: 'update'; id: ID; text: string };
-type DeleteChangeParam = { type: 'delete'; id: ID };
-type TitleChangeParam = { type: 'title'; text: string };
-type DescriptionChangeParam = { type: 'description'; text: string };
-type ChangeParamExceptInsert = UpdateChangeParam | DeleteChangeParam | TitleChangeParam | DescriptionChangeParam;
-type ChangeLinesParam = InsertChangeParam | ChangeParamExceptInsert;
-type InsertChangeWithUserId = InsertChangeParam & { userId: ID };
-type ChangeParam = InsertChangeWithUserId | ChangeParamExceptInsert;
-
-export const createChange = (param: ChangeParam): CommitChange => {
-  if (param.type === 'insert') {
-    return createInsertionChange(param);
-  } else if (param.type === 'update') {
-    return createUpdationChange(param);
-  } else if (param.type === 'delete') {
-    return createDeletionChange(param);
-  } else if (param.type === 'title') {
-    return createTitleChange(param);
-  } else {
-    return createDescriptionChange(param);
-  }
-};
-
-export const createChanges = (params: ChangeParam[]): CommitChange[] => params.map(createChange);
+import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
 
 export class PrivateApi {
   constructor(private readonly userId: ID, private readonly apiClient: ApiClient, private readonly websocketClient: WebsocketClient) {}
-
-  async changeLines(param: { projectId: string; pageId: string; commitId: string; changes: ChangeLinesParam[] }) {
-    return this.websocketClient.commit({
-      userId: this.userId,
-      projectId: param.projectId,
-      pageId: param.pageId,
-      parentId: param.commitId,
-      changes: createChanges(
-        param.changes.map<ChangeParam>((c) => (c.type === 'insert' ? { ...c, userId: this.userId } : c)),
-      ),
-    });
-  }
 
   async insertSingleLineIntoCurrentPage(param: { position?: ID; text: string }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
     return this.changeLines({
-      changes: [{ ...param, type: 'insert' } as const],
+      changes: [{ type: 'insert', id: generateId(this.userId), position: param.position, text: param.text }],
       projectId: project.id,
       pageId: page.id,
       commitId: page.commitId,
@@ -66,7 +20,7 @@ export class PrivateApi {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
     return this.changeLines({
-      changes: [{ ...param, type: 'update' }],
+      changes: [{ type: 'update', id: param.id, text: param.text }],
       projectId: project.id,
       pageId: page.id,
       commitId: page.commitId,
@@ -77,7 +31,7 @@ export class PrivateApi {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
     return this.changeLines({
-      changes: [{ ...param, type: 'delete' }],
+      changes: [{ type: 'delete', id: param.id }],
       projectId: project.id,
       pageId: page.id,
       commitId: page.commitId,
@@ -90,8 +44,8 @@ export class PrivateApi {
 
     return this.changeLines({
       changes: [
-        { id: titleLine.id, text: param.text, type: 'update' },
-        { text: param.text, type: 'title' },
+        { type: 'update', id: titleLine.id, text: param.text },
+        { type: 'title', title: param.text },
       ],
       projectId: project.id,
       pageId: page.id,
@@ -101,12 +55,12 @@ export class PrivateApi {
 
   async updateDescription(param: { description: string }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
-    const changes: ChangeLinesParam[] = [];
+    const changes: CommitChangeParam[] = [];
 
     // page has not description line yet
     if (page.lines.length === 1) {
-      changes.push({ text: param.description, type: 'insert' });
-      changes.push({ text: '', type: 'insert' });
+      changes.push({ type: 'insert', id: generateId(this.userId), text: param.description });
+      changes.push({ type: 'insert', id: generateId(this.userId), text: '' });
     } else {
       changes.push({ type: 'update', id: page.lines[1].id, text: param.description });
     }
@@ -120,12 +74,22 @@ export class PrivateApi {
       commitId: page.commitId,
     });
   }
+
+  private async changeLines(param: { projectId: string; pageId: string; commitId: string; changes: CommitChangeParam[] }) {
+    return this.websocketClient.commit({
+      userId: this.userId,
+      projectId: param.projectId,
+      pageId: param.pageId,
+      parentId: param.commitId,
+      changes: param.changes,
+    });
+  }
 }
 
 export const getPrivateApi = async () => {
   const apiClient = new ApiClient();
   const [user, project, page] = await Promise.all([apiClient.getMe(), apiClient.getCurrentProject(), apiClient.getCurrentPage()]);
-  const websocketClient = new WebsocketClient();
+  const websocketClient = new WebsocketClient(user.id);
   await websocketClient.joinRoom({ projectId: project.id, pageId: page.id });
 
   return new PrivateApi(user.id, apiClient, websocketClient);

@@ -1,4 +1,4 @@
-import { generateId, ID } from '../../../public-api';
+import { ID } from '../../../public-api';
 
 export type InsertCommitChange = {
   // point to insert, all after here go down one line.
@@ -29,11 +29,11 @@ export type DescriptionsCommitChange = { descriptions: string[] };
 
 export type CommitChange = InsertCommitChange | UpdateCommitChange | DeleteCommitChange | TitleCommitChange | DescriptionsCommitChange;
 
-export const createInsertionChange = (param: { userId: ID; position?: ID; text: string }): InsertCommitChange => {
+export const createInsertionChange = (param: { id: ID; position?: ID; text: string }): InsertCommitChange => {
   return {
     _insert: param.position || '_end',
     lines: {
-      id: generateId(param.userId),
+      id: param.id,
       text: param.text,
     },
   };
@@ -55,9 +55,9 @@ export const createDeletionChange = (param: { id: ID }): DeleteCommitChange => {
   };
 };
 
-export const createTitleChange = (param: { text: string }): TitleCommitChange => {
+export const createTitleChange = (param: { title: string }): TitleCommitChange => {
   return {
-    title: param.text,
+    title: param.title,
   };
 };
 

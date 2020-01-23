@@ -1,8 +1,8 @@
 import { waitUntil } from '../../../common';
 import { ID } from '../../public-api';
-import { CommitChange } from './internal/commit-change';
+import { CommitChangeParam, createChanges } from './internal/commit-change-param';
 import { extractMessage } from './websocket-client-internal-functions';
-import { ConnectionOpenMessage, Protocol, ReceivedMessage, SendMessage } from './websocket-client-types';
+import { ConnectionOpenMessage, ReceivedMessage, SendMessage } from './websocket-client-types';
 
 const endpoint = 'wss://scrapbox.io/socket.io/?EIO=3&transport=websocket';
 const sendProtocol = '42';
@@ -20,22 +20,22 @@ export class WebsocketClient {
    */
   private receivePool = new Map<string, ReceivedMessage | undefined>();
 
-  constructor() {
+  constructor(private readonly userId: ID) {
     this.socket = new WebSocket(endpoint);
     this.initialize();
   }
 
-  commit(param: { projectId: string; userId: ID; pageId: string; parentId: string; changes: CommitChange[] }) {
+  commit(param: { projectId: string; userId: ID; pageId: string; parentId: string; changes: CommitChangeParam[] }) {
     return this.send({
       method: 'commit',
       data: {
         kind: 'page',
-        parentId: param.parentId,
-        changes: param.changes,
-        cursor: null,
-        pageId: param.pageId,
-        userId: param.userId,
+        userId: this.userId,
         projectId: param.projectId,
+        pageId: param.pageId,
+        parentId: param.parentId,
+        changes: createChanges(param.changes),
+        cursor: null,
         freeze: true,
       },
     });
