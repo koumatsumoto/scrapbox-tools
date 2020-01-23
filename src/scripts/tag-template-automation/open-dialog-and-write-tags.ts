@@ -10,14 +10,16 @@ export const openDialogAndWriteTags = async () => {
     if (result.ok) {
       const tagLineText = [getDateOrTimeText(), ...result.data].map(makeTag).join(' ');
       if (isEmptyPage()) {
-        await api.updateTitle({ title: getDateText() });
-        await api.updateDescription({ description: tagLineText });
+        await api.updateTitleAndDescription({ title: getDateText(), description: tagLineText });
       } else {
+        const changes: { text: string }[] = [];
         if (!hasEmptyEOF()) {
-          await api.insertSingleLineIntoCurrentPage({ text: '' });
+          changes.push({ text: '' });
         }
-        await api.insertSingleLineIntoCurrentPage({ text: tagLineText });
-        await api.insertSingleLineIntoCurrentPage({ text: '' });
+        changes.push({ text: tagLineText });
+        changes.push({ text: '' });
+
+        await api.insertLine(changes);
       }
     }
   } catch (e) {
