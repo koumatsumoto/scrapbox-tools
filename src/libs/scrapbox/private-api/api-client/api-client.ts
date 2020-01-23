@@ -5,11 +5,13 @@ const baseURL = 'https://scrapbox.io/api';
 
 export class ApiClient {
   async getCurrentPage(): Promise<PageResponse> {
-    return this.request<PageResponse>(`${baseURL}/pages/${getCurrentProjectName()}/${getCurrentPageName()}?followRename=true`);
+    return this.request<PageResponse>(
+      `${baseURL}/pages/${encodeURIComponent(getCurrentProjectName())}/${encodeURIComponent(getCurrentPageName())}?followRename=true`,
+    );
   }
 
   async getCurrentProject(): Promise<ProjectResponse> {
-    return this.request<ProjectResponse>(`${baseURL}/projects/${getCurrentProjectName()}`);
+    return this.request<ProjectResponse>(`${baseURL}/projects/${encodeURIComponent(getCurrentProjectName())}`);
   }
 
   async getMe(): Promise<MeResponse> {
