@@ -3,81 +3,67 @@ import { ApiClient } from './api-client/api-client';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
 import { createDeletionChange, createInsertionChange, createUpdationChange } from './websocket-clinet/websocket-client-internal-functions';
 
+type InsertChange = { type: 'insert'; position?: ID; text: string };
+type UpdateChange = { type: 'update'; id: ID; text: string };
+type DeleteChange = { type: 'delete'; id: ID };
+type Change = InsertChange | UpdateChange | DeleteChange;
+type InsertChangeWithUserId = InsertChange & { userId: ID };
+type ChangeParam = InsertChangeWithUserId | UpdateChange | DeleteChange;
+
+const createChanges = (params: ChangeParam[]) => {
+  return params.map((p) => {
+    if (p.type === 'insert') {
+      return createInsertionChange(p);
+    } else if (p.type === 'update') {
+      return createUpdationChange(p);
+    } else {
+      return createDeletionChange(p);
+    }
+  });
+};
+
 export class PrivateApi {
   constructor(private readonly userId: ID, private readonly apiClient: ApiClient, private readonly websocketClient: WebsocketClient) {}
 
-  async insertSingleLine(param: { projectId: string; pageId: string; commitId: string; position?: ID; text: string }) {
+  async changeLines(param: { projectId: string; pageId: string; commitId: string; changes: Change[] }) {
     return this.websocketClient.commit({
       userId: this.userId,
       projectId: param.projectId,
       pageId: param.pageId,
       parentId: param.commitId,
-      changes: [
-        createInsertionChange({
-          userId: this.userId,
-          position: param.position || '_end',
-          text: param.text,
-        }),
-      ],
-    });
-  }
-
-  async updateSingleLine(param: { projectId: string; pageId: string; commitId: string; lineId: ID; text: string }) {
-    return this.websocketClient.commit({
-      userId: this.userId,
-      projectId: param.projectId,
-      pageId: param.pageId,
-      parentId: param.commitId,
-      changes: [
-        createUpdationChange({
-          id: param.lineId,
-          text: param.text,
-        }),
-      ],
-    });
-  }
-
-  async deleteSingleLine(param: { projectId: string; pageId: string; commitId: string; lineId: ID }) {
-    return this.websocketClient.commit({
-      userId: this.userId,
-      projectId: param.projectId,
-      pageId: param.pageId,
-      parentId: param.commitId,
-      changes: [
-        createDeletionChange({
-          id: param.lineId,
-        }),
-      ],
+      changes: createChanges(
+        param.changes.map<ChangeParam>((c) => (c.type === 'insert' ? { ...c, userId: this.userId } : c)),
+      ),
     });
   }
 
   async insertSingleLineIntoCurrentPage(param: { position?: ID; text: string }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
-    return this.insertSingleLine({
-      ...param,
+    return this.changeLines({
+      changes: [{ ...param, type: 'insert' } as const],
       projectId: project.id,
       pageId: page.id,
       commitId: page.commitId,
     });
   }
 
-  async updateSingleLineOfCurrentPage(param: { lineId: ID; text: string }) {
+  async updateSingleLineOfCurrentPage(param: { id: ID; text: string }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
-    return this.updateSingleLine({
-      ...param,
+    return this.changeLines({
+      changes: [{ ...param, type: 'update' }],
       projectId: project.id,
       pageId: page.id,
       commitId: page.commitId,
     });
   }
 
-  async deleteSingleLineFromCurrentPage(param: { lineId: ID }) {
+  async deleteSingleLineFromCurrentPage(param: { id: ID }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
 
-    return this.deleteSingleLine({
-      ...param,
+    return this.changeLines({
+      changes: [{ ...param, type: 'delete' }],
       projectId: project.id,
       pageId: page.id,
       commitId: page.commitId,

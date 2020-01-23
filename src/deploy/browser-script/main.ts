@@ -23,7 +23,7 @@ const main = async () => {
 
       // update existing
       if (lineId) {
-        await api.updateSingleLineOfCurrentPage({ lineId, text: newSourceCode });
+        await api.updateSingleLineOfCurrentPage({ id: lineId, text: newSourceCode });
       } else {
         // TODO: implement creation
         throw new Error('Creation is currently not supported, create manually code block before deploy');

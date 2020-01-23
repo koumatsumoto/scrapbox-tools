@@ -8,9 +8,9 @@ import {
   UpdateCommitChange,
 } from './websocket-client-types';
 
-export const createInsertionChange = (param: { userId: ID; position: ID | '_end'; text: string }): InsertCommitChange => {
+export const createInsertionChange = (param: { userId: ID; position?: ID; text: string }): InsertCommitChange => {
   return {
-    _insert: param.position,
+    _insert: param.position || '_end',
     lines: {
       id: generateId(param.userId),
       text: param.text,

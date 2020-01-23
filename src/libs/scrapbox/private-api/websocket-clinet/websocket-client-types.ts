@@ -44,7 +44,10 @@ export type DeleteCommitChange = {
   lines: -1;
 };
 
-export type CommitChange = InsertCommitChange | UpdateCommitChange | DeleteCommitChange;
+export type TitleCommitChange = { title: string };
+export type DescriptionsCommitChange = { descriptions: string[] };
+
+export type CommitChange = InsertCommitChange | UpdateCommitChange | DeleteCommitChange | TitleCommitChange | DescriptionsCommitChange;
 
 export type CommitPayload = {
   method: 'commit';
