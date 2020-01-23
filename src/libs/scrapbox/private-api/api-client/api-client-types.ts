@@ -1,5 +1,7 @@
 import { ID } from '../../public-api';
 
+type Line = { id: ID; text: string; userId: string; created: number; updated: number };
+
 export type PageResponse = {
   id: string;
   title: string;
@@ -21,7 +23,7 @@ export type PageResponse = {
   accessed: number;
   snapshotCreated: number;
   persistent: boolean;
-  lines: { id: string; text: string; userId: string; created: number; updated: number }[];
+  lines: Line[];
   links: [];
   icons: {};
   relatedPages: { links1hop: []; links2hop: []; icons1hop: [] };

@@ -1,5 +1,6 @@
 // only actually used values
 import { ID } from '../../public-api';
+import { CommitChange } from './internal/commit-change';
 
 /**
  * - '0'
@@ -20,34 +21,6 @@ export type ConnectionResultReceiveMessage = [{ data: { success: boolean; pageId
 export type ReceivedMessage = ConnectionOpenMessage | ConnectionResultReceiveMessage | null;
 
 export type ProtocolAndPayload = ['0', ConnectionOpenMessage] | [Protocol, ReceivedMessage];
-
-export type InsertCommitChange = {
-  // point to insert, all after here go down one line.
-  // use '_end' value if insert to last line.
-  _insert: ID | '_end';
-  lines: {
-    id: ID;
-    text: string;
-  };
-};
-
-export type UpdateCommitChange = {
-  // target line id
-  _update: ID;
-  lines: {
-    text: string;
-  };
-};
-
-export type DeleteCommitChange = {
-  _delete: ID;
-  lines: -1;
-};
-
-export type TitleCommitChange = { title: string };
-export type DescriptionsCommitChange = { descriptions: string[] };
-
-export type CommitChange = InsertCommitChange | UpdateCommitChange | DeleteCommitChange | TitleCommitChange | DescriptionsCommitChange;
 
 export type CommitPayload = {
   method: 'commit';

@@ -1,38 +1,4 @@
-import { generateId, ID } from '../../public-api';
-import {
-  DeleteCommitChange,
-  InsertCommitChange,
-  Protocol,
-  ProtocolAndPayload,
-  ReceivedMessage,
-  UpdateCommitChange,
-} from './websocket-client-types';
-
-export const createInsertionChange = (param: { userId: ID; position?: ID; text: string }): InsertCommitChange => {
-  return {
-    _insert: param.position || '_end',
-    lines: {
-      id: generateId(param.userId),
-      text: param.text,
-    },
-  };
-};
-
-export const createUpdationChange = (param: { id: ID; text: string }): UpdateCommitChange => {
-  return {
-    _update: param.id,
-    lines: {
-      text: param.text,
-    },
-  };
-};
-
-export const createDeletionChange = (param: { id: ID }): DeleteCommitChange => {
-  return {
-    _delete: param.id,
-    lines: -1,
-  };
-};
+import { Protocol, ProtocolAndPayload, ReceivedMessage } from './websocket-client-types';
 
 // 430[{...}}] => 430, [{}]
 export const extractMessage = (message: string): ProtocolAndPayload => {

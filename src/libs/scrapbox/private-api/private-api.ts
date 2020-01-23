@@ -1,31 +1,41 @@
 import { ID } from '../public-api';
 import { ApiClient } from './api-client/api-client';
+import {
+  CommitChange,
+  createDeletionChange,
+  createInsertionChange,
+  createTitleChange,
+  createUpdationChange,
+} from './websocket-clinet/internal/commit-change';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
-import { createDeletionChange, createInsertionChange, createUpdationChange } from './websocket-clinet/websocket-client-internal-functions';
 
-type InsertChange = { type: 'insert'; position?: ID; text: string };
-type UpdateChange = { type: 'update'; id: ID; text: string };
-type DeleteChange = { type: 'delete'; id: ID };
-type Change = InsertChange | UpdateChange | DeleteChange;
-type InsertChangeWithUserId = InsertChange & { userId: ID };
-type ChangeParam = InsertChangeWithUserId | UpdateChange | DeleteChange;
+type InsertChangeParam = { type: 'insert'; position?: ID; text: string };
+type UpdateChangeParam = { type: 'update'; id: ID; text: string };
+type DeleteChangeParam = { type: 'delete'; id: ID };
+type TitleChangeParam = { type: 'title'; text: string };
+type ChangeParamExceptInsert = UpdateChangeParam | DeleteChangeParam | TitleChangeParam;
+type ChangeLinesParam = InsertChangeParam | ChangeParamExceptInsert;
+type InsertChangeWithUserId = InsertChangeParam & { userId: ID };
+type ChangeParam = InsertChangeWithUserId | ChangeParamExceptInsert;
 
-const createChanges = (params: ChangeParam[]) => {
-  return params.map((p) => {
-    if (p.type === 'insert') {
-      return createInsertionChange(p);
-    } else if (p.type === 'update') {
-      return createUpdationChange(p);
-    } else {
-      return createDeletionChange(p);
-    }
-  });
+export const createChange = (param: ChangeParam): CommitChange => {
+  if (param.type === 'insert') {
+    return createInsertionChange(param);
+  } else if (param.type === 'update') {
+    return createUpdationChange(param);
+  } else if (param.type === 'delete') {
+    return createDeletionChange(param);
+  } else {
+    return createTitleChange(param);
+  }
 };
+
+export const createChanges = (params: ChangeParam[]): CommitChange[] => params.map(createChange);
 
 export class PrivateApi {
   constructor(private readonly userId: ID, private readonly apiClient: ApiClient, private readonly websocketClient: WebsocketClient) {}
 
-  async changeLines(param: { projectId: string; pageId: string; commitId: string; changes: Change[] }) {
+  async changeLines(param: { projectId: string; pageId: string; commitId: string; changes: ChangeLinesParam[] }) {
     return this.websocketClient.commit({
       userId: this.userId,
       projectId: param.projectId,
@@ -64,6 +74,21 @@ export class PrivateApi {
 
     return this.changeLines({
       changes: [{ ...param, type: 'delete' }],
+      projectId: project.id,
+      pageId: page.id,
+      commitId: page.commitId,
+    });
+  }
+
+  async updateTitle(param: { text: string }) {
+    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
+    const titleLine = page.lines[0];
+
+    return this.changeLines({
+      changes: [
+        { id: titleLine.id, text: param.text, type: 'update' },
+        { text: param.text, type: 'title' },
+      ],
       projectId: project.id,
       pageId: page.id,
       commitId: page.commitId,

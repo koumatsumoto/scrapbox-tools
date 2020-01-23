@@ -1,7 +1,8 @@
 import { waitUntil } from '../../../common';
 import { ID } from '../../public-api';
+import { CommitChange } from './internal/commit-change';
 import { extractMessage } from './websocket-client-internal-functions';
-import { CommitChange, ConnectionOpenMessage, Protocol, ReceivedMessage, SendMessage } from './websocket-client-types';
+import { ConnectionOpenMessage, Protocol, ReceivedMessage, SendMessage } from './websocket-client-types';
 
 const endpoint = 'wss://scrapbox.io/socket.io/?EIO=3&transport=websocket';
 const sendProtocol = '42';
