@@ -4,7 +4,7 @@
 import { defineCustomElements } from './components';
 import { importRxJS } from './libs/common';
 import { runOnScrapboxReady } from './libs/scrapbox/public-api';
-import { applyLoginCSSClass, componentManager, enableConsoleButton, enablePrivateApi, highlightTagsInListItem } from './scripts';
+import { applyLoginCSSClass, componentManager, enablePrivateApi, highlightTagsInListItem } from './scripts';
 
 export const main = () => {
   runOnScrapboxReady(async () => {
@@ -16,7 +16,6 @@ export const main = () => {
     componentManager.setupComponents();
 
     highlightTagsInListItem();
-    enableConsoleButton();
 
     // add custom css class to body tag
     applyLoginCSSClass();

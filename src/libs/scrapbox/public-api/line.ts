@@ -22,3 +22,6 @@ export const findNextLineId = (searchString: string, lines: PageLine[] = getLine
 
   return next ? next.id : null;
 };
+
+// page has one line at least
+export const getTitleLine = (lines: PageLine[] = getLines()): PageLine => lines[0]!;

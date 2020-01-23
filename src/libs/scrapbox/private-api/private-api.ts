@@ -38,14 +38,14 @@ export class PrivateApi {
     });
   }
 
-  async updateTitle(param: { text: string }) {
+  async updateTitle(param: { title: string }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
     const titleLine = page.lines[0];
 
     return this.changeLines({
       changes: [
-        { type: 'update', id: titleLine.id, text: param.text },
-        { type: 'title', title: param.text },
+        { type: 'update', id: titleLine.id, text: param.title },
+        { type: 'title', title: param.title },
       ],
       projectId: project.id,
       pageId: page.id,

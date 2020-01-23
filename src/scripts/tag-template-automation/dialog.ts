@@ -32,7 +32,7 @@ const makeCheckboxesHTML = (tagOptions: TagOption[]) => {
     .join('');
 };
 
-const menuHTML = `<menu><button value="cancel">Cancel</button><button value="default">Copy</button></menu>`;
+const menuHTML = `<menu><button value="cancel">Cancel</button><button value="default">Add</button></menu>`;
 
 const makeFormHTML = (checkboxesHTML: string, menuHTML: string) => `<form method="dialog"><div>${checkboxesHTML}</div>${menuHTML}</form>`;
 
