@@ -1,4 +1,4 @@
-import { getDateText, getPrivateApi, hasEmptyEOF, isEmptyPage, makeTag } from '../../libs/scrapbox';
+import { getDateText, getPageUrl, getPrivateApi, hasEmptyEOF, isEmptyPage, makeTag } from '../../libs/scrapbox';
 import { tagOptions } from './config';
 import { openDialog } from './dialog';
 import { getDateOrTimeText } from './get-date-or-time-text';
@@ -10,7 +10,10 @@ export const openDialogAndWriteTags = async () => {
     if (result.ok) {
       const tagLineText = [getDateOrTimeText(), ...result.data].map(makeTag).join(' ');
       if (isEmptyPage()) {
-        await api.updateTitleAndDescription({ title: getDateText(), description: tagLineText });
+        const title = getDateText();
+        await api.updateTitleAndDescription({ title, description: tagLineText });
+        // TODO: use React router
+        window.location.assign(getPageUrl(title));
       } else {
         const changes: { text: string }[] = [];
         if (!hasEmptyEOF()) {
