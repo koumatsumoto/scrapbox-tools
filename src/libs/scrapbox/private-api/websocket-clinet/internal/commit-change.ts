@@ -60,3 +60,7 @@ export const createTitleChange = (param: { text: string }): TitleCommitChange =>
     title: param.text,
   };
 };
+
+export const createDescriptionChange = (param: { text: string }): DescriptionsCommitChange => {
+  return { descriptions: [param.text] };
+};

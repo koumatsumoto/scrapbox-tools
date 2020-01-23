@@ -3,6 +3,7 @@ import { ApiClient } from './api-client/api-client';
 import {
   CommitChange,
   createDeletionChange,
+  createDescriptionChange,
   createInsertionChange,
   createTitleChange,
   createUpdationChange,
@@ -13,7 +14,8 @@ type InsertChangeParam = { type: 'insert'; position?: ID; text: string };
 type UpdateChangeParam = { type: 'update'; id: ID; text: string };
 type DeleteChangeParam = { type: 'delete'; id: ID };
 type TitleChangeParam = { type: 'title'; text: string };
-type ChangeParamExceptInsert = UpdateChangeParam | DeleteChangeParam | TitleChangeParam;
+type DescriptionChangeParam = { type: 'description'; text: string };
+type ChangeParamExceptInsert = UpdateChangeParam | DeleteChangeParam | TitleChangeParam | DescriptionChangeParam;
 type ChangeLinesParam = InsertChangeParam | ChangeParamExceptInsert;
 type InsertChangeWithUserId = InsertChangeParam & { userId: ID };
 type ChangeParam = InsertChangeWithUserId | ChangeParamExceptInsert;
@@ -25,8 +27,10 @@ export const createChange = (param: ChangeParam): CommitChange => {
     return createUpdationChange(param);
   } else if (param.type === 'delete') {
     return createDeletionChange(param);
-  } else {
+  } else if (param.type === 'title') {
     return createTitleChange(param);
+  } else {
+    return createDescriptionChange(param);
   }
 };
 
@@ -89,6 +93,28 @@ export class PrivateApi {
         { id: titleLine.id, text: param.text, type: 'update' },
         { text: param.text, type: 'title' },
       ],
+      projectId: project.id,
+      pageId: page.id,
+      commitId: page.commitId,
+    });
+  }
+
+  async updateDescription(param: { description: string }) {
+    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
+    const changes: ChangeLinesParam[] = [];
+
+    // page has not description line yet
+    if (page.lines.length === 1) {
+      changes.push({ text: param.description, type: 'insert' });
+      changes.push({ text: '', type: 'insert' });
+    } else {
+      changes.push({ type: 'update', id: page.lines[1].id, text: param.description });
+    }
+
+    changes.push({ type: 'description', text: param.description });
+
+    return this.changeLines({
+      changes,
       projectId: project.id,
       pageId: page.id,
       commitId: page.commitId,
