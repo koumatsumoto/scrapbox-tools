@@ -17,21 +17,28 @@ const main = async () => {
   };
 
   runOnScrapboxReady(async () => {
+    console.log('[deploy] runOnScrapboxReady');
+
+    // connect to websocket
     const api = await getPrivateApi();
-    const updateSourceCode = async (codeName: string, newSourceCode: string) => {
-      const lineId = findNextLineId(codeName);
+    console.log('[deploy] private api is ready');
 
-      // update existing
-      if (lineId) {
-        await api.updateSingleLineOfCurrentPage({ id: lineId, text: newSourceCode });
-      } else {
-        // TODO: implement creation
-        throw new Error('Creation is currently not supported, create manually code block before deploy');
-      }
+    // setup global context
+    window.__myScripts = {
+      updateSourceCode: async (codeName: string, newSourceCode: string) => {
+        const lineId = findNextLineId(codeName);
+
+        // update existing
+        if (lineId) {
+          console.log('[deploy] start to try update the line of source code');
+          await api.updateSingleLineOfCurrentPage({ id: lineId, text: newSourceCode });
+          console.log('[deploy] complete updation');
+        } else {
+          // TODO: implement creation
+          throw new Error('Creation is currently not supported, create manually code block before deploy');
+        }
+      },
     };
-
-    // enable to use global context
-    window.__myScripts = { updateSourceCode };
   });
 };
 

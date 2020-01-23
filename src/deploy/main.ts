@@ -13,8 +13,8 @@ import { loadUserCSS, loadUserScript } from './file-loaders';
 
   // deploy user script and user css
   await Promise.all([
-    deployByPrivateApi({ browser, url: config.userPageUrl, codeName: 'script.js', text: userPageText }),
-    deployByPrivateApi({ browser, url: config.settingsPageUrl, codeName: 'style.css', text: settingsPageText }),
+    deployByPrivateApi({ browser, url: config.userPageUrl, codeName: 'script.js', text: userPageText }).catch(console.error),
+    deployByPrivateApi({ browser, url: config.settingsPageUrl, codeName: 'style.css', text: settingsPageText }).catch(console.error),
   ]);
 
   await browser.close();

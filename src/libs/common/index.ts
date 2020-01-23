@@ -7,5 +7,5 @@ export * from './load-scripts';
 export * from './run-on-document-ready';
 export * from './register-element-management';
 export * from './rxjs';
-export * from './timers';
+export * from './time-operation';
 export * from './util';

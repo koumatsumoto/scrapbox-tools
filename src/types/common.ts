@@ -13,3 +13,6 @@ export type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> }
 
 // branded type
 export type Brand<K, T> = K & { __brand: T };
+export type Timestamp = Brand<number, 'Timestamp'>;
+export type ISOString = Brand<string, 'ISOString'>;
+export type LocaleString = Brand<string, 'LocaleString'>;

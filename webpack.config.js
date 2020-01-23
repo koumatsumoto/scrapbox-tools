@@ -7,7 +7,7 @@ module.exports = {
     // load in puppeteer page context
     'run-in-puppeteer-page': path.join(
       __dirname,
-      'src/deploy/browser-script/main.ts',
+      'src/deploy/browser-local-script/main.ts',
     ),
   },
   output: {

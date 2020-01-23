@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { getJSTString } from '../libs/common';
 
 // relative where deploy command executed
 const bundleJsFilePath = './dist/bundle.min.js';
@@ -16,7 +17,7 @@ const loadFile = (path: string) =>
     }),
   );
 
-const deployTime = new Date().toISOString();
+const deployTime = getJSTString();
 const versionString = `/* ${deployTime} */`;
 
 // first space is needed for scrapbox code block

@@ -1,8 +1,8 @@
-import '../../browser-script/global-type';
+import '../../browser-local-script/global-type';
 import * as puppeteer from 'puppeteer';
 
 export const updateScriptText = async (page: puppeteer.Page, codeName: string, text: string) => {
-  page.evaluate(
+  return page.evaluate(
     (n: string, t: string) => {
       return window
         .waitForMyScriptsReady()
