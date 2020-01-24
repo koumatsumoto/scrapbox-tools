@@ -1,7 +1,7 @@
 /**
  * scripts to enable private-api in browser context
  */
-import { waitUntil } from '../../libs/common';
+import { importRxJS, waitUntil } from '../../libs/common';
 import { getPrivateApi } from '../../libs/scrapbox/private-api';
 import { findNextLineId, runOnScrapboxReady } from '../../libs/scrapbox/public-api';
 import { MyScripts } from './global-type';
@@ -18,6 +18,9 @@ const main = async () => {
 
   runOnScrapboxReady(async () => {
     console.log('[deploy] runOnScrapboxReady');
+
+    // load RxJS from CDN
+    await importRxJS();
 
     // connect to websocket
     const api = await getPrivateApi();

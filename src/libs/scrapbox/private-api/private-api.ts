@@ -94,7 +94,7 @@ const preparePrivateApi = async () => {
 };
 
 let privateApiPreparation: Promise<PrivateApi> | undefined;
-export const getPrivateApi = async (option: { newInstance: boolean } = { newInstance: false }) => {
+export const getPrivateApi = (option: { newInstance: boolean } = { newInstance: false }) => {
   if (option.newInstance) {
     return preparePrivateApi();
   }
@@ -103,5 +103,5 @@ export const getPrivateApi = async (option: { newInstance: boolean } = { newInst
     privateApiPreparation = preparePrivateApi();
   }
 
-  return privateApiPreparation;
+  return privateApiPreparation as Promise<PrivateApi>;
 };

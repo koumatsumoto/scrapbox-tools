@@ -1,27 +1,34 @@
-import { waitUntil } from '../../../common';
+import { Subject } from 'rxjs';
+import { getRx } from '../../../common';
 import { ID } from '../../public-api';
 import { CommitChangeParam, createChanges } from './internal/commit-change-param';
 import { extractMessage } from './websocket-client-internal-functions';
-import { ConnectionOpenMessage, ReceivedMessage, SendMessage } from './websocket-client-types';
+import { CommitPayload, CommitResponse, ConnectionOpenMessage, SendMessage } from './websocket-client-types';
 
 const endpoint = 'wss://scrapbox.io/socket.io/?EIO=3&transport=websocket';
 const sendProtocol = '42';
 const receiveProtocol = '43';
-const websocketResponseTimeoutMs = 1000 * 30;
 
 export class WebsocketClient {
   private readonly socket: WebSocket;
   // need buffer if try to send until connection opened
   private sendBuffer: Function[] = [];
   private senderId = 0;
-  /**
-   * if map.get(key) === undefined, message sent and response unreceived
-   * if map.get(key) !== undefined, message sent and response received
-   */
-  private receivePool = new Map<string, ReceivedMessage | undefined>();
+  // pageId, lastCommitId
+  private readonly lastCommitId = new Map<string, string>();
+  readonly response$: Subject<{ senderId: string; data: CommitResponse }>;
+  readonly open$: Subject<Event>;
+  readonly close$: Subject<CloseEvent>;
+  readonly error$: Subject<Event>;
 
   constructor(private readonly userId: ID) {
+    const { Subject } = getRx();
     this.socket = new WebSocket(endpoint);
+    this.response$ = new Subject<{ senderId: string; data: CommitResponse }>();
+    this.open$ = new Subject<Event>();
+    this.close$ = new Subject<CloseEvent>();
+    this.error$ = new Subject<Event>();
+
     this.initialize();
   }
 
@@ -52,10 +59,10 @@ export class WebsocketClient {
     });
   }
 
-  private async send(payload: SendMessage): Promise<ReceivedMessage> {
+  private async send(payload: SendMessage): Promise<CommitResponse> {
     const body = JSON.stringify(['socket.io-request', payload]);
-    const senderId = `${this.senderId++}`;
-    const data = `${sendProtocol}${senderId}${body}`;
+    const sid = `${this.senderId++}`;
+    const data = `${sendProtocol}${sid}${body}`;
 
     if (this.socket.readyState !== WebSocket.OPEN) {
       this.sendBuffer.push(() => this.socket.send(data));
@@ -63,13 +70,20 @@ export class WebsocketClient {
       this.socket.send(data);
     }
 
-    this.receivePool.set(senderId, undefined);
-    await waitUntil(() => this.receivePool.get(senderId) !== undefined, 10, websocketResponseTimeoutMs);
+    const response = await this.response$.pipe(getRx().operators.first(({ senderId }) => senderId === sid)).toPromise();
+    const errorOne = response.data.find((obj) => obj.error !== undefined);
+    if (errorOne) {
+      throw new Error(errorOne.error!.message);
+    }
 
-    const result = this.receivePool.get(senderId) || null;
-    this.receivePool.delete(senderId);
+    // update lastCommitId
+    response.data.forEach((obj) => {
+      if (obj.data && obj.data.commitId) {
+        this.lastCommitId.set((payload as CommitPayload).data.pageId, obj.data.commitId);
+      }
+    });
 
-    return result as ReceivedMessage;
+    return response.data;
   }
 
   /**
@@ -78,6 +92,7 @@ export class WebsocketClient {
   private initialize() {
     this.socket.addEventListener('open', (event: Event) => {
       console.log('[websocket-client] connection opened ', event);
+      this.open$.next(event);
     });
 
     this.socket.addEventListener('message', (event: MessageEvent) => {
@@ -86,35 +101,36 @@ export class WebsocketClient {
       }
 
       const message = event.data;
-      const [header, body] = extractMessage(message);
-      console.log('[websocket-client] message', header, body);
+      const [header, data] = extractMessage(message);
 
       // message just after connection opened
       if (header === '0') {
-        this.handleOpen(body as ConnectionOpenMessage);
+        this.setPingAndConsumeBuffer(data as ConnectionOpenMessage);
       }
       // for send()
       if (header.startsWith(receiveProtocol)) {
         const senderId = header.slice(receiveProtocol.length);
-        this.receivePool.set(senderId, body);
+        this.response$.next({ senderId, data: data as CommitResponse });
       }
     });
 
     this.socket.addEventListener('close', (event: CloseEvent) => {
       // maybe closed by server
       console.error('[websocket-client] connection closed ', event);
+      this.close$.next(event);
     });
 
-    this.socket.addEventListener('error', (event: any) => {
+    this.socket.addEventListener('error', (event: Event) => {
       console.error('[websocket-client] connection errored ', event);
+      this.error$.next(event);
     });
   }
 
-  private handleOpen(message: ConnectionOpenMessage) {
+  private setPingAndConsumeBuffer(data: ConnectionOpenMessage) {
     // setup ping
     setInterval(() => {
       this.socket.send('2');
-    }, message.pingInterval);
+    }, data.pingInterval);
 
     // consume buffer
     this.sendBuffer.forEach((f) => f());

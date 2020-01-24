@@ -18,7 +18,11 @@ export type ConnectionOpenMessage = {
   pingTimeout: number;
 };
 export type ConnectionResultReceiveMessage = [{ data: { success: boolean; pageId: null; projectId: string } }];
-export type ReceivedMessage = ConnectionOpenMessage | ConnectionResultReceiveMessage | null;
+export type CommitResponse = {
+  data?: { commitId: string };
+  error?: { name: string; message: string };
+}[];
+export type ReceivedMessage = ConnectionOpenMessage | ConnectionResultReceiveMessage | CommitResponse | null;
 
 export type ProtocolAndPayload = ['0', ConnectionOpenMessage] | [Protocol, ReceivedMessage];
 
