@@ -1,4 +1,4 @@
-import { generateId, ID } from '../public-api';
+import { generateId, ID, isPage, onPageChange } from '../public-api';
 import { ApiClient } from './api-client/api-client';
 import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
 
@@ -10,36 +10,45 @@ export class PrivateApi {
   constructor(private readonly userId: ID, private readonly apiClient: ApiClient, private readonly websocketClient: WebsocketClient) {}
 
   async insertLine(param: InsertLineParam | InsertLineParam[]) {
-    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
     const array = Array.isArray(param) ? param : [param];
+    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
+    if (!page) {
+      throw new Error('Use in layout:page');
+    }
 
     return this.changeLines({
       changes: array.map((p) => ({ ...p, type: 'insert', id: generateId(this.userId) })),
-      projectId: project.id,
+      projectId: project!.id,
       pageId: page.id,
       commitId: page.commitId,
     });
   }
 
   async updateLine(param: UpdateLineParam | UpdateLineParam[]) {
-    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
     const array = Array.isArray(param) ? param : [param];
+    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
+    if (!page) {
+      throw new Error('Use in layout:page');
+    }
 
     return this.changeLines({
       changes: array.map((p) => ({ ...p, type: 'update' })),
-      projectId: project.id,
+      projectId: project!.id,
       pageId: page.id,
       commitId: page.commitId,
     });
   }
 
   async deleteLine(param: DeleteLineParam | DeleteLineParam[]) {
-    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
     const array = Array.isArray(param) ? param : [param];
+    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
+    if (!page) {
+      throw new Error('Use in layout:page');
+    }
 
     return this.changeLines({
       changes: array.map((p) => ({ ...p, type: 'delete' })),
-      projectId: project.id,
+      projectId: project!.id,
       pageId: page.id,
       commitId: page.commitId,
     });
@@ -47,6 +56,10 @@ export class PrivateApi {
 
   async updateTitleAndDescription(param: { title: string; description?: string } | { title?: string; description: string }) {
     const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
+    if (!page) {
+      throw new Error('Use in layout:page');
+    }
+
     const titleLine = page.lines[0];
     const changes: CommitChangeParam[] = [];
 
@@ -67,7 +80,7 @@ export class PrivateApi {
 
     return this.changeLines({
       changes,
-      projectId: project.id,
+      projectId: project!.id,
       pageId: page.id,
       commitId: page.commitId,
     });
@@ -87,10 +100,24 @@ export class PrivateApi {
 const preparePrivateApi = async () => {
   const apiClient = new ApiClient();
   const [user, project, page] = await Promise.all([apiClient.getMe(), apiClient.getCurrentProject(), apiClient.getCurrentPage()]);
-  const websocketClient = new WebsocketClient(user.id);
-  await websocketClient.joinRoom({ projectId: project.id, pageId: page.id });
+  const websocketClient = new WebsocketClient(user!.id);
 
-  return new PrivateApi(user.id, apiClient, websocketClient);
+  if (page) {
+    await websocketClient.setPage({ projectId: project!.id, pageId: page.id, lastCommitId: page.commitId });
+  }
+
+  // register page change handling
+  onPageChange(async (title) => {
+    // layout:list
+    if (title === null) {
+      websocketClient.setPage({ projectId: project!.id, pageId: null });
+    } else {
+      const page = await apiClient.getCurrentPage();
+      websocketClient.setPage({ projectId: project!.id, pageId: page!.id, lastCommitId: page!.commitId });
+    }
+  });
+
+  return new PrivateApi(user!.id, apiClient, websocketClient);
 };
 
 let privateApiPreparation: Promise<PrivateApi> | undefined;

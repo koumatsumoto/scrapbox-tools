@@ -14,11 +14,15 @@ export const getScrapboxPageType = (): ValueOf<typeof customPageType> => {
   const layout = window.scrapbox.Layout;
   const title = window.scrapbox.Page.title;
 
+  if (title === null) {
+    return customPageType.other;
+  }
+
   if (layout !== 'page') {
     return customPageType.other;
   }
 
-  // improve performance
+  // 2020/01/28
   if (title.length !== 10) {
     return customPageType.symbol;
   }

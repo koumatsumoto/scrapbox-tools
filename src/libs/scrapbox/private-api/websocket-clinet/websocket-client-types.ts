@@ -44,8 +44,8 @@ export type CommitPayload = {
 type JoinRoomPayload = {
   method: 'room:join';
   data: {
-    pageId: string;
     projectId: string;
+    pageId: string | null;
     projectUpdatesStream: false;
   };
 };

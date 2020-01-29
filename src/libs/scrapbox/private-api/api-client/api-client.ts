@@ -4,9 +4,14 @@ import { MeResponse, PageResponse, ProjectResponse } from './api-client-types';
 const baseURL = 'https://scrapbox.io/api';
 
 export class ApiClient {
-  async getCurrentPage(): Promise<PageResponse> {
+  async getCurrentPage(): Promise<PageResponse | null> {
+    const pageName = getCurrentPageName();
+    if (!pageName) {
+      return null;
+    }
+
     return this.request<PageResponse>(
-      `${baseURL}/pages/${encodeURIComponent(getCurrentProjectName())}/${encodeURIComponent(getCurrentPageName())}?followRename=true`,
+      `${baseURL}/pages/${encodeURIComponent(getCurrentProjectName())}/${encodeURIComponent(pageName)}?followRename=true`,
     );
   }
 

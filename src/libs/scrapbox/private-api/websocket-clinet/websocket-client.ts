@@ -15,7 +15,7 @@ export class WebsocketClient {
   private sendBuffer: Function[] = [];
   private senderId = 0;
   // pageId, lastCommitId
-  private readonly lastCommitId = new Map<string, string>();
+  private lastCommitId: string | null = null;
   readonly response$: Subject<{ senderId: string; data: CommitResponse }>;
   readonly open$: Subject<Event>;
   readonly close$: Subject<CloseEvent>;
@@ -48,7 +48,18 @@ export class WebsocketClient {
     });
   }
 
-  joinRoom(param: { projectId: string; pageId: string }) {
+  /**
+   * This WebsocketClient can handle only one page.
+   * Need reset on every url change event.
+   */
+  async setPage(
+    param: { projectId: string; pageId: null; lastCommitId?: string } | { projectId: string; pageId: string; lastCommitId: string },
+  ) {
+    await this.joinRoom(param);
+    this.lastCommitId = param.lastCommitId || null;
+  }
+
+  joinRoom(param: { projectId: string; pageId: string | null }) {
     return this.send({
       method: 'room:join',
       data: {
@@ -79,7 +90,7 @@ export class WebsocketClient {
     // update lastCommitId
     response.data.forEach((obj) => {
       if (obj.data && obj.data.commitId) {
-        this.lastCommitId.set((payload as CommitPayload).data.pageId, obj.data.commitId);
+        this.lastCommitId = obj.data.commitId;
       }
     });
 

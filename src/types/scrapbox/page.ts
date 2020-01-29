@@ -114,7 +114,8 @@ export type NonIndentedFormulaLine = NonTitleLine & { formulaLine: true };
 export type PageLine = TitleLine | NonTitleLine | NonIndentedFormulaLine;
 
 export type ScrapboxPage = {
-  title: TitleLine['text'];
+  // null if layout:list
+  title: TitleLine['text'] | null;
   // first item is title line
   lines: PageLine[];
 };
