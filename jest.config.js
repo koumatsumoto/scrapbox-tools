@@ -28,4 +28,5 @@ module.exports = {
   coverageReporters: ['lcov', 'text-summary'],
   verbose: true,
   preset: 'ts-jest',
+  restoreMocks: true,
 };
