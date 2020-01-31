@@ -1,4 +1,4 @@
-import { generateId, ID, isPage, onPageChange } from '../public-api';
+import { generateId, getCurrentPageName, ID, onPageChange } from '../public-api';
 import { ApiClient } from './api-client/api-client';
 import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
 
@@ -7,55 +7,57 @@ type UpdateLineParam = { id: ID; text: string };
 type DeleteLineParam = { id: ID };
 
 export class PrivateApi {
-  constructor(private readonly userId: ID, private readonly apiClient: ApiClient, private readonly websocketClient: WebsocketClient) {}
+  private currentPageTitle: string | null = null;
+  private currentPageId: string | null = null;
+  private currentPageCommitId: string | null = null;
+
+  constructor(
+    private readonly userId: ID,
+    private readonly projectId: string,
+    private readonly apiClient: ApiClient,
+    private readonly websocketClient: WebsocketClient,
+  ) {
+    this.registerPageChangeHandling();
+  }
 
   async insertLine(param: InsertLineParam | InsertLineParam[]) {
+    this.checkPage();
     const array = Array.isArray(param) ? param : [param];
-    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
-    if (!page) {
-      throw new Error('Use in layout:page');
-    }
 
     return this.changeLines({
       changes: array.map((p) => ({ ...p, type: 'insert', id: generateId(this.userId) })),
-      projectId: project!.id,
-      pageId: page.id,
-      commitId: page.commitId,
+      projectId: this.projectId,
+      pageId: this.currentPageId!,
+      commitId: this.currentPageCommitId!,
     });
   }
 
   async updateLine(param: UpdateLineParam | UpdateLineParam[]) {
+    this.checkPage();
     const array = Array.isArray(param) ? param : [param];
-    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
-    if (!page) {
-      throw new Error('Use in layout:page');
-    }
 
     return this.changeLines({
       changes: array.map((p) => ({ ...p, type: 'update' })),
-      projectId: project!.id,
-      pageId: page.id,
-      commitId: page.commitId,
+      projectId: this.projectId,
+      pageId: this.currentPageId!,
+      commitId: this.currentPageCommitId!,
     });
   }
 
   async deleteLine(param: DeleteLineParam | DeleteLineParam[]) {
+    this.checkPage();
     const array = Array.isArray(param) ? param : [param];
-    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
-    if (!page) {
-      throw new Error('Use in layout:page');
-    }
 
     return this.changeLines({
       changes: array.map((p) => ({ ...p, type: 'delete' })),
-      projectId: project!.id,
-      pageId: page.id,
-      commitId: page.commitId,
+      projectId: this.projectId,
+      pageId: this.currentPageId!,
+      commitId: this.currentPageCommitId!,
     });
   }
 
   async updateTitleAndDescription(param: { title: string; description?: string } | { title?: string; description: string }) {
-    const [project, page] = await Promise.all([this.apiClient.getCurrentProject(), this.apiClient.getCurrentPage()]);
+    const page = await this.apiClient.getCurrentPage();
     if (!page) {
       throw new Error('Use in layout:page');
     }
@@ -80,7 +82,7 @@ export class PrivateApi {
 
     return this.changeLines({
       changes,
-      projectId: project!.id,
+      projectId: this.projectId,
       pageId: page.id,
       commitId: page.commitId,
     });
@@ -95,29 +97,51 @@ export class PrivateApi {
       changes: param.changes,
     });
   }
+
+  private registerPageChangeHandling() {
+    const handle = async (title: string | null) => {
+      // layout:list
+      if (title === null) {
+        this.currentPageTitle = null;
+        this.currentPageId = null;
+      } else {
+        const page = await this.apiClient.getPage(title);
+        this.currentPageTitle = page.title;
+        this.currentPageId = page.id;
+        this.currentPageCommitId = page.commitId;
+      }
+
+      this.websocketClient.joinRoom({ projectId: this.projectId, pageId: this.currentPageId });
+    };
+
+    // initial
+    const title = getCurrentPageName();
+    if (title) {
+      handle(title);
+    }
+
+    // on change
+    onPageChange((t) => handle(t));
+  }
+
+  private checkPage() {
+    if (!this.currentPageId || !this.currentPageCommitId) {
+      throw new Error('page id or commit id is not set');
+    }
+
+    // when page information is overridden by multiple xhr
+    if (this.currentPageTitle && this.currentPageTitle !== getCurrentPageName()) {
+      throw new Error('invalid state');
+    }
+  }
 }
 
 const preparePrivateApi = async () => {
   const apiClient = new ApiClient();
-  const [user, project, page] = await Promise.all([apiClient.getMe(), apiClient.getCurrentProject(), apiClient.getCurrentPage()]);
+  const [user, project] = await Promise.all([apiClient.getMe(), apiClient.getCurrentProject()]);
   const websocketClient = new WebsocketClient(user!.id);
 
-  if (page) {
-    await websocketClient.setPage({ projectId: project!.id, pageId: page.id, lastCommitId: page.commitId });
-  }
-
-  // register page change handling
-  onPageChange(async (title) => {
-    // layout:list
-    if (title === null) {
-      websocketClient.setPage({ projectId: project!.id, pageId: null });
-    } else {
-      const page = await apiClient.getCurrentPage();
-      websocketClient.setPage({ projectId: project!.id, pageId: page!.id, lastCommitId: page!.commitId });
-    }
-  });
-
-  return new PrivateApi(user!.id, apiClient, websocketClient);
+  return new PrivateApi(user.id, project.id, apiClient, websocketClient);
 };
 
 let privateApiPreparation: Promise<PrivateApi> | undefined;

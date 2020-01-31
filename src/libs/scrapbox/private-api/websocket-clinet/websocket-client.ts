@@ -3,7 +3,7 @@ import { getRx } from '../../../common';
 import { ID } from '../../public-api';
 import { CommitChangeParam, createChanges } from './internal/commit-change-param';
 import { extractMessage } from './websocket-client-internal-functions';
-import { CommitPayload, CommitResponse, ConnectionOpenMessage, SendMessage } from './websocket-client-types';
+import { CommitResponse, ConnectionOpenMessage, SendMessage } from './websocket-client-types';
 
 const endpoint = 'wss://scrapbox.io/socket.io/?EIO=3&transport=websocket';
 const sendProtocol = '42';
@@ -46,17 +46,6 @@ export class WebsocketClient {
         freeze: true,
       },
     });
-  }
-
-  /**
-   * This WebsocketClient can handle only one page.
-   * Need reset on every url change event.
-   */
-  async setPage(
-    param: { projectId: string; pageId: null; lastCommitId?: string } | { projectId: string; pageId: string; lastCommitId: string },
-  ) {
-    await this.joinRoom(param);
-    this.lastCommitId = param.lastCommitId || null;
   }
 
   joinRoom(param: { projectId: string; pageId: string | null }) {
