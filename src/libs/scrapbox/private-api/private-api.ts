@@ -20,6 +20,16 @@ export class PrivateApi {
     this.registerPageChangeHandling();
   }
 
+  /**
+   * call after construction
+   */
+  async initizalize() {
+    const title = getCurrentPageName();
+    if (title) {
+      await this.handlePageChange(title);
+    }
+  }
+
   async insertLine(param: InsertLineParam | InsertLineParam[]) {
     this.checkPage();
     const array = Array.isArray(param) ? param : [param];
@@ -99,29 +109,23 @@ export class PrivateApi {
   }
 
   private registerPageChangeHandling() {
-    const handle = async (title: string | null) => {
-      // layout:list
-      if (title === null) {
-        this.currentPageTitle = null;
-        this.currentPageId = null;
-      } else {
-        const page = await this.apiClient.getPage(title);
-        this.currentPageTitle = page.title;
-        this.currentPageId = page.id;
-        this.currentPageCommitId = page.commitId;
-      }
+    // on change
+    onPageChange((t) => this.handlePageChange(t));
+  }
 
-      this.websocketClient.joinRoom({ projectId: this.projectId, pageId: this.currentPageId });
-    };
-
-    // initial
-    const title = getCurrentPageName();
-    if (title) {
-      handle(title);
+  private async handlePageChange(title: string | null) {
+    // layout:list
+    if (title === null) {
+      this.currentPageTitle = null;
+      this.currentPageId = null;
+    } else {
+      const page = await this.apiClient.getPage(title);
+      this.currentPageTitle = page.title;
+      this.currentPageId = page.id;
+      this.currentPageCommitId = page.commitId;
     }
 
-    // on change
-    onPageChange((t) => handle(t));
+    this.websocketClient.joinRoom({ projectId: this.projectId, pageId: this.currentPageId });
   }
 
   private checkPage() {
@@ -141,7 +145,10 @@ const preparePrivateApi = async () => {
   const [user, project] = await Promise.all([apiClient.getMe(), apiClient.getCurrentProject()]);
   const websocketClient = new WebsocketClient(user!.id);
 
-  return new PrivateApi(user.id, project.id, apiClient, websocketClient);
+  const api = new PrivateApi(user.id, project.id, apiClient, websocketClient);
+  await api.initizalize();
+
+  return api;
 };
 
 let privateApiPreparation: Promise<PrivateApi> | undefined;

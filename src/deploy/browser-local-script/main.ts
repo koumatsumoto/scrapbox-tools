@@ -29,16 +29,20 @@ const main = async () => {
     // setup global context
     window.__myScripts = {
       updateSourceCode: async (codeName: string, newSourceCode: string) => {
-        const lineId = findNextLineId(codeName);
+        try {
+          const lineId = findNextLineId(codeName);
 
-        // update existing
-        if (lineId) {
-          console.log('[deploy] start to try update the line of source code');
-          await api.updateLine({ id: lineId, text: newSourceCode });
-          console.log('[deploy] complete updation');
-        } else {
-          // TODO: implement creation
-          throw new Error('Creation is currently not supported, create manually code block before deploy');
+          // update existing
+          if (lineId) {
+            console.log('[deploy] start to try update the line of source code');
+            await api.updateLine({ id: lineId, text: newSourceCode });
+            console.log('[deploy] complete updation');
+          } else {
+            // TODO: implement creation
+            throw new Error('Creation is currently not supported, create manually code block before deploy');
+          }
+        } catch (e) {
+          console.error('[deploy] error in updation: ', e.message);
         }
       },
     };
