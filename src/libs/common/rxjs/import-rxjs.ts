@@ -32,8 +32,10 @@ type RxJS = {
     map: typeof operatorsType.map;
     pairwise: typeof operatorsType.pairwise;
     scan: typeof operatorsType.scan;
+    shareReplay: typeof operatorsType.shareReplay;
     skip: typeof operatorsType.skip;
     switchMap: typeof operatorsType.switchMap;
+    tap: typeof operatorsType.tap;
     withLatestFrom: typeof operatorsType.withLatestFrom;
   };
 };

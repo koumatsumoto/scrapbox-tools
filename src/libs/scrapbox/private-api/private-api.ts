@@ -1,6 +1,7 @@
 import { getRx } from '../../common/rxjs';
 import { generateId, getCurrentPageName, ID, onPageChange } from '../public-api';
 import { ApiClient } from './api-client/api-client';
+import { PageResponse } from './api-client/api-client-types';
 import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
 
 type InsertLineParam = { text: string; position?: ID };
@@ -8,17 +9,11 @@ type UpdateLineParam = { id: ID; text: string };
 type DeleteLineParam = { id: ID };
 
 export class PrivateApi {
-  private currentPageTitle: string | null = null;
-  private currentPageId: string | null = null;
-  private currentPageCommitId: string | null = null;
-  private pageData: {
-    id: string;
-    title: string;
-    commitId: string;
-  } | null = null;
   private readonly pageRequest$ = new (getRx().Subject)<string | null>();
   private readonly pageResponse$ = this.pageRequest$.pipe(
+    getRx().operators.distinctUntilChanged(),
     getRx().operators.switchMap((title) => (title === null ? getRx().of(null) : this.apiClient.getPage(title))),
+    getRx().operators.shareReplay(1),
   );
 
   constructor(
@@ -27,7 +22,13 @@ export class PrivateApi {
     private readonly apiClient: ApiClient,
     private readonly websocketClient: WebsocketClient,
   ) {
-    this.registerPageChangeHandling();
+    // register page change handling
+    this.pageResponse$.subscribe();
+    onPageChange((t) => this.pageRequest$.next(t));
+  }
+
+  getPageData(): Promise<PageResponse | null> {
+    return this.pageResponse$.pipe(getRx().operators.first()).toPromise();
   }
 
   /**
@@ -36,48 +37,62 @@ export class PrivateApi {
   async initialize() {
     const title = getCurrentPageName();
     this.pageRequest$.next(title);
+
+    // wait for initial page data fetching (handling is registered in constructor)
+    await this.getPageData();
   }
 
   async insertLine(param: InsertLineParam | InsertLineParam[]) {
-    this.checkPage();
+    const page = await this.getPageData();
+    if (page === null) {
+      throw new Error('Page is not found');
+    }
+
     const array = Array.isArray(param) ? param : [param];
 
     return this.changeLines({
       changes: array.map((p) => ({ ...p, type: 'insert', id: generateId(this.userId) })),
       projectId: this.projectId,
-      pageId: this.currentPageId!,
-      commitId: this.currentPageCommitId!,
+      pageId: page.id,
+      commitId: page.commitId,
     });
   }
 
   async updateLine(param: UpdateLineParam | UpdateLineParam[]) {
-    this.checkPage();
+    const page = await this.getPageData();
+    if (page === null) {
+      throw new Error('Page is not found');
+    }
+
     const array = Array.isArray(param) ? param : [param];
 
     return this.changeLines({
       changes: array.map((p) => ({ ...p, type: 'update' })),
       projectId: this.projectId,
-      pageId: this.currentPageId!,
-      commitId: this.currentPageCommitId!,
+      pageId: page.id,
+      commitId: page.commitId,
     });
   }
 
   async deleteLine(param: DeleteLineParam | DeleteLineParam[]) {
-    this.checkPage();
+    const page = await this.getPageData();
+    if (page === null) {
+      throw new Error('Page is not found');
+    }
     const array = Array.isArray(param) ? param : [param];
 
     return this.changeLines({
       changes: array.map((p) => ({ ...p, type: 'delete' })),
       projectId: this.projectId,
-      pageId: this.currentPageId!,
-      commitId: this.currentPageCommitId!,
+      pageId: page.id,
+      commitId: page.commitId,
     });
   }
 
   async updateTitleAndDescription(param: { title: string; description?: string } | { title?: string; description: string }) {
-    const page = await this.apiClient.getCurrentPage();
-    if (!page) {
-      throw new Error('Use in layout:page');
+    const page = await this.getPageData();
+    if (page === null) {
+      throw new Error('Page is not found');
     }
 
     const titleLine = page.lines[0];
@@ -115,40 +130,10 @@ export class PrivateApi {
       changes: param.changes,
     });
   }
-
-  private registerPageChangeHandling() {
-    onPageChange((t) => this.pageRequest$.next(t));
-    this.pageResponse$.subscribe((pageOrNull) => (this.pageData = pageOrNull));
-  }
-
-  private async handlePageChange(title: string | null) {
-    // layout:list
-    if (title === null) {
-      this.currentPageTitle = null;
-      this.currentPageId = null;
-    } else {
-      const page = await this.apiClient.getPage(title);
-      this.currentPageTitle = page.title;
-      this.currentPageId = page.id;
-      this.currentPageCommitId = page.commitId;
-    }
-
-    this.websocketClient.joinRoom({ projectId: this.projectId, pageId: this.currentPageId });
-  }
-
-  private checkPage() {
-    if (!this.currentPageId || !this.currentPageCommitId) {
-      throw new Error('page id or commit id is not set');
-    }
-
-    // when page information is overridden by multiple xhr
-    if (this.currentPageTitle && this.currentPageTitle !== getCurrentPageName()) {
-      throw new Error('invalid state');
-    }
-  }
 }
 
 const preparePrivateApi = async () => {
+  console.log('[private-api] start preparation');
   const apiClient = new ApiClient();
   const [user, project] = await Promise.all([apiClient.getMe(), apiClient.getCurrentProject()]);
   const websocketClient = new WebsocketClient(user!.id);
