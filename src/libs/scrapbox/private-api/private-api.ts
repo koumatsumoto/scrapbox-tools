@@ -1,3 +1,4 @@
+import { getRx } from '../../common/rxjs';
 import { generateId, getCurrentPageName, ID, onPageChange } from '../public-api';
 import { ApiClient } from './api-client/api-client';
 import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
@@ -10,6 +11,15 @@ export class PrivateApi {
   private currentPageTitle: string | null = null;
   private currentPageId: string | null = null;
   private currentPageCommitId: string | null = null;
+  private pageData: {
+    id: string;
+    title: string;
+    commitId: string;
+  } | null = null;
+  private readonly pageRequest$ = new (getRx().Subject)<string | null>();
+  private readonly pageResponse$ = this.pageRequest$.pipe(
+    getRx().operators.switchMap((title) => (title === null ? getRx().of(null) : this.apiClient.getPage(title))),
+  );
 
   constructor(
     private readonly userId: ID,
@@ -23,11 +33,9 @@ export class PrivateApi {
   /**
    * call after construction
    */
-  async initizalize() {
+  async initialize() {
     const title = getCurrentPageName();
-    if (title) {
-      await this.handlePageChange(title);
-    }
+    this.pageRequest$.next(title);
   }
 
   async insertLine(param: InsertLineParam | InsertLineParam[]) {
@@ -109,8 +117,8 @@ export class PrivateApi {
   }
 
   private registerPageChangeHandling() {
-    // on change
-    onPageChange((t) => this.handlePageChange(t));
+    onPageChange((t) => this.pageRequest$.next(t));
+    this.pageResponse$.subscribe((pageOrNull) => (this.pageData = pageOrNull));
   }
 
   private async handlePageChange(title: string | null) {
@@ -146,7 +154,7 @@ const preparePrivateApi = async () => {
   const websocketClient = new WebsocketClient(user!.id);
 
   const api = new PrivateApi(user.id, project.id, apiClient, websocketClient);
-  await api.initizalize();
+  await api.initialize();
 
   return api;
 };

@@ -22,6 +22,7 @@ type RxJS = {
   Subject: typeof RxType.Subject;
   animationFrameScheduler: typeof RxType.animationFrameScheduler;
   combineLatest: typeof RxType.combineLatest;
+  of: typeof RxType.of;
   operators: {
     bufferCount: typeof operatorsType.bufferCount;
     debounceTime: typeof operatorsType.debounceTime;
@@ -32,6 +33,7 @@ type RxJS = {
     pairwise: typeof operatorsType.pairwise;
     scan: typeof operatorsType.scan;
     skip: typeof operatorsType.skip;
+    switchMap: typeof operatorsType.switchMap;
     withLatestFrom: typeof operatorsType.withLatestFrom;
   };
 };
