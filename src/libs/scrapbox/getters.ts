@@ -2,6 +2,8 @@ import { ValueOf } from '../../types';
 import { scrapboxCustomFormat } from './datetime-operations';
 
 export const customPageType = {
+  // new page
+  empty: 'empty',
   // page whose title is date, e.g. '2019/12/14'
   diary: 'diary',
   // page whose title is not date
@@ -15,14 +17,14 @@ export const getScrapboxPageType = (): ValueOf<typeof customPageType> => {
   const title = window.scrapbox.Page.title;
 
   if (title === null) {
-    return customPageType.other;
+    return customPageType.empty;
   }
 
   if (layout !== 'page') {
     return customPageType.other;
   }
 
-  // 2020/01/28
+  // e.g. "2020/01/28"
   if (title.length !== 10) {
     return customPageType.symbol;
   }
