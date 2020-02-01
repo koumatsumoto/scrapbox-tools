@@ -1,10 +1,5 @@
 import * as fs from 'fs';
-import { getJSTString } from '../libs/common';
-
-// relative where deploy command executed
-const bundleJsFilePath = './dist/bundle.min.js';
-const cssFilePath = './dist/style.min.css';
-const browserScriptPath = './dist/run-in-puppeteer-page.min.js';
+import { getJSTString } from '../../../libs/common';
 
 const loadFile = (path: string) =>
   new Promise<string>((resolve, reject) =>
@@ -19,9 +14,9 @@ const loadFile = (path: string) =>
 
 const deployTime = getJSTString();
 const versionString = `/* ${deployTime} */`;
+const browserScriptPath = './dist/run-in-puppeteer-page.min.js';
 
 // first space is needed for scrapbox code block
-export const loadUserScript = async () => ` ${versionString}${await loadFile(bundleJsFilePath)}`;
-export const loadUserCSS = async () => ` ${versionString}${await loadFile(cssFilePath)}`;
+export const loadSourceCode = async (file: string) => ` ${versionString}${await loadFile(file)}`;
 // script to be evaluated in browser
 export const loadBrowserScript = () => loadFile(browserScriptPath);

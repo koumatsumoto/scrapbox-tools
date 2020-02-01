@@ -32,7 +32,7 @@ export const getConfiguredPage = async (context: puppeteer.BrowserContext) => {
     deviceScaleFactor: 1,
   });
   await page.setUserAgent(config.browserUserAgent);
-  await page.setCookie(config.cookieToAuth);
+  await page.setCookie(config.authCookie);
   // see: https://github.com/puppeteer/puppeteer#debugging-tips
   page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
 
@@ -67,3 +67,6 @@ export const debugClipboard = (page: puppeteer.Page) =>
   page.evaluate(() => {
     navigator.clipboard.readText().then((v) => alert(v));
   });
+
+// value of auth cookie
+export const isValidToken = (val: unknown): val is string => typeof val === 'string' && 0 < val.length;

@@ -1,6 +1,6 @@
 import '../../browser-local-script/global-type';
 import * as puppeteer from 'puppeteer';
-import { loadBrowserScript } from '../../file-loaders';
+import { loadBrowserScript } from './file-loaders';
 
 export const loadBrowserJavaScript = async (page: puppeteer.Page) => {
   const contents = await loadBrowserScript();

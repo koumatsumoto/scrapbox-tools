@@ -3,19 +3,16 @@ require('dotenv').config();
 
 import * as puppeteer from 'puppeteer';
 import { config } from './config';
-import { deployByPrivateApi } from './deploy-by-private-api/deploy-by-private-api';
-import { loadUserCSS, loadUserScript } from './file-loaders';
+import { deployCssAndScriptForProject } from './internal';
 
 (async () => {
-  const userPageText = await loadUserScript();
-  const settingsPageText = await loadUserCSS();
   const browser = await puppeteer.launch({ headless: !config.local });
 
-  // deploy user script and user css
-  await Promise.all([
-    deployByPrivateApi({ browser, url: config.userPageUrl, codeName: 'script.js', text: userPageText }).catch(console.error),
-    deployByPrivateApi({ browser, url: config.settingsPageUrl, codeName: 'style.css', text: settingsPageText }).catch(console.error),
-  ]);
+  // deploy user script and user css for each project.
+  // need process one by one to avoid auth error.
+  for (const project of config.projects) {
+    await deployCssAndScriptForProject(browser, project);
+  }
 
   await browser.close();
 })()

@@ -1,33 +1,21 @@
-type AllowedEnv = {
-  // whether script run on local environment
+import { isValidToken } from './util';
+
+type Env = {
+  // whether script run on local environment (for development and debug)
   LOCAL?: 'yes';
-  // scrapbox project name
-  PROJECT?: string;
-  // scrapbox user name
-  USER?: string;
-  // value of cookie authentication
+  // value of auth cookie (scrapbox.id connect.sid)
   TOKEN?: string;
 };
 
-const isValid = (val: unknown): val is string => typeof val === 'string' && 0 < val.length;
-
 export const getEnv = () => {
-  const env = process.env as AllowedEnv;
+  const env = process.env as Env;
 
-  if (!isValid(env.PROJECT)) {
-    throw new Error('process.env.PROJECT is invalid');
-  }
-  if (!isValid(env.USER)) {
-    throw new Error('process.env.USER is invalid');
-  }
-  if (!isValid(env.TOKEN)) {
+  if (!isValidToken(env.TOKEN)) {
     throw new Error('process.env.TOKEN is invalid');
   }
 
   return {
     local: env.LOCAL === 'yes',
-    project: env.PROJECT,
-    user: env.USER,
     token: env.TOKEN,
   } as const;
 };
