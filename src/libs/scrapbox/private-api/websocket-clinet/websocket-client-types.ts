@@ -72,8 +72,43 @@ export type JoinRoomResponse = JoinRoomSuccessResponse | JoinRoomErrorResponse;
 
 export type WebsocketSendResponse = CommitResponse | JoinRoomResponse;
 
-// ping, onopen
-export type WebsocketResponse = ConnectionOpenResponse | WebsocketSendResponse | null;
+export type ExternalCursorResponse = [
+  'cursor',
+  {
+    user: {
+      id: string;
+      displayName: string;
+    };
+    pageId: string;
+    position: {
+      line: number;
+      char: number;
+    };
+    visible: true;
+    socketId: string;
+  },
+];
+
+export type ExternalCommitData = {
+  kind: 'page';
+  parentId: string;
+  changes: CommitChange[];
+  cursor: null;
+  pageId: string;
+  userId: ID;
+  projectId: string;
+  freeze: true;
+  // new commit id
+  id: string;
+};
+
+export type ExternalCommitResponse = ['commit', ExternalCommitData];
+
+// response for protocol '42'
+export type ExternalResponse = ExternalCursorResponse | ExternalCommitResponse;
+
+// include response by ping, onopen, updation by other user
+export type WebsocketResponse = ConnectionOpenResponse | WebsocketSendResponse | ExternalCursorResponse | ExternalCommitResponse | null;
 
 export type ProtocolAndPayload = ['0', ConnectionOpenResponse] | [Protocol, WebsocketResponse];
 

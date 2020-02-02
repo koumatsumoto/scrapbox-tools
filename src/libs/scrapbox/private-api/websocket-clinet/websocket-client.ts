@@ -1,7 +1,7 @@
-import { Subject } from 'rxjs';
 import { getRx } from '../../../common';
 import { ID } from '../../public-api';
 import { CommitChangeParam, createChanges } from './internal/commit-change-param';
+import { tryRetrieveCommitData } from './internal/retreive-commit-id';
 import { validateResponse } from './internal/validate-response';
 import { extractMessage } from './websocket-client-internal-functions';
 import {
@@ -9,6 +9,8 @@ import {
   CommitResponse,
   CommitSuccessResponse,
   ConnectionOpenResponse,
+  ExternalCommitData,
+  ExternalResponse,
   JoinRoomPayload,
   JoinRoomSuccessResponse,
   WebsocketPayload,
@@ -26,19 +28,17 @@ export class WebsocketClient {
   // need buffer if try to send until connection opened
   private sendBuffer: Function[] = [];
   private senderId = 0;
-  readonly response$: Subject<ResponseEmission>;
-  readonly open$: Subject<Event>;
-  readonly close$: Subject<CloseEvent>;
-  readonly error$: Subject<Event>;
+  private readonly _externalCommit$ = new (getRx().Subject)<ExternalCommitData | null>();
+  readonly response$ = new (getRx().Subject)<ResponseEmission>();
+  readonly open$ = new (getRx().Subject)<Event>();
+  readonly close$ = new (getRx().Subject)<CloseEvent>();
+  readonly error$ = new (getRx().Subject)<Event>();
+  readonly commitIdUpdate$ = this._externalCommit$
+    .asObservable()
+    .pipe(getRx().operators.filter(((v) => v !== null) as (v: ExternalCommitData | null) => v is ExternalCommitData));
 
   constructor(private readonly userId: ID) {
-    const { Subject } = getRx();
     this.socket = new WebSocket(endpoint);
-    this.response$ = new Subject<ResponseEmission>();
-    this.open$ = new Subject<Event>();
-    this.close$ = new Subject<CloseEvent>();
-    this.error$ = new Subject<Event>();
-
     this.initialize();
   }
 
@@ -115,7 +115,11 @@ export class WebsocketClient {
       if (header === '0') {
         this.setPingAndConsumeBuffer(data as ConnectionOpenResponse);
       }
-      // for send()
+      // updation by other user
+      if (header === '42') {
+        this._externalCommit$.next(tryRetrieveCommitData(data as ExternalResponse));
+      }
+      // for own send() result
       if (header.startsWith(receiveProtocol)) {
         const senderId = header.slice(receiveProtocol.length);
         this.response$.next({ senderId, data: data as CommitResponse });

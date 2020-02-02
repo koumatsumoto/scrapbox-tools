@@ -33,6 +33,12 @@ export class PrivateApi {
       this.pageData = page;
       this.websocketClient.joinRoom({ projectId: this.projectId, pageId: page === null ? null : page.id });
     });
+    // handle update by other user
+    this.websocketClient.commitIdUpdate$.subscribe((data) => {
+      if (this.pageData && this.pageData.id === data.pageId) {
+        this.pageData.commitId = data.id;
+      }
+    });
     onPageChange((t) => this.pageRequest$.next(t));
   }
 
@@ -42,11 +48,13 @@ export class PrivateApi {
   async initialize() {
     const title = getCurrentPageName();
     this.pageRequest$.next(title);
+    // wait for initial page data fetching (handling is registered in constructor)
+    await this.pageResponse$.pipe(getRx().operators.first()).toPromise();
   }
 
   async insertLine(param: InsertLineParam | InsertLineParam[]) {
     if (!this.pageData) {
-      throw new Error('Page is not found');
+      throw new Error('Page data is not set');
     }
 
     const array = Array.isArray(param) ? param : [param];
@@ -61,7 +69,7 @@ export class PrivateApi {
 
   async updateLine(param: UpdateLineParam | UpdateLineParam[]) {
     if (!this.pageData) {
-      throw new Error('Page is not found');
+      throw new Error('Page data is not set');
     }
 
     const array = Array.isArray(param) ? param : [param];
@@ -76,7 +84,7 @@ export class PrivateApi {
 
   async deleteLine(param: DeleteLineParam | DeleteLineParam[]) {
     if (!this.pageData) {
-      throw new Error('Page is not found');
+      throw new Error('Page data is not set');
     }
     const array = Array.isArray(param) ? param : [param];
 
@@ -90,7 +98,7 @@ export class PrivateApi {
 
   async updateTitleAndDescription(param: { title: string; description?: string } | { title?: string; description: string }) {
     if (!this.pageData) {
-      throw new Error('Page is not found');
+      throw new Error('Page data is not set');
     }
 
     const titleLine = this.pageData.lines[0];
