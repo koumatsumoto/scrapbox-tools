@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { version } from '../../../../version';
 import { getJSTString } from '../../../libs/common';
 
 const loadFile = (path: string) =>
@@ -13,7 +14,7 @@ const loadFile = (path: string) =>
   );
 
 const deployTime = getJSTString();
-const versionString = `/* ${deployTime} */`;
+const versionString = `/* ${version.slice(0, 7)} ${deployTime} */`;
 const browserScriptPath = './dist/run-in-puppeteer-page.min.js';
 
 // first space is needed for scrapbox code block

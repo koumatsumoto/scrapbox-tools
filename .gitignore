@@ -66,3 +66,4 @@ typings/
 # build result
 /dist
 /src/*.js
+/version.ts
