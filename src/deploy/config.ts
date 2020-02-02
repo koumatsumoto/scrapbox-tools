@@ -36,13 +36,13 @@ export const config = {
       name: 'km-public',
       user: 'kou',
       userCSS: getDistDirPath('km-public.min.css'),
-      userScript: getDistDirPath('bundle.min.js'),
+      userScript: null,
     },
     {
       name: 'km-private',
       user: 'kou',
       userCSS: getDistDirPath('km-public.min.css'),
-      userScript: getDistDirPath('bundle.min.js'),
+      userScript: null,
     },
     {
       name: 'km-study',

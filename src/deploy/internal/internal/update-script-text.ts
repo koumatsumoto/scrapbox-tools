@@ -7,7 +7,11 @@ export const updateScriptText = async (page: puppeteer.Page, codeName: string, t
       return window
         .waitForMyScriptsReady()
         .then((scripts) => scripts.updateSourceCode(n, t))
-        .catch(console.error);
+        .catch((e) => {
+          console.error('[deploy]', e);
+          // raise to puppeteer
+          throw e;
+        });
     },
     codeName,
     text,

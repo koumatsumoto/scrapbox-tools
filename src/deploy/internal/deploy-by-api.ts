@@ -22,18 +22,28 @@ const deployByPrivateApi = async (param: { browser: puppeteer.Browser; url: stri
 };
 
 export const deployCssAndScriptForProject = async (browser: puppeteer.Browser, settings: Config['projects'][number]) => {
-  return Promise.all([
-    deployByPrivateApi({
-      browser,
-      url: getUserPageUrl(settings),
-      codeTitle: userScriptCodeTitle,
-      sourceCode: await loadSourceCode(settings.userScript),
-    }),
-    deployByPrivateApi({
-      browser,
-      url: getSettingsPageUrl(settings),
-      codeTitle: userCssCodeTitle,
-      sourceCode: await loadSourceCode(settings.userCSS),
-    }),
-  ]);
+  const updating: Promise<any>[] = [];
+
+  if (settings.userScript) {
+    updating.push(
+      deployByPrivateApi({
+        browser,
+        url: getUserPageUrl(settings),
+        codeTitle: userScriptCodeTitle,
+        sourceCode: await loadSourceCode(settings.userScript),
+      }),
+    );
+  }
+  if (settings.userCSS) {
+    updating.push(
+      deployByPrivateApi({
+        browser,
+        url: getSettingsPageUrl(settings),
+        codeTitle: userCssCodeTitle,
+        sourceCode: await loadSourceCode(settings.userCSS),
+      }),
+    );
+  }
+
+  return Promise.all(updating);
 };
