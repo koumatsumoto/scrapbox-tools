@@ -7,9 +7,10 @@
   "license": "MIT",
   "scripts": {
     "build:dev": "concurrently 'yarn :build:dev:scss' 'yarn :build:dev:ts'",
-    "build:prod": "concurrently 'yarn build:prod:scss' 'yarn build:prod:ts'",
-    "build:prod:scss": "node-sass src/styles/main.scss dist/style.css && uglifycss dist/style.css --output dist/style.min.css",
+    "build:km-study:prod:scss": "node-sass src/styles/km-study.scss dist/km-study.css && uglifycss dist/km-study.css --output dist/km-study.min.css",
     "build:km-public:prod:scss": "node-sass src/styles/km-public.scss dist/km-public.css && uglifycss dist/km-public.css --output dist/km-public.min.css",
+    "build:prod": "concurrently 'yarn build:prod:scss' 'yarn build:prod:ts'",
+    "build:prod:scss": "concurrently 'yarn build:km-study:prod:scss' 'yarn build:km-public:prod:scss'",
     "build:prod:ts": "webpack --config webpack.config.prod.js",
     "check:build:tsc": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.json --noEmit",
     "check:diff": "git diff --exit-code --name-only .",
@@ -26,7 +27,7 @@
     "start:dev": "yarn build:dev && concurrently 'yarn :build:dev:scss:watch' 'yarn :build:dev:ts:watch' 'browser-sync start --config bs-config.js'",
     "test:unit": "yarn jest -c jest.config.js",
     "ts-node": "node --max-old-space-size=8000 node_modules/.bin/ts-node --project tsconfig.json",
-    ":build:dev:scss": "node-sass src/styles/main.scss dist/style.css",
+    ":build:dev:scss": "node-sass src/styles/km-study.scss dist/style.css",
     ":build:dev:scss:watch": "yarn :build:dev:scss && yarn :build:dev:scss -w",
     ":build:dev:ts": "webpack --config webpack.config.dev.js",
     ":build:dev:ts:watch": "yarn :build:dev:ts -w"
