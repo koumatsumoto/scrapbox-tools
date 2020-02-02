@@ -61,6 +61,12 @@ body:not(#{map_get($custom-css-class-names, 'apply-login-css-class')}) {
   border-radius: 2px !important;
 }
 
+// don't display related list in public project
+// public project is not used as wiki
+.related-page-list {
+  display: none !important;
+}
+
 @media (max-width: 767px) {
   // page container
   .col-page {
