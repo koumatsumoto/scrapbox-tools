@@ -11,20 +11,71 @@ import { CommitChange } from './internal/commit-change';
  */
 export type Protocol = '0' | '2' | '3' | '40' | '42' | string;
 
-export type ConnectionOpenMessage = {
+export type ConnectionOpenResponse = {
   sid: string;
   upgrades: [];
   pingInterval: number;
   pingTimeout: number;
 };
-export type ConnectionResultReceiveMessage = [{ data: { success: boolean; pageId: null; projectId: string } }];
-export type CommitResponse = {
-  data?: { commitId: string };
-  error?: { name: string; message: string };
-}[];
-export type ReceivedMessage = ConnectionOpenMessage | ConnectionResultReceiveMessage | CommitResponse | null;
 
-export type ProtocolAndPayload = ['0', ConnectionOpenMessage] | [Protocol, ReceivedMessage];
+export type CommitSuccessResponse = [
+  {
+    data: { commitId: string };
+    error: undefined;
+  },
+];
+export type CommitErrorResponse = [
+  {
+    data: undefined;
+    error: {
+      name: string;
+      message: string;
+      // for type checking
+      errors: undefined;
+    };
+  },
+];
+
+export type CommitResponse = CommitSuccessResponse | CommitErrorResponse;
+
+export type JoinRoomSuccessResponse = [
+  {
+    data: {
+      success: true;
+      pageId: string;
+      projectId: string;
+    };
+    error: undefined;
+  },
+];
+
+export type JoinRoomErrorResponse = [
+  {
+    data: undefined;
+    error: {
+      errors: [
+        {
+          message: string;
+          name: string;
+          stringValue: string;
+          kind: 'ObjectId';
+          value: string;
+          path: '_id';
+          stack: string;
+        },
+      ];
+    };
+  },
+];
+
+export type JoinRoomResponse = JoinRoomSuccessResponse | JoinRoomErrorResponse;
+
+export type WebsocketSendResponse = CommitResponse | JoinRoomResponse;
+
+// ping, onopen
+export type WebsocketResponse = ConnectionOpenResponse | WebsocketSendResponse | null;
+
+export type ProtocolAndPayload = ['0', ConnectionOpenResponse] | [Protocol, WebsocketResponse];
 
 export type CommitPayload = {
   method: 'commit';
@@ -41,7 +92,7 @@ export type CommitPayload = {
   };
 };
 
-type JoinRoomPayload = {
+export type JoinRoomPayload = {
   method: 'room:join';
   data: {
     projectId: string;
@@ -50,4 +101,4 @@ type JoinRoomPayload = {
   };
 };
 
-export type SendMessage = CommitPayload | JoinRoomPayload;
+export type WebsocketPayload = CommitPayload | JoinRoomPayload;

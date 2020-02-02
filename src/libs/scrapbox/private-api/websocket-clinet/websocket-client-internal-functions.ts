@@ -1,4 +1,4 @@
-import { Protocol, ProtocolAndPayload, ReceivedMessage } from './websocket-client-types';
+import { Protocol, ProtocolAndPayload, WebsocketResponse } from './websocket-client-types';
 
 // 430[{...}}] => 430, [{}]
 export const extractMessage = (message: string): ProtocolAndPayload => {
@@ -11,7 +11,7 @@ export const extractMessage = (message: string): ProtocolAndPayload => {
       header += head;
       message = message.substr(1);
     } else {
-      return [header as Protocol, JSON.parse(message) as ReceivedMessage];
+      return [header as Protocol, JSON.parse(message) as WebsocketResponse];
     }
   }
 

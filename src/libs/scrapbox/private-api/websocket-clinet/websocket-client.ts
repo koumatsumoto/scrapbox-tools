@@ -2,21 +2,31 @@ import { Subject } from 'rxjs';
 import { getRx } from '../../../common';
 import { ID } from '../../public-api';
 import { CommitChangeParam, createChanges } from './internal/commit-change-param';
+import { validateResponse } from './internal/validate-response';
 import { extractMessage } from './websocket-client-internal-functions';
-import { CommitResponse, ConnectionOpenMessage, SendMessage } from './websocket-client-types';
+import {
+  CommitPayload,
+  CommitResponse,
+  CommitSuccessResponse,
+  ConnectionOpenResponse,
+  JoinRoomPayload,
+  JoinRoomSuccessResponse,
+  WebsocketPayload,
+  WebsocketSendResponse,
+} from './websocket-client-types';
 
 const endpoint = 'wss://scrapbox.io/socket.io/?EIO=3&transport=websocket';
 const sendProtocol = '42';
 const receiveProtocol = '43';
+// own impl
+type ResponseEmission = { senderId: string; data: WebsocketSendResponse };
 
 export class WebsocketClient {
   private readonly socket: WebSocket;
   // need buffer if try to send until connection opened
   private sendBuffer: Function[] = [];
   private senderId = 0;
-  // pageId, lastCommitId
-  private lastCommitId: string | null = null;
-  readonly response$: Subject<{ senderId: string; data: CommitResponse }>;
+  readonly response$: Subject<ResponseEmission>;
   readonly open$: Subject<Event>;
   readonly close$: Subject<CloseEvent>;
   readonly error$: Subject<Event>;
@@ -24,7 +34,7 @@ export class WebsocketClient {
   constructor(private readonly userId: ID) {
     const { Subject } = getRx();
     this.socket = new WebSocket(endpoint);
-    this.response$ = new Subject<{ senderId: string; data: CommitResponse }>();
+    this.response$ = new Subject<ResponseEmission>();
     this.open$ = new Subject<Event>();
     this.close$ = new Subject<CloseEvent>();
     this.error$ = new Subject<Event>();
@@ -59,7 +69,9 @@ export class WebsocketClient {
     });
   }
 
-  private async send(payload: SendMessage): Promise<CommitResponse> {
+  private async send(payload: CommitPayload): Promise<CommitSuccessResponse>;
+  private async send(payload: JoinRoomPayload): Promise<JoinRoomSuccessResponse>;
+  private async send(payload: WebsocketPayload): Promise<any> {
     const body = JSON.stringify(['socket.io-request', payload]);
     const sid = `${this.senderId++}`;
     const data = `${sendProtocol}${sid}${body}`;
@@ -70,20 +82,16 @@ export class WebsocketClient {
       this.socket.send(data);
     }
 
-    const response = await this.response$.pipe(getRx().operators.first(({ senderId }) => senderId === sid)).toPromise();
-    const errorOne = response.data.find((obj) => obj.error !== undefined);
-    if (errorOne) {
-      throw new Error(errorOne.error!.message);
-    }
+    const response = await this.response$
+      .pipe(
+        getRx().operators.first(({ senderId }) => senderId === sid),
+        getRx().operators.map((res) => res.data),
+      )
+      .toPromise<WebsocketSendResponse>();
+    // throw if error
+    validateResponse(response);
 
-    // update lastCommitId
-    response.data.forEach((obj) => {
-      if (obj.data && obj.data.commitId) {
-        this.lastCommitId = obj.data.commitId;
-      }
-    });
-
-    return response.data;
+    return response;
   }
 
   /**
@@ -105,7 +113,7 @@ export class WebsocketClient {
 
       // message just after connection opened
       if (header === '0') {
-        this.setPingAndConsumeBuffer(data as ConnectionOpenMessage);
+        this.setPingAndConsumeBuffer(data as ConnectionOpenResponse);
       }
       // for send()
       if (header.startsWith(receiveProtocol)) {
@@ -126,7 +134,7 @@ export class WebsocketClient {
     });
   }
 
-  private setPingAndConsumeBuffer(data: ConnectionOpenMessage) {
+  private setPingAndConsumeBuffer(data: ConnectionOpenResponse) {
     // setup ping
     setInterval(() => {
       this.socket.send('2');
