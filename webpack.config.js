@@ -3,7 +3,8 @@ const path = require('path');
 module.exports = {
   mode: 'development',
   entry: {
-    bundle: path.join(__dirname, 'src/index.ts'),
+    'km-study': path.join(__dirname, 'src/km-study.ts'),
+    'km-public': path.join(__dirname, 'src/km-public.ts'),
     // load in puppeteer page context
     'run-in-puppeteer-page': path.join(
       __dirname,

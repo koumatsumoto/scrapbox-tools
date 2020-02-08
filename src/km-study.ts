@@ -6,7 +6,7 @@ import { importRxJS } from './libs/common';
 import { runOnScrapboxReady } from './libs/scrapbox/public-api';
 import { applyLoginCSSClass, componentManager, enablePrivateApi, highlightTagsInListItem } from './scripts';
 
-export const main = () => {
+const main = () => {
   runOnScrapboxReady(async () => {
     await importRxJS();
 
@@ -23,3 +23,5 @@ export const main = () => {
     enablePrivateApi();
   });
 };
+
+main();
