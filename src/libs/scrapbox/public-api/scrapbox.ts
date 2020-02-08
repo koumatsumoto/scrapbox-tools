@@ -18,7 +18,7 @@ export const isScrapboxReady = () => getCurrentProjectName() !== undefined && ge
 export const changeRoute = (title: string, scrapbox: Scrapbox = getScrapbox()) =>
   window.history.pushState(
     {
-      path: `/${encodeURIComponent(getCurrentProjectName(scrapbox))}/${title}`,
+      path: `/${encodeURIComponent(getCurrentProjectName(scrapbox))}/${encodeURIComponent(title)}`,
     },
     title,
   );
