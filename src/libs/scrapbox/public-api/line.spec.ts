@@ -1,4 +1,4 @@
-import { findLineId, findLineIndex, findNextLineId } from './line';
+import { findLineId, findLineIndex, findNextLineId, isEmptyLine } from './line';
 
 describe('line', () => {
   const lines: any[] = [
@@ -31,6 +31,13 @@ describe('line', () => {
       expect(findNextLineId('hello', lines)).toBe('2');
       expect(findNextLineId('hello world', lines)).toBe(null);
       expect(findNextLineId('not found', lines)).toBe(null);
+    });
+  });
+
+  describe('isEmptyLine', () => {
+    it('should work', () => {
+      expect(isEmptyLine({ text: '' } as any)).toBe(true);
+      expect(isEmptyLine({ text: 'hello' } as any)).toBe(false);
     });
   });
 });

@@ -1,4 +1,11 @@
-import { getFormattedDateString, getFormattedTimeString, getTimeText, getDateText, scrapboxCustomFormat } from './datetime-operations';
+import {
+  getFormattedDateString,
+  getFormattedTimeString,
+  getTimeText,
+  getDateText,
+  scrapboxCustomFormat,
+  isDiaryPageTitle,
+} from './datetime-operations';
 
 describe('datetime-operations', () => {
   describe('getFormattedDateString', () => {
@@ -24,6 +31,15 @@ describe('datetime-operations', () => {
   describe('getTimeText', () => {
     it('should get string', () => {
       expect(getTimeText()).toMatch(scrapboxCustomFormat.time);
+    });
+  });
+
+  describe('isDiaryPageTitle', () => {
+    it('should work', () => {
+      expect(isDiaryPageTitle('2020/02/09')).toBe(true);
+      expect(isDiaryPageTitle('a2020/02/28')).toBe(false);
+      expect(isDiaryPageTitle('2020/02/09a')).toBe(false);
+      expect(isDiaryPageTitle('else')).toBe(false);
     });
   });
 });

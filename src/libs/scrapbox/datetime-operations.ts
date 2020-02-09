@@ -16,5 +16,7 @@ export const getFormattedTimeString = (date: Date) => {
   return `${hoursStr}:${minutesStr}`;
 };
 
-export const getDateText = () => getFormattedDateString(new Date());
-export const getTimeText = () => getFormattedTimeString(new Date());
+export const getDateText = (date: Date = new Date()) => getFormattedDateString(date);
+export const getTimeText = (date: Date = new Date()) => getFormattedTimeString(date);
+
+export const isDiaryPageTitle = (title: string) => scrapboxCustomFormat.date.test(title);

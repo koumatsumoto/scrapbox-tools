@@ -1,37 +1,21 @@
-import {
-  changeRoute,
-  getCurrentProjectName,
-  getDateText,
-  getPageUrl,
-  getPrivateApi,
-  hasEmptyEOF,
-  isEmptyPage,
-  makeTag,
-} from '../../libs/scrapbox';
+import { changeRoute, getDateText, getPrivateApi, getTimeText, isEmptyPage, makeTag } from '../../libs/scrapbox';
 import { tagOptions } from './config';
 import { openDialog } from './dialog';
-import { getDateOrTimeText } from './get-date-or-time-text';
+import { createLineInsertions } from './internal/create-line-insertions';
 
 export const openDialogAndWriteTags = async () => {
   try {
     const [api, result] = await Promise.all([getPrivateApi(), openDialog({ tagOptions })]);
 
     if (result.ok) {
-      const tagLineText = [getDateOrTimeText(), ...result.data].map(makeTag).join(' ');
       if (isEmptyPage()) {
+        const tagText = [getTimeText(), ...result.data].map(makeTag).join(' ');
         const title = getDateText();
-        await api.updateTitleAndDescription({ title, description: tagLineText });
+        await api.updateTitleAndDescription({ title, description: tagText });
 
         changeRoute(title);
       } else {
-        const changes: { text: string }[] = [];
-        if (!hasEmptyEOF()) {
-          changes.push({ text: '' });
-        }
-        changes.push({ text: tagLineText });
-        changes.push({ text: '' });
-
-        await api.insertLine(changes);
+        await api.insertLine(createLineInsertions(result.data));
       }
     }
   } catch (e) {
