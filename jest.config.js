@@ -16,13 +16,15 @@ module.exports = {
   testURL: 'http://localhost/',
   testMatch: ['<rootDir>/deploy/**/*.spec.ts', '<rootDir>/src/**/*.spec.ts'],
   collectCoverageFrom: [
-    '<rootDir>/deploy/**/*.{js,ts}',
-    '<rootDir>/src/**/*.{js,ts}',
+    '<rootDir>/src/components/**/*.ts',
+    '<rootDir>/src/libs/**/*.ts',
+    '<rootDir>/src/scripts/**/*.ts',
   ],
   coveragePathIgnorePatterns: [
     '/node_modules/',
-    '/testing/',
     '/specs/',
+    '/test-helpers/',
+    '/testing/',
     '/tests/',
   ],
   coverageReporters: ['lcov', 'text-summary'],
