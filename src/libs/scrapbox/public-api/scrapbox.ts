@@ -15,6 +15,7 @@ export const getPageUrl = (title: string) => `${baseUrl}/${encodeURIComponent(ge
 // ready after api requests initiated on react bootstrap completed
 export const isScrapboxReady = () => getCurrentProjectName() !== undefined && getCurrentPageName() !== undefined;
 
+// TODO: currently not working, react-router not recognize history change
 export const changeRoute = (title: string, scrapbox: Scrapbox = getScrapbox()) =>
   window.history.pushState(
     {
@@ -22,3 +23,8 @@ export const changeRoute = (title: string, scrapbox: Scrapbox = getScrapbox()) =
     },
     title,
   );
+
+// TODO: use react-router instead window.location to improve performance
+export const loadPage = (title: string, scrapbox: Scrapbox = getScrapbox()) => {
+  window.location.assign(`/${encodeURIComponent(getCurrentProjectName(scrapbox))}/${encodeURIComponent(title)}`);
+};

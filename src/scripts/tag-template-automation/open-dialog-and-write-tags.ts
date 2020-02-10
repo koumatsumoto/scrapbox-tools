@@ -1,4 +1,4 @@
-import { changeRoute, getDateText, getPrivateApi, getTimeText, isEmptyPage, makeTag } from '../../libs/scrapbox';
+import { getDateText, getPrivateApi, getTimeText, isEmptyPage, loadPage, makeTag } from '../../libs/scrapbox';
 import { tagOptions } from './config';
 import { openDialog } from './dialog';
 import { createLineInsertions } from './internal/create-line-insertions';
@@ -13,7 +13,7 @@ export const openDialogAndWriteTags = async () => {
         const title = getDateText();
         await api.updateTitleAndDescription({ title, description: tagText });
 
-        changeRoute(title);
+        loadPage(title);
       } else {
         await api.insertLine(createLineInsertions(result.data));
       }
