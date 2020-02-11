@@ -1,0 +1,74 @@
+@import '../../variables';
+
+// layout:list
+// main list items in index page
+.page-list {
+  $row-size: 104px;
+  $img-size: 72px;
+  $list-item-each-space: 8px;
+  $list-item-inner-v-padding: 16px;
+  $list-item-inner-h-padding: 12px;
+
+  ul.grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0px;
+
+    li {
+      width: 100%;
+      height: $row-size;
+      margin: $list-item-each-space 0 0;
+      visibility: visible;
+
+      &:first-of-type {
+        margin-top: 0;
+      }
+
+      &.page-list-item a {
+        $anim: 108ms map_get($easing, easeInOutCirc);
+        transition: background-color $anim, box-shadow $anim, opacity $anim;
+
+        &:hover {
+          // TODO: adjust
+          background-color: #ebf2ff;
+          opacity: 0.96;
+        }
+
+        .hover {
+          display: none;
+        }
+
+        .content {
+          flex-direction: row;
+          height: 100%;
+        }
+
+        .icon {
+          order: 1;
+          padding: 0;
+
+          img {
+            position: absolute;
+            top: $list-item-inner-v-padding;
+            left: $list-item-inner-h-padding;
+            max-width: $img-size;
+            max-height: $img-size;
+          }
+        }
+
+        .header {
+          order: 2;
+          padding: $list-item-inner-v-padding $list-item-inner-h-padding
+            $list-item-inner-v-padding $row-size;
+          border: none;
+        }
+
+        .description {
+          display: none;
+        }
+      }
+    }
+  }
+}
