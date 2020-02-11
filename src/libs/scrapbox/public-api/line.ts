@@ -27,3 +27,5 @@ export const findNextLineId = (searchString: string, lines: PageLine[] = getLine
 export const getTitleLine = (lines: PageLine[] = getLines()): PageLine => lines[0]!;
 
 export const isEmptyLine = (line: PageLine) => line.text === '';
+
+export const getLastLineId = (lines: PageLine[] = getLines()): ID => lines[lines.length - 1]!.id;

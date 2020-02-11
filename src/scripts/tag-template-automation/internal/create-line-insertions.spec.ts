@@ -9,6 +9,8 @@ describe('createLineInsertions', () => {
   const symbolTitleOnly = [{ text: 'Symbol' }] as any;
   const symbolTitleEOF = [{ text: 'Symbol' }, { text: '' }] as any;
   const hasPreviousTags = [{ text: 'Symbol' }, { text: '#tag' }] as any;
+  const has3Lines = [{ text: 'Symbol' }, { text: '#tag' }, { text: 'text' }] as any;
+  const has3LinesEOF = [{ text: 'Symbol' }, { text: '#tag' }, { text: '' }] as any;
 
   it('should work', () => {
     expect(createLineInsertions(words, date, dailyTitleOnly)).toEqual([{ text: '#12:00 #tag1 #tag2' }, { text: '' }]);
@@ -16,5 +18,7 @@ describe('createLineInsertions', () => {
     expect(createLineInsertions(words, date, symbolTitleOnly)).toEqual([{ text: '#2020/02/09 #tag1 #tag2' }, { text: '' }]);
     expect(createLineInsertions(words, date, symbolTitleEOF)).toEqual([{ text: '#2020/02/09 #tag1 #tag2' }, { text: '' }]);
     expect(createLineInsertions(words, date, hasPreviousTags)).toEqual([{ text: '' }, { text: '#2020/02/09 #tag1 #tag2' }, { text: '' }]);
+    expect(createLineInsertions(words, date, has3Lines)).toEqual([{ text: '' }, { text: '#2020/02/09 #tag1 #tag2' }, { text: '' }]);
+    expect(createLineInsertions(words, date, has3LinesEOF)).toEqual([{ text: '#2020/02/09 #tag1 #tag2' }, { text: '' }]);
   });
 });

@@ -12,7 +12,7 @@ export const isEmptyPage = (lines: PageLine[] = getLines()) => {
   return lines.length === 1 && title.text === '';
 };
 
-export const hasEmptyEOF = (lines: PageLine[] = getLines()) => {
+export const endWithEmptyLine = (lines: PageLine[] = getLines()) => {
   const last = lines[lines.length - 1];
 
   return last.text === '';

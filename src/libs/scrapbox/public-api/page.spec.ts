@@ -1,4 +1,4 @@
-import { hasEmptyEOF, isEmptyPage } from './page';
+import { endWithEmptyLine, isEmptyPage } from './page';
 
 describe('page', () => {
   const lines: any[] = [
@@ -15,11 +15,11 @@ describe('page', () => {
     });
   });
 
-  describe('hasEmptyEOF', () => {
+  describe('endWithEmptyLine', () => {
     it('should work', () => {
-      expect(hasEmptyEOF(lines)).toBe(false);
-      expect(hasEmptyEOF([{ text: '' }] as any)).toBe(true);
-      expect(hasEmptyEOF([{ text: 'first' }, { text: '' }] as any)).toBe(true);
+      expect(endWithEmptyLine(lines)).toBe(false);
+      expect(endWithEmptyLine([{ text: '' }] as any)).toBe(true);
+      expect(endWithEmptyLine([{ text: 'first' }, { text: '' }] as any)).toBe(true);
     });
   });
 });
