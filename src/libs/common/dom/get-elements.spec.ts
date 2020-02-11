@@ -1,4 +1,4 @@
-import { setupBodyForTest } from '../../test-helpers';
+import { setupBodyForTest } from '../../../test-helpers';
 import { getElementOrFail, getElements } from './get-elements';
 
 describe('getElementOrFail', () => {

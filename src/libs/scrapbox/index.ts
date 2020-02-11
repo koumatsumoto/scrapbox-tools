@@ -1,4 +1,5 @@
 export * from './datetime-operations';
+export * from './dom';
 export * from './get-page-last-updated-time';
 export * from './getters';
 export * from './private-api';

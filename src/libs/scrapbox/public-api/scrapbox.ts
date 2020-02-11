@@ -1,10 +1,36 @@
-import { Scrapbox } from '../../../types/scrapbox';
+import { ExistentPageListItem, Scrapbox, ScrapboxProjectPage } from '../../../types/scrapbox';
 
 const baseUrl = 'https://scrapbox.io';
 
 export const getScrapbox = () => window.scrapbox;
 
 export const getLines = () => getScrapbox().Page.lines;
+
+export const getPages = (scrapbox: Scrapbox = getScrapbox()) => scrapbox.Project.pages;
+
+export const getPageIdMap = (scrapbox: Scrapbox = getScrapbox()) => {
+  const map = new Map<string, ExistentPageListItem>();
+
+  for (const page of getPages(scrapbox)) {
+    if (page.exists && page.id) {
+      map.set(page.id, page);
+    }
+  }
+
+  return map;
+};
+
+export const getPageTitleMap = (scrapbox: Scrapbox = getScrapbox()) => {
+  const map = new Map<string, ScrapboxProjectPage>();
+
+  for (const page of getPages(scrapbox)) {
+    if (page.title) {
+      map.set(page.title, page);
+    }
+  }
+
+  return map;
+};
 
 export const getCurrentProjectName = (scrapbox: Scrapbox = getScrapbox()) => scrapbox.Project.name;
 

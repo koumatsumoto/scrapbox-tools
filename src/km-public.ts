@@ -3,7 +3,7 @@
  */
 import { importRxJS } from './libs/common';
 import { runOnScrapboxReady } from './libs/scrapbox/public-api';
-import { applyLoginCSSClass } from './scripts';
+import { addDatetimeOnListItem, applyLoginCSSClass } from './scripts';
 
 export const main = () => {
   runOnScrapboxReady(async () => {
@@ -11,6 +11,8 @@ export const main = () => {
 
     // add custom css class to body tag
     applyLoginCSSClass();
+    // display datetime on list-item
+    addDatetimeOnListItem();
   });
 };
 

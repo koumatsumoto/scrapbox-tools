@@ -17,7 +17,9 @@ export type NonExistentPageListItem = {
   exists: false;
 };
 
+export type ScrapboxProjectPage = ExistentPageListItem | NonExistentPageListItem;
+
 export type ScrapboxProject = {
   name: string;
-  pages: (ExistentPageListItem | NonExistentPageListItem)[];
+  pages: ScrapboxProjectPage[];
 };
