@@ -4,7 +4,7 @@
 import { defineCustomElements } from './components';
 import { importRxJS } from './libs/common';
 import { runOnScrapboxReady } from './libs/scrapbox/public-api';
-import { addDatetimeOnListItem, applyLoginCSSClass, componentManager, enablePrivateApi, highlightTagsInListItem } from './scripts';
+import { addDatetimeOnListItem, applyLoginCSSClass, componentManager, highlightTagsInListItem } from './scripts';
 
 const main = () => {
   runOnScrapboxReady(async () => {
@@ -19,8 +19,6 @@ const main = () => {
 
     // add custom css class to body tag
     applyLoginCSSClass();
-    // enable private api
-    enablePrivateApi();
     // display datetime on list-item
     addDatetimeOnListItem();
   });

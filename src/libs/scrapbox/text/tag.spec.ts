@@ -1,4 +1,4 @@
-import { makeTag } from './tag-operations';
+import { makeTag } from './tag';
 
 describe('tag operations', () => {
   describe('makeTag', () => {

@@ -5,7 +5,7 @@ import {
   getDateText,
   scrapboxCustomFormat,
   isDiaryPageTitle,
-} from './datetime-operations';
+} from './datetime';
 
 describe('datetime-operations', () => {
   describe('getFormattedDateString', () => {
