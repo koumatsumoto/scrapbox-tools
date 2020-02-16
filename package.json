@@ -20,7 +20,7 @@
     "ci:check:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit --collectCoverage",
     "ci:deploy": "yarn deploy",
     "deploy": "yarn build:prod && yarn ts-node src/deploy/main.ts",
-    "format": "yarn lint:scss --fix && yarn lint:ts --fix && prettier --config .prettierrc --write '{deploy,src,.circleci,sandbox}/**/*.{ts,js,scss,html,md,yml}' ./*.{js,json}",
+    "format": "yarn lint:scss --fix && yarn lint:ts --fix && prettier --config .prettierrc --write '{deploy,src,.circleci}/**/*.{ts,js,scss,html,md,yml}' ./*.{js,json}",
     "lint:scss": "stylelint 'src/styles/**/*.scss'",
     "lint:ts": "eslint 'src/**/*.ts'",
     "make:version-file": "echo \"export const version = '`git rev-parse HEAD`'\" > version.ts",

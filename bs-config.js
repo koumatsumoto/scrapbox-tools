@@ -24,7 +24,7 @@ module.exports = {
     ignoreInitial: true,
   },
   server: {
-    baseDir: 'sandbox',
+    baseDir: 'src',
     routes: {
       '/dist': 'dist',
     },
