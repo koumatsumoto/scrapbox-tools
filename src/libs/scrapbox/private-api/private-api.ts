@@ -4,10 +4,6 @@ import { ApiClient } from './api-client/api-client';
 import { PageResponse } from './api-client/api-client-types';
 import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
 
-type InsertLineParam = { text: string; position?: ID };
-type UpdateLineParam = { id: ID; text: string };
-type DeleteLineParam = { id: ID };
-
 interface PageData extends PageResponse {
   // will mutate
   commitId: string;
@@ -59,81 +55,6 @@ export class PrivateApi {
 
     return this.commit({
       changes: Array.isArray(param) ? param : [param],
-      projectId: this.projectId,
-      pageId: this.pageData.id,
-      commitId: this.pageData.commitId,
-    });
-  }
-
-  async insertLine(param: InsertLineParam | InsertLineParam[]) {
-    if (!this.pageData) {
-      throw new Error('Page data is not set');
-    }
-
-    const array = Array.isArray(param) ? param : [param];
-
-    return this.commit({
-      changes: array.map((p) => ({ ...p, type: 'insert' })),
-      projectId: this.projectId,
-      pageId: this.pageData.id,
-      commitId: this.pageData.commitId,
-    });
-  }
-
-  async updateLine(param: UpdateLineParam | UpdateLineParam[]) {
-    if (!this.pageData) {
-      throw new Error('Page data is not set');
-    }
-
-    const array = Array.isArray(param) ? param : [param];
-
-    return this.commit({
-      changes: array.map((p) => ({ ...p, type: 'update' })),
-      projectId: this.projectId,
-      pageId: this.pageData.id,
-      commitId: this.pageData.commitId,
-    });
-  }
-
-  async deleteLine(param: DeleteLineParam | DeleteLineParam[]) {
-    if (!this.pageData) {
-      throw new Error('Page data is not set');
-    }
-    const array = Array.isArray(param) ? param : [param];
-
-    return this.commit({
-      changes: array.map((p) => ({ ...p, type: 'delete' })),
-      projectId: this.projectId,
-      pageId: this.pageData.id,
-      commitId: this.pageData.commitId,
-    });
-  }
-
-  async updateTitleAndDescription(param: { title: string; description?: string } | { title?: string; description: string }) {
-    if (!this.pageData) {
-      throw new Error('Page data is not set');
-    }
-
-    const titleLine = this.pageData.lines[0];
-    const changes: CommitChangeParam[] = [];
-
-    if (typeof param.title === 'string') {
-      changes.push({ type: 'update', id: titleLine.id, text: param.title });
-      changes.push({ type: 'title', title: param.title });
-    }
-    if (typeof param.description === 'string') {
-      // page has not description line yet
-      if (this.pageData.lines.length === 1) {
-        changes.push({ type: 'insert', text: param.description });
-        changes.push({ type: 'insert', text: '' });
-      } else {
-        changes.push({ type: 'update', id: this.pageData.lines[1].id, text: param.description });
-      }
-      changes.push({ type: 'description', text: param.description });
-    }
-
-    return this.commit({
-      changes,
       projectId: this.projectId,
       pageId: this.pageData.id,
       commitId: this.pageData.commitId,

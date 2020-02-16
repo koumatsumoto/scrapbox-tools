@@ -1,4 +1,4 @@
-import { getDateText, getLastLineId, getTimeText, isDiaryPageTitle, makeTag } from '../../../libs/scrapbox';
+import { getDateText, getLastLineId, getTimeText, isDiaryPageTitle, isEmptyPage, makeTag } from '../../../libs/scrapbox';
 import { CommitChangeParam } from '../../../libs/scrapbox/private-api/websocket-clinet';
 import { endWithEmptyLine, getLines } from '../../../libs/scrapbox/public-api';
 import { PageLine } from '../../../types/scrapbox';
@@ -14,13 +14,31 @@ export const createLineInsertions = (words: string[], date: Date = new Date(), l
   }
 
   const changes: CommitChangeParam[] = [];
-  const timeWord = isDiaryPageTitle(lines[0].text) ? getTimeText(date) : getDateText(date);
-  const tagLineText = [timeWord, ...words].map(makeTag).join(' ');
+  const titleLine = lines[0];
+
+  // construct a tag of date or time.
+  // if diary page, use time (e.g. "24:00")
+  // if other page, use date (e.g. "2020/02/16")
+  let timeOrDate: string;
+  if (isEmptyPage(lines)) {
+    timeOrDate = getTimeText(date);
+  } else if (isDiaryPageTitle(lines[0].text)) {
+    timeOrDate = getTimeText(date);
+  } else {
+    timeOrDate = getDateText(date);
+  }
+  const tagLineText = [timeOrDate, ...words].map(makeTag).join(' ');
 
   switch (lines.length) {
-    // title only
-    // in this case, don't insert an empty line after title
+    // an empty or title-only page
+    // if empty page, need update title with date string
     case 1: {
+      if (titleLine.text === '') {
+        const title = getDateText();
+        changes.push({ type: 'update', id: titleLine.id, text: title });
+        changes.push({ type: 'title', title });
+      }
+
       changes.push({ type: 'insert', text: tagLineText });
       changes.push({ type: 'insert', text: '' });
       changes.push({ type: 'description', text: 'tagLineText' });

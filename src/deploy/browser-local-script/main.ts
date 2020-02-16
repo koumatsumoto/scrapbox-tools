@@ -35,7 +35,7 @@ const main = async () => {
           // update existing
           if (lineId) {
             console.log('[deploy] start to try update the line of source code');
-            await api.updateLine({ id: lineId, text: newSourceCode });
+            await api.changeLine({ type: 'update', id: lineId, text: newSourceCode });
             console.log('[deploy] complete updation');
           } else {
             // TODO: implement creation

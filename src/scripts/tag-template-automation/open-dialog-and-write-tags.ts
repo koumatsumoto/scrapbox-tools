@@ -1,4 +1,4 @@
-import { getDateText, getPrivateApi, getTimeText, isEmptyPage, loadPage, makeTag } from '../../libs/scrapbox';
+import { getDateText, getPrivateApi, isEmptyPage, loadPage } from '../../libs/scrapbox';
 import { tagOptions } from './config';
 import { openDialog } from './dialog';
 import { createLineInsertions } from './internal/create-line-insertions';
@@ -8,14 +8,14 @@ export const openDialogAndWriteTags = async () => {
     const [api, result] = await Promise.all([getPrivateApi(), openDialog({ tagOptions })]);
 
     if (result.ok) {
-      if (isEmptyPage()) {
-        const tagText = [getTimeText(), ...result.data].map(makeTag).join(' ');
-        const title = getDateText();
-        await api.updateTitleAndDescription({ title, description: tagText });
+      // TODO: bad impl, real title is create in createLineInsertions(), this title is possible to mistake.
+      const title = getDateText();
+      const needReload = isEmptyPage();
 
+      await api.changeLine(createLineInsertions(result.data));
+
+      if (needReload) {
         loadPage(title);
-      } else {
-        await api.changeLine(createLineInsertions(result.data));
       }
     }
   } catch (e) {
