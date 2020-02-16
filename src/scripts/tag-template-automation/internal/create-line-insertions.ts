@@ -1,5 +1,6 @@
-import { getDateText, getLastLineId, getTimeText, ID, isDiaryPageTitle, makeTag } from '../../../libs/scrapbox';
-import { getLines, endWithEmptyLine } from '../../../libs/scrapbox/public-api';
+import { getDateText, getLastLineId, getTimeText, isDiaryPageTitle, makeTag } from '../../../libs/scrapbox';
+import { CommitChangeParam } from '../../../libs/scrapbox/private-api/websocket-clinet';
+import { endWithEmptyLine, getLines } from '../../../libs/scrapbox/public-api';
 import { PageLine } from '../../../types/scrapbox';
 
 /**
@@ -7,12 +8,12 @@ import { PageLine } from '../../../types/scrapbox';
  * @param tagLineText
  * @param lines - for testing
  */
-export const createLineInsertions = (words: string[], date: Date = new Date(), lines: PageLine[] = getLines()) => {
+export const createLineInsertions = (words: string[], date: Date = new Date(), lines: PageLine[] = getLines()): CommitChangeParam[] => {
   if (lines.length < 1) {
     throw new Error('Bad impl, this function requires at least one line');
   }
 
-  const changes: { text: string; position?: ID }[] = [];
+  const changes: CommitChangeParam[] = [];
   const timeWord = isDiaryPageTitle(lines[0].text) ? getTimeText(date) : getDateText(date);
   const tagLineText = [timeWord, ...words].map(makeTag).join(' ');
 
@@ -20,8 +21,9 @@ export const createLineInsertions = (words: string[], date: Date = new Date(), l
     // title only
     // in this case, don't insert an empty line after title
     case 1: {
-      changes.push({ text: tagLineText });
-      changes.push({ text: '' });
+      changes.push({ type: 'insert', text: tagLineText });
+      changes.push({ type: 'insert', text: '' });
+      changes.push({ type: 'description', text: 'tagLineText' });
 
       break;
     }
@@ -29,23 +31,23 @@ export const createLineInsertions = (words: string[], date: Date = new Date(), l
     // if empty line, replace it with tag line
     case 2: {
       if (endWithEmptyLine(lines)) {
-        changes.push({ text: tagLineText, position: getLastLineId(lines) });
-        changes.push({ text: '' });
+        changes.push({ type: 'insert', text: tagLineText, position: getLastLineId(lines) });
+        changes.push({ type: 'insert', text: '' });
       } else {
-        changes.push({ text: '' });
-        changes.push({ text: tagLineText });
-        changes.push({ text: '' });
+        changes.push({ type: 'insert', text: '' });
+        changes.push({ type: 'insert', text: tagLineText });
+        changes.push({ type: 'insert', text: '' });
       }
 
       break;
     }
     default: {
       if (!endWithEmptyLine(lines)) {
-        changes.push({ text: '' });
+        changes.push({ type: 'insert', text: '' });
       }
 
-      changes.push({ text: tagLineText });
-      changes.push({ text: '' });
+      changes.push({ type: 'insert', text: tagLineText });
+      changes.push({ type: 'insert', text: '' });
     }
   }
 

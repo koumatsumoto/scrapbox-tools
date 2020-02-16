@@ -51,7 +51,7 @@ export class WebsocketClient {
         projectId: param.projectId,
         pageId: param.pageId,
         parentId: param.parentId,
-        changes: createChanges(param.changes),
+        changes: createChanges(param.changes, param.userId),
         cursor: null,
         freeze: true,
       },

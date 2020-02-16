@@ -15,7 +15,7 @@ export const openDialogAndWriteTags = async () => {
 
         loadPage(title);
       } else {
-        await api.insertLine(createLineInsertions(result.data));
+        await api.changeLine(createLineInsertions(result.data));
       }
     }
   } catch (e) {

@@ -1,5 +1,5 @@
 import { getRx } from '../../common/rxjs';
-import { generateId, getCurrentPageName, ID, onPageChange } from '../public-api';
+import { getCurrentPageName, ID, onPageChange } from '../public-api';
 import { ApiClient } from './api-client/api-client';
 import { PageResponse } from './api-client/api-client-types';
 import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
@@ -52,6 +52,19 @@ export class PrivateApi {
     await this.pageResponse$.pipe(getRx().operators.first()).toPromise();
   }
 
+  async changeLine(param: CommitChangeParam | CommitChangeParam[]) {
+    if (!this.pageData) {
+      throw new Error('Page data is not set');
+    }
+
+    return this.commit({
+      changes: Array.isArray(param) ? param : [param],
+      projectId: this.projectId,
+      pageId: this.pageData.id,
+      commitId: this.pageData.commitId,
+    });
+  }
+
   async insertLine(param: InsertLineParam | InsertLineParam[]) {
     if (!this.pageData) {
       throw new Error('Page data is not set');
@@ -59,8 +72,8 @@ export class PrivateApi {
 
     const array = Array.isArray(param) ? param : [param];
 
-    return this.changeLines({
-      changes: array.map((p) => ({ ...p, type: 'insert', id: generateId(this.userId) })),
+    return this.commit({
+      changes: array.map((p) => ({ ...p, type: 'insert' })),
       projectId: this.projectId,
       pageId: this.pageData.id,
       commitId: this.pageData.commitId,
@@ -74,7 +87,7 @@ export class PrivateApi {
 
     const array = Array.isArray(param) ? param : [param];
 
-    return this.changeLines({
+    return this.commit({
       changes: array.map((p) => ({ ...p, type: 'update' })),
       projectId: this.projectId,
       pageId: this.pageData.id,
@@ -88,7 +101,7 @@ export class PrivateApi {
     }
     const array = Array.isArray(param) ? param : [param];
 
-    return this.changeLines({
+    return this.commit({
       changes: array.map((p) => ({ ...p, type: 'delete' })),
       projectId: this.projectId,
       pageId: this.pageData.id,
@@ -111,15 +124,15 @@ export class PrivateApi {
     if (typeof param.description === 'string') {
       // page has not description line yet
       if (this.pageData.lines.length === 1) {
-        changes.push({ type: 'insert', id: generateId(this.userId), text: param.description });
-        changes.push({ type: 'insert', id: generateId(this.userId), text: '' });
+        changes.push({ type: 'insert', text: param.description });
+        changes.push({ type: 'insert', text: '' });
       } else {
         changes.push({ type: 'update', id: this.pageData.lines[1].id, text: param.description });
       }
       changes.push({ type: 'description', text: param.description });
     }
 
-    return this.changeLines({
+    return this.commit({
       changes,
       projectId: this.projectId,
       pageId: this.pageData.id,
@@ -127,7 +140,7 @@ export class PrivateApi {
     });
   }
 
-  private async changeLines(param: { projectId: string; pageId: string; commitId: string; changes: CommitChangeParam[] }) {
+  private async commit(param: { projectId: string; pageId: string; commitId: string; changes: CommitChangeParam[] }) {
     const response = await this.websocketClient.commit({
       userId: this.userId,
       projectId: param.projectId,
