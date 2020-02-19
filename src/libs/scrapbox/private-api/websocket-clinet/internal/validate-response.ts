@@ -20,8 +20,6 @@ export const validateResponse = (response: WebsocketSendResponse) => {
       throw new Error(res.error.message);
     } else if (isJoinRoomErrorResponse(res)) {
       throw new Error(JSON.stringify(res.error.errors));
-    } else {
-      throw new Error('Unexpected error in validating ws response');
     }
   }
 };
