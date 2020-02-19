@@ -18,59 +18,69 @@ export type ConnectionOpenResponse = {
   pingTimeout: number;
 };
 
-export type CommitSuccessResponse = [
-  {
-    data: { commitId: string };
-    error: undefined;
-  },
-];
-export type CommitErrorResponse = [
-  {
-    data: undefined;
-    error: {
-      name: string;
-      message: string;
-      // for type checking
-      errors: undefined;
+export type CommitError = {
+  message: string;
+  name: string;
+  properties: {
+    message: string;
+    type: 'required';
+    path: 'title';
+    value: '';
+  };
+  kind: 'required';
+  path: 'title';
+  value: '';
+  stack: string;
+};
+
+export type JoinRoomError = {
+  message: string;
+  name: string;
+  stringValue: string;
+  kind: 'ObjectId';
+  value: string;
+  path: '_id';
+  stack: string;
+};
+
+export type CommitSuccessResponse = {
+  data: { commitId: string };
+  error: undefined;
+};
+
+export type CommitErrorResponse = {
+  data: undefined;
+  error: {
+    name: string;
+    message: string;
+    errors: {
+      title?: CommitError;
+      titleLc?: CommitError;
     };
-  },
-];
+  };
+};
 
 export type CommitResponse = CommitSuccessResponse | CommitErrorResponse;
 
-export type JoinRoomSuccessResponse = [
-  {
-    data: {
-      success: true;
-      pageId: string;
-      projectId: string;
-    };
-    error: undefined;
-  },
-];
+export type JoinRoomSuccessResponse = {
+  data: {
+    success: true;
+    pageId: string;
+    projectId: string;
+  };
+  error: undefined;
+};
 
-export type JoinRoomErrorResponse = [
-  {
-    data: undefined;
-    error: {
-      errors: [
-        {
-          message: string;
-          name: string;
-          stringValue: string;
-          kind: 'ObjectId';
-          value: string;
-          path: '_id';
-          stack: string;
-        },
-      ];
-    };
-  },
-];
+export type JoinRoomErrorResponse = {
+  data: undefined;
+  error: {
+    errors: JoinRoomError[];
+  };
+};
 
 export type JoinRoomResponse = JoinRoomSuccessResponse | JoinRoomErrorResponse;
 
-export type WebsocketSendResponse = CommitResponse | JoinRoomResponse;
+export type WebsocketSendResponse = CommitResponse[] | JoinRoomResponse[];
 
 export type ExternalCursorResponse = [
   'cursor',
@@ -110,7 +120,7 @@ export type ExternalResponse = ExternalCursorResponse | ExternalCommitResponse;
 // include response by ping, onopen, updation by other user
 export type WebsocketResponse = ConnectionOpenResponse | WebsocketSendResponse | ExternalCursorResponse | ExternalCommitResponse | null;
 
-export type ProtocolAndPayload = ['0', ConnectionOpenResponse] | [Protocol, WebsocketResponse];
+export type ProtocolAndData = ['0', ConnectionOpenResponse] | [Protocol, WebsocketResponse];
 
 export type CommitPayload = {
   method: 'commit';

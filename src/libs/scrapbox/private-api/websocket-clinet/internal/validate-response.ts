@@ -1,18 +1,27 @@
-import { WebsocketSendResponse } from '../websocket-client-types';
+import {
+  CommitErrorResponse,
+  CommitResponse,
+  JoinRoomErrorResponse,
+  JoinRoomResponse,
+  WebsocketSendResponse,
+} from '../websocket-client-types';
+
+const isCommitErrorResponse = (response: CommitResponse | JoinRoomResponse): response is CommitErrorResponse => {
+  return !!response.error && !Array.isArray(response.error.errors);
+};
+
+const isJoinRoomErrorResponse = (response: CommitResponse | JoinRoomResponse): response is JoinRoomErrorResponse => {
+  return !!response.error && Array.isArray(response.error.errors);
+};
 
 export const validateResponse = (response: WebsocketSendResponse) => {
   for (const res of response) {
-    if (res.error !== undefined) {
-      // error for room-join
-      if (res.error.errors) {
-        if (Array.isArray(res.error.errors) && res.error.errors[0]) {
-          throw new Error(res.error.errors[0].message);
-        } else {
-          throw new Error('error response for join room (unexpected schema)');
-        }
-      } else {
-        throw new Error(res.error.message);
-      }
+    if (isCommitErrorResponse(res)) {
+      throw new Error(res.error.message);
+    } else if (isJoinRoomErrorResponse(res)) {
+      throw new Error(JSON.stringify(res.error.errors));
+    } else {
+      throw new Error('Unexpected error in validating ws response');
     }
   }
 };

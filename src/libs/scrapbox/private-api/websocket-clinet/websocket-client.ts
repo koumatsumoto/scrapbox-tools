@@ -69,8 +69,8 @@ export class WebsocketClient {
     });
   }
 
-  private async send(payload: CommitPayload): Promise<CommitSuccessResponse>;
-  private async send(payload: JoinRoomPayload): Promise<JoinRoomSuccessResponse>;
+  private async send(payload: CommitPayload): Promise<CommitSuccessResponse[]>;
+  private async send(payload: JoinRoomPayload): Promise<JoinRoomSuccessResponse[]>;
   private async send(payload: WebsocketPayload): Promise<any> {
     const body = JSON.stringify(['socket.io-request', payload]);
     const sid = `${this.senderId++}`;
@@ -122,7 +122,7 @@ export class WebsocketClient {
       // for own send() result
       if (header.startsWith(receiveProtocol)) {
         const senderId = header.slice(receiveProtocol.length);
-        this.response$.next({ senderId, data: data as CommitResponse });
+        this.response$.next({ senderId, data: data as WebsocketSendResponse });
       }
     });
 

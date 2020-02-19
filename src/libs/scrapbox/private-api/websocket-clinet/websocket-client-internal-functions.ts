@@ -1,7 +1,7 @@
-import { Protocol, ProtocolAndPayload, WebsocketResponse } from './websocket-client-types';
+import { Protocol, ProtocolAndData, WebsocketResponse } from './websocket-client-types';
 
 // 430[{...}}] => 430, [{}]
-export const extractMessage = (message: string): ProtocolAndPayload => {
+export const extractMessage = (message: string): ProtocolAndData => {
   // protocol and arbitrary number
   let header = '';
   while (message.length) {
