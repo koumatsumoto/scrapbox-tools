@@ -33,12 +33,10 @@ export const createLineInsertions = (words: string[], date: Date = new Date(), l
     // an empty or title-only page
     // if empty page, need update title with date string
     case 1: {
-      if (titleLine.text === '') {
-        const title = getDateText(date);
-        changes.push({ type: 'update', id: titleLine.id, text: title });
-        changes.push({ type: 'title', title });
-      }
-
+      // if empty, use date to title.
+      const title = titleLine.text === '' ? getDateText(date) : titleLine.text;
+      changes.push({ type: 'update', id: titleLine.id, text: title });
+      changes.push({ type: 'title', title });
       changes.push({ type: 'insert', text: tagLineText });
       changes.push({ type: 'insert', text: '' });
       changes.push({ type: 'description', text: 'tagLineText' });

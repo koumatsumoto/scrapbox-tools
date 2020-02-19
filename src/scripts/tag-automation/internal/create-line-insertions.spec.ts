@@ -5,9 +5,9 @@ describe('createLineInsertions', () => {
   const words = ['tag1', 'tag2'];
   const date = getFakeJSTDate('2020-02-09T03:28:38.036Z');
   const emptyPage = [{ text: '', id: 'id' }] as any;
-  const dailyTitleOnly = [{ text: '2020/02/08' }] as any;
+  const dailyTitleOnly = [{ text: '2020/02/08', id: 'id' }] as any;
   const dailyTitleEOF = [{ text: '2020/02/08' }, { text: '' }] as any;
-  const symbolTitleOnly = [{ text: 'Symbol' }] as any;
+  const symbolTitleOnly = [{ text: 'Symbol', id: 'id' }] as any;
   const symbolTitleEOF = [{ text: 'Symbol' }, { text: '' }] as any;
   const hasPreviousTags = [{ text: 'Symbol' }, { text: '#tag' }] as any;
   const has3Lines = [{ text: 'Symbol' }, { text: '#tag' }, { text: 'text' }] as any;
@@ -22,6 +22,8 @@ describe('createLineInsertions', () => {
       { type: 'description', text: 'tagLineText' },
     ]);
     expect(createLineInsertions(words, date, dailyTitleOnly)).toEqual([
+      { type: 'update', id: 'id', text: '2020/02/08' },
+      { type: 'title', title: '2020/02/08' },
       { type: 'insert', text: '#12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
       { type: 'description', text: 'tagLineText' },
@@ -31,6 +33,8 @@ describe('createLineInsertions', () => {
       { type: 'insert', text: '' },
     ]);
     expect(createLineInsertions(words, date, symbolTitleOnly)).toEqual([
+      { type: 'update', id: 'id', text: 'Symbol' },
+      { type: 'title', title: 'Symbol' },
       { type: 'insert', text: '#2020/02/09 #tag1 #tag2' },
       { type: 'insert', text: '' },
       { type: 'description', text: 'tagLineText' },
