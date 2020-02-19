@@ -3,8 +3,8 @@ import { createLineInsertions } from './create-line-insertions';
 
 describe('createLineInsertions', () => {
   const words = ['tag1', 'tag2'];
-  const date = getFakeJSTDate(1581218918036); // 2020-02-09T03:28:38.036Z
-  const emptyPage = [{ text: '' }] as any;
+  const date = getFakeJSTDate('2020-02-09T03:28:38.036Z');
+  const emptyPage = [{ text: '', id: 'id' }] as any;
   const dailyTitleOnly = [{ text: '2020/02/08' }] as any;
   const dailyTitleEOF = [{ text: '2020/02/08' }, { text: '' }] as any;
   const symbolTitleOnly = [{ text: 'Symbol' }] as any;
@@ -15,11 +15,11 @@ describe('createLineInsertions', () => {
 
   it('should work', () => {
     expect(createLineInsertions(words, date, emptyPage)).toEqual([
-      { text: '2020/02/16', type: 'update' },
-      { title: '2020/02/16', type: 'title' },
-      { text: '#12:00 #tag1 #tag2', type: 'insert' },
-      { text: '', type: 'insert' },
-      { text: 'tagLineText', type: 'description' },
+      { type: 'update', id: 'id', text: '2020/02/09' },
+      { type: 'title', title: '2020/02/09' },
+      { type: 'insert', text: '#12:00 #tag1 #tag2' },
+      { type: 'insert', text: '' },
+      { type: 'description', text: 'tagLineText' },
     ]);
     expect(createLineInsertions(words, date, dailyTitleOnly)).toEqual([
       { type: 'insert', text: '#12:00 #tag1 #tag2' },

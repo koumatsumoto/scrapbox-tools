@@ -34,7 +34,7 @@ export const createLineInsertions = (words: string[], date: Date = new Date(), l
     // if empty page, need update title with date string
     case 1: {
       if (titleLine.text === '') {
-        const title = getDateText();
+        const title = getDateText(date);
         changes.push({ type: 'update', id: titleLine.id, text: title });
         changes.push({ type: 'title', title });
       }
