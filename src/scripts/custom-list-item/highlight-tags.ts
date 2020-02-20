@@ -1,6 +1,7 @@
-import { getElements, registerElementManagement, removeHead } from '../../libs/common';
+import { registerElementManagement, removeHead } from '../../libs/common';
 import { isTagString } from '../../libs/scrapbox';
-import { customCSSClassName, nodeSelector } from '../config';
+import { customCSSClassName } from '../config';
+import { tagTextSelectorFn } from './config';
 
 /**
  * Remove hash and add custom css class to link-text in list-item
@@ -8,7 +9,7 @@ import { customCSSClassName, nodeSelector } from '../config';
  */
 export const highlightTags = () =>
   registerElementManagement({
-    targetsSelector: () => getElements(nodeSelector.pageLinkTextInListItem),
+    targetsSelector: tagTextSelectorFn,
     clearFlagCondition: (elem) => !isTagString(elem.textContent),
     onFirstCheck: (elem) => {
       const text = elem.textContent || '';
@@ -16,9 +17,6 @@ export const highlightTags = () =>
         elem.textContent = removeHead(text);
         elem.classList.add(customCSSClassName.hashInListItem);
       }
-    },
-    onRemove: () => {
-      // do nothing
     },
     checkInterval: 1000 * 5,
   });

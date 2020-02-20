@@ -11,9 +11,9 @@ const doSafely = (fn: (e: HTMLElement) => unknown, param: HTMLElement) => {
 
 export const registerElementManagement = (param: {
   targetsSelector: () => HTMLElement[];
-  clearFlagCondition: (e: HTMLElement) => boolean;
   onFirstCheck: (e: HTMLElement) => unknown;
-  onRemove: (e: HTMLElement) => unknown;
+  clearFlagCondition?: (e: HTMLElement) => boolean;
+  onRemove?: (e: HTMLElement) => unknown;
   checkInterval: number;
 }) => {
   let managing: HTMLElement[] = [];
@@ -29,12 +29,16 @@ export const registerElementManagement = (param: {
   };
 
   const clearFlagToReDoFirstCheckOnNextFound = () => {
-    managing
-      .filter((e) => param.clearFlagCondition(e))
-      .forEach((e) => {
-        doSafely(param.onRemove, e);
-        uncheck(e);
-      });
+    if (param.clearFlagCondition) {
+      managing
+        .filter((e) => param.clearFlagCondition!(e))
+        .forEach((e) => {
+          if (param.onRemove) {
+            doSafely(param.onRemove, e);
+          }
+          uncheck(e);
+        });
+    }
   };
 
   // initial execution
