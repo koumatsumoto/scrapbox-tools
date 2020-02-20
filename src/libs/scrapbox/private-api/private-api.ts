@@ -1,7 +1,7 @@
 import { getRx } from '../../common/rxjs';
 import { getCurrentPageName, ID, onPageChange } from '../public-api';
 import { ApiClient } from './api-client/api-client';
-import { PageResponse } from './api-client/api-client-types';
+import { MeResponse, PageResponse } from './api-client/api-client-types';
 import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
 
 interface PageData extends PageResponse {
@@ -79,10 +79,23 @@ export class PrivateApi {
   }
 }
 
+// to cache
+let fetchingMe: Promise<MeResponse>;
+export const getMe = () => {
+  if (fetchingMe) {
+    return fetchingMe;
+  }
+
+  const apiClient = new ApiClient();
+  fetchingMe = apiClient.getMe();
+
+  return fetchingMe;
+};
+
 const preparePrivateApi = async () => {
   console.log('[private-api] start preparation');
   const apiClient = new ApiClient();
-  const [user, project] = await Promise.all([apiClient.getMe(), apiClient.getCurrentProject()]);
+  const [user, project] = await Promise.all([getMe(), apiClient.getCurrentProject()]);
   const websocketClient = new WebsocketClient(user!.id);
 
   const api = new PrivateApi(user.id, project.id, apiClient, websocketClient);
