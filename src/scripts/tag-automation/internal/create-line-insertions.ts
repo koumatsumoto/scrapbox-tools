@@ -18,16 +18,13 @@ export const createLineInsertions = (words: string[], date: Date = new Date(), l
 
   // construct a tag of date or time.
   // if diary page, use time (e.g. "24:00")
-  // if other page, use date (e.g. "2020/02/16")
-  let timeOrDate: string;
-  if (isEmptyPage(lines)) {
-    timeOrDate = getTimeText(date);
-  } else if (isDiaryPageTitle(lines[0].text)) {
-    timeOrDate = getTimeText(date);
+  // if other page, use date and time (e.g. "2020/02/16", "24:00")
+  let tagLineText: string;
+  if (isEmptyPage(lines) || isDiaryPageTitle(lines[0].text)) {
+    tagLineText = [getTimeText(date), ...words].map(makeTag).join(' ');
   } else {
-    timeOrDate = getDateText(date);
+    tagLineText = [getDateText(date), getTimeText(date), ...words].map(makeTag).join(' ');
   }
-  const tagLineText = [timeOrDate, ...words].map(makeTag).join(' ');
 
   switch (lines.length) {
     // an empty or title-only page

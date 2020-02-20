@@ -35,26 +35,26 @@ describe('createLineInsertions', () => {
     expect(createLineInsertions(words, date, symbolTitleOnly)).toEqual([
       { type: 'update', id: 'id', text: 'Symbol' },
       { type: 'title', title: 'Symbol' },
-      { type: 'insert', text: '#2020/02/09 #tag1 #tag2' },
+      { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
       { type: 'description', text: 'tagLineText' },
     ]);
     expect(createLineInsertions(words, date, symbolTitleEOF)).toEqual([
-      { type: 'insert', text: '#2020/02/09 #tag1 #tag2' },
+      { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
     ]);
     expect(createLineInsertions(words, date, hasPreviousTags)).toEqual([
       { type: 'insert', text: '' },
-      { type: 'insert', text: '#2020/02/09 #tag1 #tag2' },
+      { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
     ]);
     expect(createLineInsertions(words, date, has3Lines)).toEqual([
       { type: 'insert', text: '' },
-      { type: 'insert', text: '#2020/02/09 #tag1 #tag2' },
+      { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
     ]);
     expect(createLineInsertions(words, date, has3LinesEOF)).toEqual([
-      { type: 'insert', text: '#2020/02/09 #tag1 #tag2' },
+      { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
     ]);
   });
