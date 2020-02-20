@@ -4,7 +4,7 @@
 import { defineCustomElements } from './components';
 import { importRxJS } from './libs/common';
 import { runOnScrapboxReady } from './libs/scrapbox/public-api';
-import { addDatetimeOnListItem, applyLoginCSSClass, componentManager, highlightTagsInListItem } from './scripts';
+import { addDatetimeOnListItem, applyLoginCSSClass, componentManager, enableCustomListItem } from './scripts';
 
 const main = () => {
   runOnScrapboxReady(async () => {
@@ -15,7 +15,7 @@ const main = () => {
     // components will be connect to DOM
     componentManager.setupComponents();
 
-    highlightTagsInListItem();
+    enableCustomListItem();
 
     // add custom css class to body tag
     applyLoginCSSClass();
