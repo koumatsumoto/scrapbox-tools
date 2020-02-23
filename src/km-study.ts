@@ -10,6 +10,7 @@ import {
   componentManager,
   enableCustomListItem,
   registerUpdatingNewButton,
+  setupConsoleButton,
   setupLibs,
 } from './scripts';
 
@@ -24,6 +25,8 @@ const main = () => {
     defineCustomElements();
     // components will be connect to DOM
     componentManager.setupComponents();
+
+    setupConsoleButton();
 
     enableCustomListItem();
 

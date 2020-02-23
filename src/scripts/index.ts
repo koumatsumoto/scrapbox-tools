@@ -1,4 +1,5 @@
 export * from './component-manager';
+export * from './console-button';
 export * from './custom-list-item';
 export * from './datetime-on-list';
 export * from './debug-board';
