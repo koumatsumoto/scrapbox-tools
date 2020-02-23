@@ -32,11 +32,10 @@ export const createLineInsertions = (words: string[], date: Date = new Date(), l
     case 1: {
       // if empty, use date to title.
       const title = titleLine.text === '' ? getDateText(date) : titleLine.text;
-      changes.push({ type: 'update', id: titleLine.id, text: title });
       changes.push({ type: 'title', title });
       changes.push({ type: 'insert', text: tagLineText });
       changes.push({ type: 'insert', text: '' });
-      changes.push({ type: 'description', text: 'tagLineText' });
+      changes.push({ type: 'description', text: tagLineText });
 
       break;
     }
