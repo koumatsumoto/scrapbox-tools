@@ -23,16 +23,3 @@ export const endWithEmptyLine = (lines: PageLine[] = getLines()) => {
 
   return last.text === '';
 };
-
-const pageChangeObserveInterval = 250;
-export const onPageChange = (callback: (title: string | null) => any) => {
-  let state: string | null = getScrapbox().Page.title;
-
-  window.setInterval(() => {
-    const current = getScrapbox().Page.title;
-    if (current !== state) {
-      state = current;
-      callback(state);
-    }
-  }, pageChangeObserveInterval);
-};

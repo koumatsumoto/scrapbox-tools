@@ -1,5 +1,6 @@
 import { getRx } from '../../common/rxjs';
-import { getCurrentPageName, ID, onPageChange } from '../public-api';
+import { getCurrentPageName, ID } from '../public-api';
+import { onPageChange } from '../router';
 import { ApiClient } from './api-client/api-client';
 import { MeResponse, PageResponse } from './api-client/api-client-types';
 import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
