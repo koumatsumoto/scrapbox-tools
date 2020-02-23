@@ -1,10 +1,10 @@
-@import 'base';
-@import 'icons';
-@import 'text';
-@import 'old';
-@import 'dialog';
-@import 'my-console-button';
-@import 'my-debug-board';
+@import './base';
+@import './components/dialog';
+@import './icons';
+@import './text';
+@import './old';
+@import './my-console-button';
+@import './my-debug-board';
 @import './parts/for-list-layout/quick-launch';
 @import './parts/list/list-item';
 @import './parts/table/table';

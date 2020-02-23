@@ -1,9 +1,9 @@
-@import 'variables';
-@import 'base';
-@import 'dialog';
-@import 'icons';
-@import 'my-console-button';
-@import 'text';
+@import './variables';
+@import './base';
+@import './components/dialog';
+@import './icons';
+@import './my-console-button';
+@import './text';
 @import './parts/for-list-layout/quick-launch';
 @import './parts/list/list-item';
 @import './parts/table/table';
