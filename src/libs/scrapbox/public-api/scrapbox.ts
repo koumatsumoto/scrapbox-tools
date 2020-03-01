@@ -4,7 +4,17 @@ const baseUrl = 'https://scrapbox.io';
 
 export const getScrapbox = () => window.scrapbox;
 
-export const getLines = () => getScrapbox().Page.lines;
+export const getLines = (scrapbox: Scrapbox = getScrapbox()) => scrapbox.Page.lines;
+
+export const getFirstLineOrFail = (scrapbox: Scrapbox = getScrapbox()) => {
+  const lines = getLines(scrapbox);
+  const first = lines[0];
+  if (first === undefined) {
+    throw new Error('Failed to load first line');
+  }
+
+  return first;
+};
 
 export const getPages = (scrapbox: Scrapbox = getScrapbox()) => scrapbox.Project.pages;
 

@@ -1,6 +1,25 @@
-import { changeRoute, getPageIdMap, getPageTitleMap } from './scrapbox';
+import { changeRoute, getFirstLineOrFail, getPageIdMap, getPageTitleMap } from './scrapbox';
 
 describe('scrap box public api', () => {
+  describe('getFirstLineOrFail', () => {
+    it('should get first line', () => {
+      const first = {};
+      expect(
+        getFirstLineOrFail({
+          Page: { lines: [first] },
+        } as any),
+      ).toEqual(first);
+    });
+
+    it('should throw if first line not found', () => {
+      expect(() =>
+        getFirstLineOrFail({
+          Page: { lines: [] },
+        } as any),
+      ).toThrow();
+    });
+  });
+
   describe('changeRoute', () => {
     it('should push state', () => {
       const pushState = jest.fn();
