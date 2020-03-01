@@ -6,7 +6,6 @@ import { validateResponse } from './internal/validate-response';
 import { extractMessage } from './websocket-client-internal-functions';
 import {
   CommitPayload,
-  CommitResponse,
   CommitSuccessResponse,
   ConnectionOpenResponse,
   ExternalCommitData,
@@ -135,6 +134,7 @@ export class WebsocketClient {
     this.socket.addEventListener('error', (event: Event) => {
       console.error('[websocket-client] connection errored ', event);
       this.error$.next(event);
+      this.socket.close();
     });
   }
 

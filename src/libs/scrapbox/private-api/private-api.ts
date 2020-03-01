@@ -20,23 +20,15 @@ export class PrivateApi {
     getRx().operators.switchMap((title) => (title === null ? getRx().of(null) : this.apiClient.getPage(title))),
     getRx().operators.shareReplay(1),
   );
+  private websocketClient!: WebsocketClient;
 
-  constructor(
-    private readonly userId: ID,
-    private readonly projectId: string,
-    private readonly apiClient: ApiClient,
-    private readonly websocketClient: WebsocketClient,
-  ) {
+  constructor(private readonly userId: ID, private readonly projectId: string, private readonly apiClient: ApiClient) {
+    this.setupWebsocket();
+
     // register page change handling
     this.pageResponse$.subscribe((page) => {
       this.pageData = page;
       this.websocketClient.joinRoom({ projectId: this.projectId, pageId: page === null ? null : page.id });
-    });
-    // handle update by other user
-    this.websocketClient.commitIdUpdate$.subscribe((data) => {
-      if (this.pageData && this.pageData.id === data.pageId) {
-        this.pageData.commitId = data.id;
-      }
     });
     onPageChange((t) => this.pageRequest$.next(t));
   }
@@ -61,6 +53,26 @@ export class PrivateApi {
       projectId: this.projectId,
       pageId: this.pageData.id,
       commitId: this.pageData.commitId,
+    });
+  }
+
+  /**
+   * for websocket reconnect handling
+   */
+  private setupWebsocket() {
+    this.websocketClient = new WebsocketClient(this.userId);
+
+    // handle update by other user
+    const subscription = this.websocketClient.commitIdUpdate$.subscribe((data) => {
+      if (this.pageData && this.pageData.id === data.pageId) {
+        this.pageData.commitId = data.id;
+      }
+    });
+
+    // auto reconnect
+    this.websocketClient.close$.pipe(getRx().operators.first()).subscribe(() => {
+      subscription.unsubscribe();
+      this.setupWebsocket();
     });
   }
 
@@ -103,9 +115,8 @@ const preparePrivateApi = async () => {
   console.log('[private-api] start preparation');
   const apiClient = new ApiClient();
   const [user, project] = await Promise.all([getMe(), apiClient.getCurrentProject()]);
-  const websocketClient = new WebsocketClient(user!.id);
 
-  const api = new PrivateApi(user.id, project.id, apiClient, websocketClient);
+  const api = new PrivateApi(user.id, project.id, apiClient);
   await api.initialize();
 
   return api;
