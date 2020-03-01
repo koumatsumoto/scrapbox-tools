@@ -1,3 +1,5 @@
+import { MyIcon, SupportedIcon } from '../my-icon/my-icon.component';
+
 const html = require('./my-console-button.component.html');
 
 export class MyConsoleButton extends HTMLElement {
@@ -6,9 +8,21 @@ export class MyConsoleButton extends HTMLElement {
     /* nothing */
   };
 
+  private readonly icon!: MyIcon;
+
   constructor() {
     super();
     this.innerHTML = `${html}`;
+
+    const icon = this.querySelector<MyIcon>('my-icon');
+    if (!icon) {
+      throw new Error('Invalid Template');
+    }
+    this.icon = icon;
+  }
+
+  setIcon(iconName: SupportedIcon) {
+    this.icon.type = iconName;
   }
 
   setAction(action: () => unknown) {

@@ -11,6 +11,8 @@ interface PageData extends PageResponse {
 }
 
 export class PrivateApi {
+  requestStatus$ = new (getRx().Subject)<'request start' | 'request end'>();
+
   private pageData: PageData | null = null;
   private readonly pageRequest$ = new (getRx().Subject)<string | null>();
   private readonly pageResponse$ = this.pageRequest$.pipe(
@@ -63,6 +65,8 @@ export class PrivateApi {
   }
 
   private async commit(param: { projectId: string; pageId: string; commitId: string; changes: CommitChangeParam[] }) {
+    this.requestStatus$.next('request start');
+
     const response = await this.websocketClient.commit({
       userId: this.userId,
       projectId: param.projectId,
@@ -75,6 +79,8 @@ export class PrivateApi {
     if (this.pageData) {
       this.pageData.commitId = response[0].data.commitId;
     }
+
+    this.requestStatus$.next('request end');
 
     return response;
   }
