@@ -34,9 +34,18 @@ $material-colors: (
    */ 'blue-grey-800': #37474f
 );
 
-$font-size: (/**
+$font-size: (
+  /**
    * text in debugboard
-   */ 'small': 11px);
+   */ 'small': 11px,
+  /**
+   * tag-selector
+   */ 'sub': 12px
+);
+
+$break-point: (/**
+   * using pixel 2 XL
+   */ 'sp': 767px);
 
 $easing: (
   'linear': cubic-bezier(0.25, 0.25, 0.75, 0.75),

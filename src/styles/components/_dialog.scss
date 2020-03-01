@@ -1,11 +1,22 @@
 @import 'src/styles/variables';
 
+$dialog-min-width: 400px;
+$dialog-max-width: 84vw;
+// don't use vh because viewport will be changed on keyboard area appeared
+$dialog-min-height: 320px;
+$dialog-max-height: 80vh;
+
 my-tag-form-dialog {
+  // layout size
+  dialog,
+  form {
+    min-width: $dialog-min-width;
+    max-width: $dialog-max-width;
+    min-height: $dialog-min-height;
+    max-height: $dialog-max-height;
+  }
+
   dialog {
-    width: 80vw;
-    // don't use vh because viewport will be changed on keyboard area appeared
-    min-height: 320px;
-    max-height: 80vh;
     padding: 0;
     overflow: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,10 +35,6 @@ my-tag-form-dialog {
   form {
     display: flex;
     flex-direction: column;
-    width: 80vw;
-    // don't use vh because viewport will be changed on keyboard area appeared
-    min-height: 320px;
-    max-height: 80vh;
     padding: 24px 8px 8px 24px;
     overflow: scroll;
     border: none;
@@ -55,10 +62,10 @@ my-tag-form-dialog {
   label {
     position: relative;
     display: inline-block;
-    padding: 0 12px 0 24px;
+    padding: 0 12px 0 22px;
     margin: 0 8px 12px 0;
     font: inherit;
-    font-size: 14px;
+    font-size: map_get($font-size, 'sub');
     line-height: 32px;
     color: map_get($material-colors, 'grey-500');
     text-align: left;
@@ -88,7 +95,7 @@ my-tag-form-dialog {
     left: 8px;
     display: inline-block;
     padding: 0;
-    margin-right: 8px;
+    margin-right: 6px;
     /* stylelint-disable-next-line */
     font-family: 'FontAwesome';
     font-size: 12px;

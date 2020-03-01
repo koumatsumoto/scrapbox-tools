@@ -69,7 +69,7 @@ body:not(#{map_get($custom-css-class-names, 'apply-login-css-class')}) {
   display: none !important;
 }
 
-@media (max-width: 767px) {
+@media (max-width: map_get($break-point, 'sp')) {
   // page container
   .col-page {
     padding: 0 !important;
