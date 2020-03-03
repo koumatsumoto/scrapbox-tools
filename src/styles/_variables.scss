@@ -40,7 +40,10 @@ $font-size: (
    */ 'small': 11px,
   /**
    * tag-selector
-   */ 'sub': 12px
+   */ 'sub': 12px,
+  /**
+   * tags in page
+   */ 'bordered-tag': 13px
 );
 
 $break-point: (/**
@@ -77,4 +80,10 @@ $easing: (
   'easeInOutExpo': cubic-bezier(1, 0, 0, 1),
   'easeInOutCirc': cubic-bezier(0.785, 0.135, 0.15, 0.86),
   'easeInOutBack': cubic-bezier(0.68, -0.55, 0.265, 1.55),
+);
+
+$COLORS: (
+  'page-link': #2688de,
+  'empty-page-link': #c5436c,
+  'bordered-tag': #f79501,
 );
