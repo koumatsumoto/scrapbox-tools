@@ -64,6 +64,8 @@
       $color: map_get($COLORS, 'bordered-tag');
       $border: 1px solid $color;
       $font-size: map_get($font-size, 'bordered-tag');
+      $color-hovered: map_get($COLORS, 'bordered-hover');
+      $background-color-hovered: map_get($COLORS, 'bordered-hover-bg');
 
       // "#"
       span:first-child {
@@ -76,21 +78,21 @@
       &:hover,
       &:active {
         display: inline-block;
-        padding: 4px 6px;
-        margin: 8px 2px 8px 0;
+        padding: 6px;
+        margin: 7px 2px 7px 0;
         font-family: 'Kosugi Maru', sans-serif !important;
         font-size: $font-size;
-        line-height: 15px;
+        line-height: 13px;
         color: $color !important;
         background: #fff;
         border: $border;
         border-radius: 2px;
-        transition: 0.24s;
+        transition: 0.24s map_get($easing, easeInOutCirc);
       }
 
       &:hover {
-        color: #ea692d !important;
-        background-color: #ffe3d5;
+        color: $color-hovered !important;
+        background-color: $background-color-hovered;
       }
     }
   }

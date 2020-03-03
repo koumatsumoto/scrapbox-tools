@@ -43,7 +43,7 @@ $font-size: (
    */ 'sub': 12px,
   /**
    * tags in page
-   */ 'bordered-tag': 13px
+   */ 'bordered-tag': 1.32rem
 );
 
 $break-point: (/**
@@ -86,4 +86,6 @@ $COLORS: (
   'page-link': #2688de,
   'empty-page-link': #c5436c,
   'bordered-tag': #f79501,
+  'bordered-hover': #f3811d,
+  'bordered-hover-bg': #f7811938,
 );
