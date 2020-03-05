@@ -19,6 +19,7 @@ export const importRxJS = () => {
 
 type RxJS = {
   Observable: typeof RxType.Observable;
+  ReplaySubject: typeof RxType.ReplaySubject;
   Subject: typeof RxType.Subject;
   animationFrameScheduler: typeof RxType.animationFrameScheduler;
   combineLatest: typeof RxType.combineLatest;

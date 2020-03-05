@@ -1,13 +1,15 @@
-const iconSvg = {
-  apps: require('./svg/apps.svg') as string,
-  clear: require('./svg/clear.svg') as string,
-  'view-modules': require('./svg/view_module.svg') as string,
-  widgets: require('./svg/widgets.svg') as string,
+export type SupportedIcon = 'add' | 'apps' | 'clear' | 'view-modules' | 'widgets';
+
+const iconSvg: Record<SupportedIcon, string> = {
+  add: require('./svg/add.svg'),
+  apps: require('./svg/apps.svg'),
+  clear: require('./svg/clear.svg'),
+  'view-modules': require('./svg/view_module.svg'),
+  widgets: require('./svg/widgets.svg'),
 } as const;
 const initialHTML = iconSvg.apps;
 
-export type SupportedIcon = keyof typeof iconSvg | string;
-export type SupportedPropertyName = 'type' | 'size' | string;
+export type SupportedPropertyName = 'type' | 'size';
 const defaultSize = '24';
 
 // TODO: should memoize
@@ -53,7 +55,8 @@ export class MyIcon extends HTMLElement {
   attributeChangedCallback(name: SupportedPropertyName, oldValue: string, newValue: string) {
     switch (name) {
       case 'type': {
-        this.type = newValue;
+        // TODO: validate value
+        this.type = newValue as SupportedIcon;
         break;
       }
       case 'size': {

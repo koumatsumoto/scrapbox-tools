@@ -1,10 +1,11 @@
 import { MyIcon, SupportedIcon } from '../my-icon/my-icon.component';
 
 const html = require('./my-console-button.component.html');
+type Action = () => unknown;
 
 export class MyConsoleButton extends HTMLElement {
   static readonly elementName = 'my-console-button';
-  private action: () => unknown = () => {
+  private action: Action = () => {
     /* nothing */
   };
 
@@ -21,12 +22,13 @@ export class MyConsoleButton extends HTMLElement {
     this.icon = icon;
   }
 
-  setIcon(iconName: SupportedIcon) {
-    this.icon.type = iconName;
-  }
-
-  setAction(action: () => unknown) {
-    this.action = action;
+  setState(param: { icon?: SupportedIcon; action?: Action }) {
+    if (param.icon) {
+      this.icon.type = param.icon;
+    }
+    if (param.action) {
+      this.action = param.action;
+    }
   }
 
   connectedCallback() {

@@ -1,23 +1,25 @@
 import { ScrapboxPage } from './page';
 import { ScrapboxProject } from './project';
 
+export type ScrapboxLayout =
+  | 'page'
+  | 'list'
+  | 'stream'
+  | 'new-project-page'
+  | 'project-settings-basic-page'
+  | 'project-settings-members-page'
+  | 'project-settings-theme-page'
+  | 'project-settings-notifications-page'
+  | 'project-settings-page-data-page'
+  | 'project-settings-backup-page'
+  | 'project-settings-advanced-page'
+  | 'project-settings-billing-page'
+  | 'settings-profile-page'
+  | 'settings-extensions-page'
+  | 'settings-delete-account-page';
+
 export type Scrapbox = {
-  Layout:
-    | 'page'
-    | 'list'
-    | 'stream'
-    | 'new-project-page'
-    | 'project-settings-basic-page'
-    | 'project-settings-members-page'
-    | 'project-settings-theme-page'
-    | 'project-settings-notifications-page'
-    | 'project-settings-page-data-page'
-    | 'project-settings-backup-page'
-    | 'project-settings-advanced-page'
-    | 'project-settings-billing-page'
-    | 'settings-profile-page'
-    | 'settings-extensions-page'
-    | 'settings-delete-account-page';
+  Layout: ScrapboxLayout;
   Page: ScrapboxPage;
   PageMenu: {
     addItem: (param: { title: string; onClick: () => void }) => void;

@@ -18,12 +18,12 @@ export const setupLibs = async () => {
   api.requestStatus$.subscribe((state) => {
     switch (state) {
       case 'request start': {
-        cb.setIcon('clear');
+        cb.setState({ icon: 'clear' });
 
         break;
       }
       case 'request end': {
-        cb.setIcon('apps');
+        cb.setState({ icon: 'apps' });
 
         break;
       }
