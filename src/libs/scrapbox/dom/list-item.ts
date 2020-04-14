@@ -1,14 +1,14 @@
 import { Brand } from '../../../types';
-import { getElementOrFail, getElements } from '../../common';
+import { findElementOrFail, getElements } from '../../common';
 import { selectors } from './internal/selectors';
 
 type ListItemElement = Brand<Element, 'ListItemElement'>;
 
 const selectListItems = (parent: ParentNode = document) => getElements(selectors.listItem, parent) as ListItemElement[];
 
-const selectTitle = (element: ListItemElement) => getElementOrFail('.title', element);
+const selectTitle = (element: ListItemElement) => findElementOrFail('.title', element);
 
-export const selectContainer = (element: ListItemElement) => getElementOrFail('.content', element);
+export const selectContainer = (element: ListItemElement) => findElementOrFail('.content', element);
 
 // internal
 const retrieveTitle = (listItem: ListItemElement) => {

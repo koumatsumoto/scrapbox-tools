@@ -8,6 +8,7 @@ import {
   addDatetimeOnListItem,
   applyLoginCSSClass,
   componentManager,
+  useAddEpisodeButton,
   enableCustomListItem,
   registerUpdatingNewButton,
   setupConsoleButton,
@@ -36,6 +37,9 @@ const main = () => {
     addDatetimeOnListItem();
 
     registerUpdatingNewButton();
+
+    // since 2020/04/20
+    useAddEpisodeButton();
   });
 };
 

@@ -1,4 +1,4 @@
-import { getDateText, onPageChange } from '../../../libs/scrapbox';
+import { getDateText, Router } from '../../../libs/scrapbox';
 import { selectNewButtons } from '../config';
 
 export const makeLink = (source: string, word: string) => source.replace('new', encodeURIComponent(word));
@@ -15,5 +15,5 @@ export const registerUpdatingNewButton = () => {
   // initial
   replaceNewButtonLink();
   // on route change
-  onPageChange(replaceNewButtonLink);
+  Router.onPageChange(replaceNewButtonLink);
 };

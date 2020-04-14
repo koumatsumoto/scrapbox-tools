@@ -1,13 +1,13 @@
 import { setupBodyForTest } from '../../../test-helpers';
-import { getElementOrFail, getElements } from './get-elements';
+import { findElementOrFail, getElements } from './get-elements';
 
-describe('getElementOrFail', () => {
+describe('findElementOrFail', () => {
   it('should retrieve an element from DOM', () => {
-    expect(getElementOrFail('body')).toBeTruthy();
+    expect(findElementOrFail('body')).toBeTruthy();
   });
 
   it('should throw if not found', () => {
-    expect(() => getElementOrFail('not-found')).toThrow();
+    expect(() => findElementOrFail('not-found')).toThrow();
   });
 });
 

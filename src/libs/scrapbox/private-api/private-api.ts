@@ -1,6 +1,6 @@
 import { getRx } from '../../common/rxjs';
 import { getCurrentPageName, ID } from '../public-api';
-import { onPageChange } from '../router';
+import { Router } from '../router';
 import { ApiClient } from './api-client/api-client';
 import { MeResponse, PageResponse } from './api-client/api-client-types';
 import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
@@ -30,7 +30,7 @@ export class PrivateApi {
       this.pageData = page;
       this.websocketClient.joinRoom({ projectId: this.projectId, pageId: page === null ? null : page.id });
     });
-    onPageChange((t) => this.pageRequest$.next(t));
+    Router.onPageChange((t) => this.pageRequest$.next(t));
   }
 
   /**

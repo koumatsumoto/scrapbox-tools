@@ -6,6 +6,8 @@ const checkInterval = 250;
 
 /**
  * Observe window.scrapbox and notify if it changes.
+ *
+ * TODO: 2020/04/14 integrate into Router
  */
 export class ScrapboxObserver {
   readonly layout$ = new (getRx().ReplaySubject)<ScrapboxLayout>(1);

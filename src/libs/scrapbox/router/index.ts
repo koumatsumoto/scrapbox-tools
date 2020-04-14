@@ -1,1 +1,1 @@
-export * from './on-page-change';
+export { Router } from './router';
