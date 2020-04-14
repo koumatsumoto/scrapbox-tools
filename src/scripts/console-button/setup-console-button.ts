@@ -4,7 +4,6 @@ import { loadPage } from '../../libs/scrapbox/public-api';
 import { getScrapboxObserver } from '../../libs/scrapbox/public-api/observer';
 import { getDateText } from '../../libs/scrapbox/text';
 import { componentManager } from '../component-manager';
-import { openDialogAndWriteTags } from '../tag-automation';
 
 export const setupConsoleButton = async () => {
   const scrapboxObserver = getScrapboxObserver();
@@ -15,8 +14,8 @@ export const setupConsoleButton = async () => {
     switch (layout) {
       case 'page': {
         return button.setState({
-          icon: 'apps',
-          action: openDialogAndWriteTags,
+          icon: 'add',
+          action: () => loadPage(getDateText()),
         });
       }
       default: {

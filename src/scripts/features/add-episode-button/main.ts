@@ -1,6 +1,6 @@
 import { createElement } from '../../../libs/common/dom';
 import { DomManipulator } from '../../../libs/scrapbox/dom/dom-manipulator';
-import { openDialogAndWriteTags } from '../../tag-automation';
+import { openDialogAndWriteTags } from './open-dialog-and-write-tags';
 
 const createAddEpisodeButton = () => {
   return createElement({

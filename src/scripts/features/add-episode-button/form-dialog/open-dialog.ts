@@ -1,8 +1,8 @@
 import { TagOption } from '../config';
-import { MyTagFormDialog } from './my-tag-form-dialog.component';
+import { MyTagFormDialog } from './form-dialog.component';
 
 let isDefined = false;
-export const openTagFormDialog = (tagOptions: TagOption[]) => {
+export const openDialog = (tagOptions: TagOption[]) => {
   if (!isDefined) {
     customElements.define(MyTagFormDialog.elementName, MyTagFormDialog);
     isDefined = true;
@@ -10,6 +10,7 @@ export const openTagFormDialog = (tagOptions: TagOption[]) => {
 
   const dialog = new MyTagFormDialog(tagOptions);
   document.body.appendChild(dialog);
+  dialog.open();
 
-  return dialog.open();
+  return dialog;
 };

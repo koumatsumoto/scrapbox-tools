@@ -1,7 +1,7 @@
-import { getFakeJSTDate } from '../../../libs/common/test-helpers';
-import { createLineInsertions } from './create-line-insertions';
+import { getFakeJSTDate } from '../../../../libs/common/test-helpers';
+import { makeInsertParams } from './make-insert-params';
 
-describe('createLineInsertions', () => {
+describe('makeInsertParams', () => {
   const words = ['tag1', 'tag2'];
   const date = getFakeJSTDate('2020-02-09T03:28:38.036Z');
   const emptyPage = [{ text: '', id: 'id' }] as any;
@@ -14,43 +14,43 @@ describe('createLineInsertions', () => {
   const has3LinesEOF = [{ text: 'Symbol' }, { text: '#tag' }, { text: '' }] as any;
 
   it('should work', () => {
-    expect(createLineInsertions(words, date, emptyPage)).toEqual([
+    expect(makeInsertParams(words, date, emptyPage)).toEqual([
       { type: 'title', title: '2020/02/09' },
       { type: 'insert', text: '#12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
       { type: 'description', text: '#12:00 #tag1 #tag2' },
     ]);
-    expect(createLineInsertions(words, date, dailyTitleOnly)).toEqual([
+    expect(makeInsertParams(words, date, dailyTitleOnly)).toEqual([
       { type: 'title', title: '2020/02/08' },
       { type: 'insert', text: '#12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
       { type: 'description', text: '#12:00 #tag1 #tag2' },
     ]);
-    expect(createLineInsertions(words, date, dailyTitleEOF)).toEqual([
+    expect(makeInsertParams(words, date, dailyTitleEOF)).toEqual([
       { type: 'insert', text: '#12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
     ]);
-    expect(createLineInsertions(words, date, symbolTitleOnly)).toEqual([
+    expect(makeInsertParams(words, date, symbolTitleOnly)).toEqual([
       { type: 'title', title: 'Symbol' },
       { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
       { type: 'description', text: '#2020/02/09 #12:00 #tag1 #tag2' },
     ]);
-    expect(createLineInsertions(words, date, symbolTitleEOF)).toEqual([
+    expect(makeInsertParams(words, date, symbolTitleEOF)).toEqual([
       { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
     ]);
-    expect(createLineInsertions(words, date, hasPreviousTags)).toEqual([
-      { type: 'insert', text: '' },
-      { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
-      { type: 'insert', text: '' },
-    ]);
-    expect(createLineInsertions(words, date, has3Lines)).toEqual([
+    expect(makeInsertParams(words, date, hasPreviousTags)).toEqual([
       { type: 'insert', text: '' },
       { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
     ]);
-    expect(createLineInsertions(words, date, has3LinesEOF)).toEqual([
+    expect(makeInsertParams(words, date, has3Lines)).toEqual([
+      { type: 'insert', text: '' },
+      { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
+      { type: 'insert', text: '' },
+    ]);
+    expect(makeInsertParams(words, date, has3LinesEOF)).toEqual([
       { type: 'insert', text: '#2020/02/09 #12:00 #tag1 #tag2' },
       { type: 'insert', text: '' },
     ]);
