@@ -1,16 +1,7 @@
 $same-color-to-scrapbox-menu-icon: #363c48;
 
 .sx-add-episode-button {
-  &.for-title-right {
-    position: absolute;
-    top: 12px; // to adjust to title text mid line
-    right: 0;
-  }
-
-  &.for-editor-bottom {
-    margin-top: 8px;
-  }
-
+  margin-top: 8px;
   font-size: 12px;
   line-height: 2em;
   color: $same-color-to-scrapbox-menu-icon;

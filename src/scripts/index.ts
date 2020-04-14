@@ -10,4 +10,4 @@ export * from './setup-libs';
 export * from './tag-automation';
 
 // new directory management since 2020/04/14
-export * from './features/add-episode-button';
+export * from './features/add-episode-button/main';
