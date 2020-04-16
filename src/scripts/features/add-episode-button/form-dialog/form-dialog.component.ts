@@ -1,7 +1,7 @@
 import { removeElement } from '../../../../libs/common/dom';
 import { TagOption } from '../config';
-const html = require('./form-dialog.component.html');
 import { addWord, removeWord, splitWords } from './textarea-operation';
+const html = require('./form-dialog.component.html');
 
 type CustomDialogResult<T> = { ok: false } | { ok: true; data: T };
 
@@ -38,7 +38,7 @@ export class MyTagFormDialog extends HTMLElement {
   private textInput: HTMLInputElement;
   private loadingIndicatorContainer: HTMLDivElement;
 
-  constructor(tagOptions: TagOption[]) {
+  constructor(tagOptions: TagOption[] = []) {
     super();
 
     this.innerHTML = `${html}`;
