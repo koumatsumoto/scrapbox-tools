@@ -1,4 +1,4 @@
-import { ISOString, LocaleString, Timestamp } from '../../../types';
+import { ISOString, LocaleString, Timestamp } from '../types';
 
 export const getTime = () => Date.now() as Timestamp;
 export const getISOString = () => new Date().toISOString() as ISOString;

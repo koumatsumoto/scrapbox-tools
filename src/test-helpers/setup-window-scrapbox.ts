@@ -1,5 +1,4 @@
-import '../types';
-import { PageLine, Scrapbox } from '../types/scrapbox';
+import { PageLine, Scrapbox } from '../libs/scrapbox/types';
 
 export type SetupWindowScrapboxOption = {
   layout?: Scrapbox['Layout'];

@@ -4,4 +4,5 @@ export * from './load-scripts';
 export * from './rxjs';
 export * from './string';
 export * from './time-operation';
+export * from './types';
 export * from './validation';

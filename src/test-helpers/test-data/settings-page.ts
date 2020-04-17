@@ -1,4 +1,4 @@
-import { PageLine } from '../../types/scrapbox';
+import { PageLine } from '../../libs/scrapbox/types';
 import { SetupWindowScrapboxOption } from '../setup-window-scrapbox';
 
 export const data: Record<string, SetupWindowScrapboxOption> = {

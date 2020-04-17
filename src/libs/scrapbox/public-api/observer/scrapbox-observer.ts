@@ -1,5 +1,5 @@
-import { ScrapboxLayout } from '../../../../types/scrapbox';
 import { getRx } from '../../../common/rxjs';
+import { ScrapboxLayout } from '../../types';
 import { getScrapbox } from '../scrapbox';
 
 const checkInterval = 250;

@@ -1,5 +1,4 @@
-import { Brand } from '../../../types';
-import { findElementOrFail, getElements } from '../../common';
+import { Brand, findElementOrFail, getElements } from '../../common';
 import { selectors } from './internal/selectors';
 
 type ListItemElement = Brand<Element, 'ListItemElement'>;

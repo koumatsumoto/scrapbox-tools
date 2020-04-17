@@ -1,4 +1,4 @@
-import { ID } from '../../libs/scrapbox/public-api';
+import { ID } from '../public-api';
 
 export type LinkNodeUnit = {
   // page name to link

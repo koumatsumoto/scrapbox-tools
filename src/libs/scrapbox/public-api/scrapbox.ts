@@ -1,4 +1,4 @@
-import { ExistentPageListItem, Scrapbox, ScrapboxProjectPage } from '../../../types/scrapbox';
+import { ExistentPageListItem, Scrapbox, ScrapboxProjectPage } from '../types';
 
 const baseUrl = 'https://scrapbox.io';
 

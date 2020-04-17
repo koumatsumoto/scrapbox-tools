@@ -1,4 +1,4 @@
-import { Brand } from '../../../types';
+import { Brand } from '../../common';
 
 export type ID = Brand<string, 'ID'>;
 

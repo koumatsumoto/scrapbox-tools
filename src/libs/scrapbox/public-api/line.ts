@@ -1,4 +1,4 @@
-import { PageLine } from '../../../types/scrapbox';
+import { PageLine } from '../types';
 import { ID } from './id';
 import { getLines } from './index';
 
