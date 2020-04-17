@@ -1,3 +1,5 @@
+@import 'variables';
+
 .quick-launch .right-box .grid-size-range {
   display: none;
 }
@@ -209,8 +211,8 @@ form {
   margin: 0 0 4px 0;
   font-size: 0.88em;
   line-height: 10px;
-  color: #f27e48 !important;
+  color: map_get($COLORS, 'bordered-tag') !important;
   background: #fff;
-  border: 1px solid #f27e48;
+  border: 1px solid map_get($COLORS, 'bordered-tag');
   border-radius: 2px;
 }
