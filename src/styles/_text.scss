@@ -7,6 +7,15 @@
 // Source Code Pro
 @import url('https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap');
 
+// show "#" on editing to visible cursor
+.cursor-line {
+  a[type='hashTag'] {
+    span:first-child {
+      display: inline !important;
+    }
+  }
+}
+
 .line {
   font-family: 'Noto Sans JP', sans-serif !important;
 
@@ -65,7 +74,6 @@
       $border: 1px solid $color;
       $font-size: map_get($font-size, 'bordered-tag');
       $color-hovered: map_get($COLORS, 'bordered-hover');
-      $background-color-hovered: map_get($COLORS, 'bordered-hover-bg');
 
       // "#"
       span:first-child {
@@ -78,21 +86,13 @@
       &:hover,
       &:active {
         display: inline-block;
-        padding: 6px;
-        margin: 7px 2px 7px 0;
-        font-family: 'Kosugi Maru', sans-serif !important;
-        font-size: $font-size;
-        line-height: 13px;
+        padding: 6px 2px;
         color: $color !important;
-        background: #fff;
-        border: $border;
-        border-radius: 2px;
         transition: 0.24s map_get($easing, easeInOutCirc);
       }
 
       &:hover {
         color: $color-hovered !important;
-        background-color: $background-color-hovered;
       }
     }
   }

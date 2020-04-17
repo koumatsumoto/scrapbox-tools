@@ -1,3 +1,3 @@
-import { getElements } from '../../libs/common/dom';
+import { findElements } from '../../libs/common/dom';
 
-export const selectNewButtons = () => getElements<HTMLAnchorElement>('a.new-button');
+export const selectNewButtons = () => findElements<HTMLAnchorElement>('a.new-button');

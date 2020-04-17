@@ -1,4 +1,4 @@
-import { ScrapboxPage } from './page';
+import { Line, TitleLine } from './page';
 import { ScrapboxProject } from './project';
 
 export type ScrapboxLayout =
@@ -20,7 +20,12 @@ export type ScrapboxLayout =
 
 export type Scrapbox = {
   Layout: ScrapboxLayout;
-  Page: ScrapboxPage;
+  Page: {
+    // null if layout:list
+    title: TitleLine['text'] | null;
+    // first item is title line
+    lines: Line[] | null;
+  };
   PageMenu: {
     addItem: (param: { title: string; onClick: () => void }) => void;
     addMenu: (param: { title: string; image: string; onClick: () => void }) => void;

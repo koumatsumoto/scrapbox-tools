@@ -1,3 +1,4 @@
+import { Brand } from '../../common';
 import { ID } from '../public-api';
 
 export type LinkNodeUnit = {
@@ -109,13 +110,10 @@ export type NonTitleLine = {
   nodes?: ScrapboxNode | ScrapboxNode[];
 };
 
+export type TextStartWithHash = Brand<string, 'TextStartWithHash'>;
+// lines that start with "#tag" string
+export type TagLine = NonTitleLine & { text: TextStartWithHash };
+
 export type NonIndentedFormulaLine = NonTitleLine & { formulaLine: true };
 
-export type PageLine = TitleLine | NonTitleLine | NonIndentedFormulaLine;
-
-export type ScrapboxPage = {
-  // null if layout:list
-  title: TitleLine['text'] | null;
-  // first item is title line
-  lines: PageLine[];
-};
+export type Line = TitleLine | NonTitleLine | TagLine | NonIndentedFormulaLine;

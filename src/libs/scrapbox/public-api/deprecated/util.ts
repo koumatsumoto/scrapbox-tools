@@ -1,4 +1,4 @@
-import { runOnDocumentReady } from '../../common';
+import { runOnDocumentReady } from '../../../common';
 import { isScrapboxReady } from './scrapbox';
 
 const reactBootstrapCheckInterval = 20;

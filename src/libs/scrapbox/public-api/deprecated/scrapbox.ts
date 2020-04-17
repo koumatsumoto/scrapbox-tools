@@ -1,10 +1,10 @@
-import { ExistentPageListItem, Scrapbox, ScrapboxProjectPage } from '../types';
+import { ExistentPageListItem, Scrapbox, ScrapboxProjectPage } from '../../types';
 
 const baseUrl = 'https://scrapbox.io';
 
 export const getScrapbox = () => window.scrapbox;
 
-export const getLines = (scrapbox: Scrapbox = getScrapbox()) => scrapbox.Page.lines;
+export const getLines = (scrapbox: Scrapbox = getScrapbox()) => scrapbox.Page.lines || [];
 
 export const getFirstLineOrFail = (scrapbox: Scrapbox = getScrapbox()) => {
   const lines = getLines(scrapbox);
