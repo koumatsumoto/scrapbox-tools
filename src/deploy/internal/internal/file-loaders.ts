@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { version } from '../../../../version';
-import { getJSTString } from '../../../libs/common';
+
+const getJSTString = () => new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
 
 const loadFile = (path: string) =>
   new Promise<string>((resolve, reject) =>

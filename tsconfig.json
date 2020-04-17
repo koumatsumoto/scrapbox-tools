@@ -15,7 +15,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "baseUrl": "./",
-    "sourceMap": true,
-    "inlineSources": true
+    "sourceMap": false,
+    "inlineSources": false
   }
 }
