@@ -1,4 +1,4 @@
-import { Line } from '../../libs/scrapbox/types';
+import { ScrapboxLine } from '../../libs/scrapbox/types';
 import { SetupWindowScrapboxOption } from '../setup-window-scrapbox';
 
 export const data: Record<string, SetupWindowScrapboxOption> = {
@@ -61,6 +61,6 @@ export const data: Record<string, SetupWindowScrapboxOption> = {
         section: { number: 1, start: false, end: true },
         nodes: '',
       },
-    ] as Line[],
+    ] as ScrapboxLine[],
   },
 };

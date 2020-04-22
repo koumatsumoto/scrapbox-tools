@@ -1,12 +1,12 @@
-import { ExistentPageListItem, Scrapbox, ScrapboxProjectPage } from '../../types';
+import { ExistentPageListItem, RawScrapbox, ScrapboxProjectPage } from '../../types';
 
 const baseUrl = 'https://scrapbox.io';
 
 export const getScrapbox = () => window.scrapbox;
 
-export const getLines = (scrapbox: Scrapbox = getScrapbox()) => scrapbox.Page.lines || [];
+export const getLines = (scrapbox: RawScrapbox = getScrapbox()) => scrapbox.Page.lines || [];
 
-export const getFirstLineOrFail = (scrapbox: Scrapbox = getScrapbox()) => {
+export const getFirstLineOrFail = (scrapbox: RawScrapbox = getScrapbox()) => {
   const lines = getLines(scrapbox);
   const first = lines[0];
   if (first === undefined) {
@@ -16,9 +16,9 @@ export const getFirstLineOrFail = (scrapbox: Scrapbox = getScrapbox()) => {
   return first;
 };
 
-export const getPages = (scrapbox: Scrapbox = getScrapbox()) => scrapbox.Project.pages;
+export const getPages = (scrapbox: RawScrapbox = getScrapbox()) => scrapbox.Project.pages;
 
-export const getPageIdMap = (scrapbox: Scrapbox = getScrapbox()) => {
+export const getPageIdMap = (scrapbox: RawScrapbox = getScrapbox()) => {
   const map = new Map<string, ExistentPageListItem>();
 
   for (const page of getPages(scrapbox)) {
@@ -30,7 +30,7 @@ export const getPageIdMap = (scrapbox: Scrapbox = getScrapbox()) => {
   return map;
 };
 
-export const getPageTitleMap = (scrapbox: Scrapbox = getScrapbox()) => {
+export const getPageTitleMap = (scrapbox: RawScrapbox = getScrapbox()) => {
   const map = new Map<string, ScrapboxProjectPage>();
 
   for (const page of getPages(scrapbox)) {
@@ -42,7 +42,7 @@ export const getPageTitleMap = (scrapbox: Scrapbox = getScrapbox()) => {
   return map;
 };
 
-export const getCurrentProjectName = (scrapbox: Scrapbox = getScrapbox()) => scrapbox.Project.name;
+export const getCurrentProjectName = (scrapbox: RawScrapbox = getScrapbox()) => scrapbox.Project.name;
 
 export const getCurrentPageName = () => getScrapbox().Page.title;
 
@@ -52,6 +52,6 @@ export const getPageUrl = (title: string) => `${baseUrl}/${encodeURIComponent(ge
 export const isScrapboxReady = () => getCurrentProjectName() !== undefined && getCurrentPageName() !== undefined;
 
 // TODO: use react-router instead window.location to improve performance
-export const loadPage = (title: string, scrapbox: Scrapbox = getScrapbox()) => {
+export const loadPage = (title: string, scrapbox: RawScrapbox = getScrapbox()) => {
   window.location.assign(`/${encodeURIComponent(getCurrentProjectName(scrapbox))}/${encodeURIComponent(title)}`);
 };

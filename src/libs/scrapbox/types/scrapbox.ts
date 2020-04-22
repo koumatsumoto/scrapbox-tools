@@ -1,4 +1,4 @@
-import { Line, TitleLine } from './page';
+import { ScrapboxLine, TitleLine } from './page';
 import { ScrapboxProject } from './project';
 
 export type ScrapboxLayout =
@@ -18,14 +18,21 @@ export type ScrapboxLayout =
   | 'settings-extensions-page'
   | 'settings-delete-account-page';
 
-export type Scrapbox = {
+export type EmptyPage = {
+  // null if layout:list
+  title: null;
+  lines: null;
+};
+
+export type Page = {
+  title: TitleLine['text'];
+  // first item is title line
+  lines: ScrapboxLine[];
+};
+
+export type RawScrapbox = {
   Layout: ScrapboxLayout;
-  Page: {
-    // null if layout:list
-    title: TitleLine['text'] | null;
-    // first item is title line
-    lines: Line[] | null;
-  };
+  Page: Page | EmptyPage;
   PageMenu: {
     addItem: (param: { title: string; onClick: () => void }) => void;
     addMenu: (param: { title: string; image: string; onClick: () => void }) => void;
@@ -45,6 +52,6 @@ export type Scrapbox = {
 // assuming, window.scrapbox exists when use type Scrapbox
 declare global {
   interface Window {
-    scrapbox: Scrapbox;
+    scrapbox: RawScrapbox;
   }
 }

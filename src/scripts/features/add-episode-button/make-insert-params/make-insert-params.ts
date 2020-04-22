@@ -1,14 +1,14 @@
 import { getDateText, getLastLineId, getTimeText, isDiaryPageTitle, isEmptyPage, makeTag } from '../../../../libs/scrapbox';
 import { CommitChangeParam } from '../../../../libs/scrapbox/private-api/websocket-clinet';
 import { endWithEmptyLine, getLines } from '../../../../libs/scrapbox/public-api';
-import { Line } from '../../../../libs/scrapbox/types';
+import { ScrapboxLine } from '../../../../libs/scrapbox/types';
 
 /**
  *
  * @param tagLineText
  * @param lines - for testing
  */
-export const makeInsertParams = (words: string[], date: Date = new Date(), lines: Line[] = getLines()): CommitChangeParam[] => {
+export const makeInsertParams = (words: string[], date: Date = new Date(), lines: ScrapboxLine[] = getLines()): CommitChangeParam[] => {
   if (lines.length < 1) {
     throw new Error('Bad impl, this function requires at least one line');
   }

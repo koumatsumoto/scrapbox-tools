@@ -1,4 +1,4 @@
-import { getTagLineIds, getTagLineIdsForDOM } from './line/line';
+import { getTagLineIds, getTagLineIdsForDOM } from './scrapbox-object/line';
 
 export * from './deprecated/id';
 export * from './deprecated/line';

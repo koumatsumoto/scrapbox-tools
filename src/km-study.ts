@@ -12,6 +12,7 @@ import {
   useAddEpisodeButton,
   useHighlightedTagLine,
 } from './scripts';
+import { useMemolia } from './scripts/features/memolia/main';
 
 const main = () => {
   runOnScrapboxReady(async () => {
@@ -33,6 +34,8 @@ const main = () => {
     useAddEpisodeButton();
     // since 2020/04/17
     useHighlightedTagLine();
+    // since 2020/04/20
+    useMemolia();
   });
 };
 

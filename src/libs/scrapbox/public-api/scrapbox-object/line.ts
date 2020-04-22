@@ -2,17 +2,17 @@ import { filter, map } from 'fp-ts/es6/Array';
 import { fromNullable, getOrElse, mapNullable } from 'fp-ts/es6/Option';
 import { pipe } from 'fp-ts/es6/pipeable';
 // window.scrapbox type is loaded also
-import { Line, TagLine } from '../../types';
+import { ScrapboxLine, TagLine } from '../../types';
 
 // some(scrapbox) or none
 export const getLines = (w = window) =>
   pipe(
     fromNullable(w.scrapbox),
     mapNullable((s) => s.Page.lines),
-    getOrElse(() => [] as Line[]),
+    getOrElse(() => [] as ScrapboxLine[]),
   );
 
-export const isTagLine = (line: Line): line is TagLine => line.text.startsWith('#');
+export const isTagLine = (line: ScrapboxLine): line is TagLine => line.text.startsWith('#');
 
 // get all lines that starts with '#'
 // if page layout is not 'page', return empty array
