@@ -3,7 +3,9 @@ import { getCurrentPageName, ID } from '../public-api';
 import { Router } from '../router';
 import { ApiClient } from './api-client/api-client';
 import { MeResponse, PageResponse } from './api-client/api-client-types';
-import { CommitChangeParam, WebsocketClient } from './websocket-clinet';
+import { CommitChangeParam } from './websocket-clinet';
+import { isCommitSuccessResponsePayload } from './websocket-clinet/internal/response';
+import { WebsocketClient } from './websocket-clinet/websocket-client';
 
 interface PageData extends PageResponse {
   // will mutate
@@ -23,12 +25,24 @@ export class PrivateApi {
   private websocketClient!: WebsocketClient;
 
   constructor(private readonly userId: ID, private readonly projectId: string, private readonly apiClient: ApiClient) {
-    this.setupWebsocket();
+    this.websocketClient = new WebsocketClient();
+
+    // handle update by other user
+    this.websocketClient.onCommitIdUpdated((data) => {
+      if (this.pageData && this.pageData.id === data.pageId) {
+        this.pageData.commitId = data.commitId;
+      }
+    });
 
     // register page change handling
     this.pageResponse$.subscribe((page) => {
       this.pageData = page;
-      this.websocketClient.joinRoom({ projectId: this.projectId, pageId: page === null ? null : page.id });
+      if (page) {
+        this.websocketClient.disjoinRoom();
+        this.websocketClient.joinRoom({ projectId: this.projectId, pageId: page.id });
+      } else {
+        this.websocketClient.disjoinRoom();
+      }
     });
     Router.onPageChange((t) => this.pageRequest$.next(t));
   }
@@ -56,26 +70,6 @@ export class PrivateApi {
     });
   }
 
-  /**
-   * for websocket reconnect handling
-   */
-  private setupWebsocket() {
-    this.websocketClient = new WebsocketClient(this.userId);
-
-    // handle update by other user
-    const subscription = this.websocketClient.commitIdUpdate$.subscribe((data) => {
-      if (this.pageData && this.pageData.id === data.pageId) {
-        this.pageData.commitId = data.id;
-      }
-    });
-
-    // auto reconnect
-    this.websocketClient.close$.pipe(getRx().operators.first()).subscribe(() => {
-      subscription.unsubscribe();
-      this.setupWebsocket();
-    });
-  }
-
   private async commit(param: { projectId: string; pageId: string; commitId: string; changes: CommitChangeParam[] }) {
     this.requestStatus$.next('request start');
 
@@ -87,9 +81,11 @@ export class PrivateApi {
       changes: param.changes,
     });
 
-    // update last commit id
-    if (this.pageData) {
-      this.pageData.commitId = response[0].data.commitId;
+    if (isCommitSuccessResponsePayload(response[0])) {
+      // update last commit id
+      if (this.pageData) {
+        this.pageData.commitId = response[0].data.commitId;
+      }
     }
 
     this.requestStatus$.next('request end');
@@ -118,6 +114,8 @@ const preparePrivateApi = async () => {
 
   const api = new PrivateApi(user.id, project.id, apiClient);
   await api.initialize();
+  // for debug purpose
+  (window as any).api = api;
 
   return api;
 };
