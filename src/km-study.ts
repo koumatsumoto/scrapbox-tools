@@ -4,16 +4,9 @@
 import { importRxJS } from './libs/common';
 import { getPrivateApi } from './libs/scrapbox/private-api';
 import { runOnScrapboxReady } from './libs/scrapbox/public-api';
-import {
-  addDatetimeOnListItem,
-  applyLoginCSSClass,
-  enableCustomListItem,
-  registerUpdatingNewButton,
-  useAddEpisodeButton,
-  useHighlightedTagLine,
-  useVersionNotificator,
-} from './scripts';
+import { addDatetimeOnListItem, applyLoginCSSClass, enableCustomListItem, registerUpdatingNewButton, useAddEpisodeButton } from './scripts';
 import { useMemolia } from './scripts/features/memolia/main';
+import { useVersionNotificator } from './scripts/features/versioin-notificator/main';
 
 const main = () => {
   runOnScrapboxReady(async () => {
@@ -33,8 +26,6 @@ const main = () => {
 
     // since 2020/04/20
     useAddEpisodeButton();
-    // since 2020/04/17
-    useHighlightedTagLine();
     // since 2020/04/20
     useMemolia();
     // since 2020/04/27

@@ -1,5 +1,5 @@
 import { Brand } from '../../../libs/common';
-import { ScrapboxLine, TextStartWithHash } from '../../../libs/scrapbox/types';
+import { ScrapboxLine, TagLine, TextStartWithHash } from '../../../libs/scrapbox/types';
 
 // can integrate its information into Φ (ii)
 export type Phiable<A> = A & {
@@ -67,6 +67,7 @@ export type ChildEpisode = Phiable<{
 
 // Episodic-Memory
 export type Episode = Phiable<{
+  headline: TagLine;
   // where episode belongs to
   of: Memory['name'];
   // have an array of tag

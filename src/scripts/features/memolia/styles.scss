@@ -1,5 +1,21 @@
 @import '../../../styles/variables';
 
+[data-sx-episode-headline] {
+  padding: 8px 4px 8px 0;
+  margin: 16px 0 4px;
+  overflow-x: auto;
+  font-family: 'Kosugi Maru', sans-serif !important;
+  font-size: 1.32rem;
+  line-height: 13px;
+  white-space: nowrap;
+  background: map_get($COLORS, 'episode-headline-background');
+
+  &.cursor-line {
+    // cannot edit if nowrap
+    white-space: pre-wrap !important;
+  }
+}
+
 [data-sx-child-episode-line] {
   background-color: map_get($COLORS, 'child-episode-lines-background');
 }

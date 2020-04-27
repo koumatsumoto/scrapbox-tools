@@ -6,5 +6,4 @@ export * from './logged-in-css-class';
 
 // new directory management since 2020/04/14
 export * from './features/add-episode-button/main';
-export * from './features/highlighted-tag-line/main';
-export * from './features/versioin-notificator/main';
+export * from './features/memolia/main';

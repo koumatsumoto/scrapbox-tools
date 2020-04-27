@@ -91,6 +91,7 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
 };
 
 export const makeEpisode = (block: EpisodeBlock): Episode => ({
+  headline: block.lines[0],
   of: block.of,
   context: getContext(block.lines[0]),
   lines: block.lines,

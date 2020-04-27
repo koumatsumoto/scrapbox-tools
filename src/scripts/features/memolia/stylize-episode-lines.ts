@@ -1,15 +1,15 @@
 import { compact, map } from 'fp-ts/es6/Array';
 import { pipe } from 'fp-ts/es6/pipeable';
-import { findElementById, updateDataset } from '../../../../libs/common/dom';
-import { Line, Memory } from '../types';
+import { findElementById, updateDataset } from '../../../libs/common/dom';
+import { Line, Memory } from './types';
 
 // id to dom starts with 'L' char because raw line-id can start with number char (it's invalid for dom)
 const toDOMId = (lineId: string) => `L` + lineId;
 
-export const colorLines = (lines: Line[], key: string, colorType: string) =>
+export const colorLines = (lines: Line[] | Line, key: string, colorType: string) =>
   pipe(
     // Line object
-    lines,
+    Array.isArray(lines) ? lines : [lines],
     // ID strings to specify dom
     map((line) => toDOMId(line.id)),
     // Elements optional
@@ -31,9 +31,15 @@ const getColorTypeGen = () => {
 };
 
 // [data-sx-child-episode-line]
-const colorDatasetKey = 'sxChildEpisodeLine';
+const episodeHeadlineDataKey = 'sxEpisodeHeadline';
+// [data-sx-child-episode-line]
+const childEpisodeLineDataKey = 'sxChildEpisodeLine';
 
-export const colorChildEpisodeLines = (memory: Memory) => {
+export const stylizeEpisodeLines = (memory: Memory) => {
+  // style episode headline
+  memory.episodes.forEach((ep) => colorLines(ep.headline, episodeHeadlineDataKey, ''));
+
+  // style lines of child-episode
   const colorTypeGen = getColorTypeGen();
   memory.episodes
     .filter((ep) => ep.children.length)
@@ -41,7 +47,7 @@ export const colorChildEpisodeLines = (memory: Memory) => {
       ep.children.forEach((child) => {
         // change color type by child episode
         const colorType = colorTypeGen();
-        colorLines([child.headline, ...child.lines], colorDatasetKey, colorType);
+        colorLines([child.headline, ...child.lines], childEpisodeLineDataKey, colorType);
       });
     });
 };
