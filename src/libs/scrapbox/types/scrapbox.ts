@@ -1,4 +1,4 @@
-import { ScrapboxLine, TitleLine } from './page';
+import { ScrapboxLine, TitleLine } from './line';
 import { ScrapboxProject } from './project';
 
 export type ScrapboxLayout =

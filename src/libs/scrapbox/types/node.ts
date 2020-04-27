@@ -26,15 +26,6 @@ export type DecoFormulaNodeUnit = {
   formula: string;
 };
 
-export type IndentNodeUnit = {
-  // whole text started with indent chars
-  whole: string;
-  // indents, e.g. ' ', '\t', '\t\t'
-  tag: string;
-  // text trimmed tag
-  content: string;
-};
-
 export type SimpleTextNode = string;
 
 export type LinkNode = {
@@ -70,7 +61,14 @@ export type GyazoNode = {
 
 export type IndentNode = {
   type: 'indent';
-  unit: IndentNodeUnit;
+  unit: {
+    // whole text started with indent chars
+    whole: string;
+    // indents, e.g. ' ', '\t', '\t\t'
+    tag: string;
+    // text trimmed tag
+    content: string;
+  };
   children: ScrapboxNode | ScrapboxNode[];
 };
 
