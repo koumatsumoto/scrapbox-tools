@@ -70,10 +70,10 @@
 
     // hash tag
     &[type='hashTag'] {
-      $color: map_get($COLORS, 'bordered-tag');
+      $color: map_get($COLORS, 'hash-tag');
       $border: 1px solid $color;
       $font-size: map_get($font-size, 'bordered-tag');
-      $color-hovered: map_get($COLORS, 'bordered-hover');
+      $color-hovered: map_get($COLORS, 'hash-tag-hovered');
 
       // "#"
       span:first-child {
@@ -88,11 +88,13 @@
         display: inline-block;
         padding: 6px 2px;
         color: $color !important;
-        transition: 0.24s map_get($easing, easeInOutCirc);
+        transition: color 160ms map_get($easing, easeInOutCirc),
+          transform 80ms map_get($easing, easeInOutCirc);
       }
 
       &:hover {
         color: $color-hovered !important;
+        transform: scale(1.024);
       }
     }
   }

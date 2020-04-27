@@ -200,8 +200,8 @@ form {
   margin: 0 0 4px 0;
   font-size: 0.88em;
   line-height: 10px;
-  color: map_get($COLORS, 'bordered-tag') !important;
+  color: map_get($COLORS, 'hash-tag') !important;
   background: #fff;
-  border: 1px solid map_get($COLORS, 'bordered-tag');
+  border: 1px solid map_get($COLORS, 'hash-tag');
   border-radius: 2px;
 }

@@ -1,5 +1,5 @@
 @import '../../../styles/variables';
 
 [data-sx-child-episode-line] {
-  background-color: map_get($COLORS, 'child-episode-background');
+  background-color: map_get($COLORS, 'child-episode-lines-background');
 }

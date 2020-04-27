@@ -84,11 +84,15 @@ $easing: (
 );
 
 $COLORS: (
-  'page-link': #2688de,
-  'empty-page-link': #c5436c,
-  'bordered-tag': #51c374,
-  'bordered-hover': #5ea728,
-  'child-episode-background': #f7feff,
+  'page-link': #4273b3,
+  'empty-page-link': #d04932,
+  // text color of hash tag e.g. "#tag"
+    'hash-tag': #648cbf,
+  'hash-tag-hovered': #4680ca,
+  // episode headline
+    'episode-headline-background': #cde0f9,
+  // lines of child episodes including headline
+    'child-episode-lines-background': #f7feff,
 );
 
 @mixin position-center() {
