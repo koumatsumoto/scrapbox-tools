@@ -11,6 +11,7 @@ import {
   registerUpdatingNewButton,
   useAddEpisodeButton,
   useHighlightedTagLine,
+  useVersionNotificator,
 } from './scripts';
 import { useMemolia } from './scripts/features/memolia/main';
 
@@ -36,6 +37,8 @@ const main = () => {
     useHighlightedTagLine();
     // since 2020/04/20
     useMemolia();
+    // since 2020/04/27
+    useVersionNotificator();
   });
 };
 
