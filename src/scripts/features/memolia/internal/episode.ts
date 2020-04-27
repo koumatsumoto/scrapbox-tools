@@ -15,14 +15,10 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
 
   const getBaseContext = () => [...getContext(header), block.of];
   const episodes = new Map<string, ChildEpisode>();
-  const merge = (v: ChildEpisode) => {
+  // NOTE: unique constraint: the last child episode used for same key, by an episode
+  const store = (v: ChildEpisode) => {
     const key = [...v.context, v.for].join();
-    const exist = episodes.get(key);
-    if (exist) {
-      episodes.set(key, { ...exist, lines: [...exist.lines, ...v.lines] });
-    } else {
-      episodes.set(key, v);
-    }
+    episodes.set(key, v);
   };
 
   const linesWithMeta = lines.map(makeLineWithMetadata);
@@ -33,7 +29,7 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
     if (ep) {
       switch (line.meta.type) {
         case 'empty': {
-          merge(ep);
+          store(ep);
           ep = null;
           break;
         }
@@ -46,10 +42,11 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
           if (parentIndentLevel < line.meta.indent) {
             ep.lines.push(line);
           } else {
-            merge(ep);
+            store(ep);
             parentIndentLevel = line.meta.indent;
             ep = {
-              // refined by case condition
+              headline: line,
+              // type-assertion: specified by case condition
               for: (line.meta as EpisodeTitleLineMetadata).name,
               context: getBaseContext(),
               lines: [],
@@ -66,7 +63,7 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
           if (parentIndentLevel < line.meta.indent) {
             ep.lines.push(line);
           } else {
-            merge(ep);
+            store(ep);
             ep = null;
           }
         }
@@ -76,6 +73,7 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
       if (line.meta.type === 'episode-title') {
         parentIndentLevel = line.meta.indent;
         ep = {
+          headline: line,
           for: line.meta.name,
           context: getBaseContext(),
           lines: [],
@@ -86,7 +84,7 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
 
   // for lacking EOL
   if (ep) {
-    merge(ep);
+    store(ep);
   }
 
   return Array.from(episodes.values());

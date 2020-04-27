@@ -59,6 +59,7 @@ export type Link = {
 };
 
 export type ChildEpisode = Phiable<{
+  headline: Line;
   for: string;
   context: string[];
   lines: Line[];

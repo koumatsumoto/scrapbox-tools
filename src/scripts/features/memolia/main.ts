@@ -1,3 +1,4 @@
+import { colorChildEpisodeLines } from './internal/color-child-episode-lines';
 import { makeMemory } from './internal/memory';
 
 export const useMemolia = () => {
@@ -6,7 +7,9 @@ export const useMemolia = () => {
     if (window.scrapbox.Page.lines) {
       if (prevCount !== window.scrapbox.Page.lines.length) {
         prevCount = window.scrapbox.Page.lines.length;
-        console.log('[dev] memolia', makeMemory(window.scrapbox.Page.lines));
+        const memory = makeMemory(window.scrapbox.Page.lines);
+        console.log('[dev] memolia', memory);
+        colorChildEpisodeLines(memory);
       }
     }
   };
