@@ -1,1 +1,1 @@
-export * from './private-api';
+export * from './api-manager';

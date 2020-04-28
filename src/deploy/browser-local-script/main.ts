@@ -1,8 +1,8 @@
 /**
  * scripts to enable private-api in browser context
  */
-import { importRxJS, waitUntil } from '../../libs/common';
-import { getPrivateApi } from '../../libs/scrapbox/private-api';
+import { waitUntil } from '../../libs/common';
+import { getApiManager } from '../../libs/scrapbox/private-api';
 import { findNextLineId, runOnScrapboxReady } from '../../libs/scrapbox/public-api';
 import { MyScripts } from './global-type';
 
@@ -18,13 +18,9 @@ const main = async () => {
 
   runOnScrapboxReady(async () => {
     console.log('[deploy] runOnScrapboxReady');
-
-    // load RxJS from CDN
-    await importRxJS();
-
-    // connect to websocket
-    const api = await getPrivateApi();
-    console.log('[deploy] private api is ready');
+    // setup server connection
+    const api = await getApiManager();
+    console.log('[deploy] api is ready');
 
     // setup global context
     window.__myScripts = {
@@ -35,7 +31,7 @@ const main = async () => {
           // update existing
           if (lineId) {
             console.log('[deploy] start to try update the line of source code');
-            await api.changeLine({ type: 'update', id: lineId, text: newSourceCode });
+            await api.changeLineOfCurrentPage({ type: 'update', id: lineId, text: newSourceCode });
             console.log('[deploy] complete updation');
           } else {
             // TODO: implement creation
