@@ -176,14 +176,6 @@ form {
   overflow-y: auto;
 }
 
-// 行頭のドットを薄く
-.line .indent-mark .dot {
-  top: 11px;
-  width: 6px;
-  height: 3px;
-  background-color: #c9c9c9;
-}
-
 /* PC右上検索ボタン */
 .search-form .form-group button .kamon {
   fill: #bbb;

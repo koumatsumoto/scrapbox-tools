@@ -92,7 +92,9 @@ $COLORS: (
   // episode headline
     'episode-headline-background': #cde0f9,
   // lines of child episodes including headline
-    'child-episode-lines-background': #f7feff,
+    'child-episode-lines-background': #e9eff7,
+  // dot line indent
+    'line-indent-dot-color': #bfc5ce,
 );
 
 @mixin position-center() {

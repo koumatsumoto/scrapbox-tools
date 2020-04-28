@@ -1,8 +1,8 @@
 @import '../../../styles/variables';
 
 [data-sx-episode-headline] {
-  padding: 8px 4px 8px 0;
-  margin: 16px 0 4px;
+  padding: 8px 4px;
+  margin: 20px 0 4px;
   overflow-x: auto;
   font-family: 'Kosugi Maru', sans-serif !important;
   font-size: 1.32rem;
@@ -18,4 +18,17 @@
 
 [data-sx-child-episode-line] {
   background-color: map_get($COLORS, 'child-episode-lines-background');
+}
+
+[data-sx-child-episode-start-line] {
+  margin-top: 8px;
+}
+
+[data-sx-child-episode-end-line] {
+  margin-bottom: 8px;
+}
+
+// in case one line child episodes continue
+[data-sx-child-episode-start-line] + [data-sx-child-episode-start-line] {
+  margin-top: -8px;
 }

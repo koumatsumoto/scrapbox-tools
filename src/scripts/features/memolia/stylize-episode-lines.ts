@@ -6,7 +6,7 @@ import { Line, Memory } from './types';
 // id to dom starts with 'L' char because raw line-id can start with number char (it's invalid for dom)
 const toDOMId = (lineId: string) => `L` + lineId;
 
-export const colorLines = (lines: Line[] | Line, key: string, colorType: string) =>
+export const applyDataset = (lines: Line[] | Line, key: string, value: string) =>
   pipe(
     // Line object
     Array.isArray(lines) ? lines : [lines],
@@ -18,36 +18,36 @@ export const colorLines = (lines: Line[] | Line, key: string, colorType: string)
     compact,
     // side-effect
     // TODO(2020-04027): use function to execute side-effect rather than map
-    map((elem) => updateDataset(elem, key, colorType)),
+    map((elem) => updateDataset(elem, key, value)),
   );
 
-// for background color for each child episode block
-const getColorTypeGen = () => {
-  let idx = 0;
-
-  return () => {
-    return `type-${idx++ % 10}`;
-  };
+const datakeys = {
+  // [data-sx-child-episode-line]
+  episodeHeadline: 'sxEpisodeHeadline',
+  // [data-sx-child-episode-line]
+  childEpisodeLine: 'sxChildEpisodeLine',
+  // [data-sx-child-episode-start-line]
+  childEpisodeStartLine: 'sxChildEpisodeStartLine',
+  // [data-sx-child-episode-end-line]
+  childEpisodeEndLine: 'sxChildEpisodeEndLine',
 };
-
-// [data-sx-child-episode-line]
-const episodeHeadlineDataKey = 'sxEpisodeHeadline';
-// [data-sx-child-episode-line]
-const childEpisodeLineDataKey = 'sxChildEpisodeLine';
 
 export const stylizeEpisodeLines = (memory: Memory) => {
   // style episode headline
-  memory.episodes.forEach((ep) => colorLines(ep.headline, episodeHeadlineDataKey, ''));
+  memory.episodes.forEach((ep) => applyDataset(ep.headline, datakeys.episodeHeadline, ''));
 
   // style lines of child-episode
-  const colorTypeGen = getColorTypeGen();
   memory.episodes
     .filter((ep) => ep.children.length)
     .forEach((ep) => {
       ep.children.forEach((child) => {
-        // change color type by child episode
-        const colorType = colorTypeGen();
-        colorLines([child.headline, ...child.lines], childEpisodeLineDataKey, colorType);
+        // stylize each line
+        const allLines = [child.headline, ...child.lines];
+        applyDataset(allLines, datakeys.childEpisodeLine, '');
+
+        // stylize for line-block (border-radius and so on)
+        applyDataset(allLines[0], datakeys.childEpisodeStartLine, '');
+        applyDataset(allLines[allLines.length - 1], datakeys.childEpisodeEndLine, '');
       });
     });
 };
