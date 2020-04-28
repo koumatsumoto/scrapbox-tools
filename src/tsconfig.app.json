@@ -3,6 +3,7 @@
   "include": ["**/*.ts"],
   "exclude": ["**/*.spec.ts"],
   "compilerOptions": {
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "module": "es2015"
   }
 }

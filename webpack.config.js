@@ -22,7 +22,7 @@ module.exports = {
         test: /\.ts$/,
         exclude: /node_modules/,
         options: {
-          configFile: 'tsconfig.json',
+          configFile: 'src/tsconfig.app.json',
         },
       },
       {
