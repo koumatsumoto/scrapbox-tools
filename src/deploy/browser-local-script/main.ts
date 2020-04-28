@@ -17,10 +17,10 @@ const main = async () => {
   };
 
   runOnScrapboxReady(async () => {
-    console.log('[deploy] runOnScrapboxReady');
+    console.log('[sx/deploy] runOnScrapboxReady');
     // setup server connection
     const api = await getApiManager();
-    console.log('[deploy] api is ready');
+    console.log('[sx/deploy] api is ready');
 
     // setup global context
     window.__myScripts = {
@@ -30,15 +30,15 @@ const main = async () => {
 
           // update existing
           if (lineId) {
-            console.log('[deploy] start to try update the line of source code');
+            console.log('[sx/deploy] start to try update the line of source code');
             await api.changeLineOfCurrentPage({ type: 'update', id: lineId, text: newSourceCode });
-            console.log('[deploy] complete updation');
+            console.log('[sx/deploy] complete updation');
           } else {
             // TODO: implement creation
             throw new Error('Creation is currently not supported, create manually code block before deploy');
           }
         } catch (e) {
-          console.error('[deploy] error in updation: ', e.message);
+          console.error('[sx/deploy] error in updation: ', e.message);
         }
       },
     };
@@ -47,6 +47,6 @@ const main = async () => {
 
 main()
   .then(() => {
-    console.log('[deploy] scripts executed and start preparation, run `waitForMyScriptsReady()` to check status');
+    console.log('[sx/deploy] scripts executed and start preparation, run `waitForMyScriptsReady()` to check status');
   })
   .catch(console.error);

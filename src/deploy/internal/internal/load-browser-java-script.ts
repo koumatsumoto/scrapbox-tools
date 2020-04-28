@@ -1,4 +1,3 @@
-import '../../browser-local-script/global-type';
 import * as puppeteer from 'puppeteer';
 import { loadBrowserScript } from './file-loaders';
 

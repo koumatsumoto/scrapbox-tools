@@ -17,7 +17,7 @@ import { deployCssAndScriptForProject } from './internal';
   await browser.close();
 })()
   .then(() => {
-    console.log('deploy completed');
+    console.log('[sx/deploy] deploy completed');
     process.exit();
   })
   .catch((e) => {

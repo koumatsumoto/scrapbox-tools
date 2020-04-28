@@ -6,7 +6,7 @@ const storageKey = 'sx-user-script-version';
 const showVersion = (storage: Storage): void => {
   const currentVersion = storage.getItem(storageKey);
   if (version !== currentVersion) {
-    alert('New UserScript Loaded: ' + version);
+    console.log('[sx/version-notificator] new version detected', version);
     storage.setItem(storageKey, version);
   }
 

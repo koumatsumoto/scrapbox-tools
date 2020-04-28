@@ -8,7 +8,7 @@ export const useMemolia = () => {
       if (prevCount !== window.scrapbox.Page.lines.length) {
         prevCount = window.scrapbox.Page.lines.length;
         const memory = makeMemory(window.scrapbox.Page.lines);
-        console.log('[dev] memolia', memory);
+        console.log('[sx/memolia] Memory', memory);
         stylizeEpisodeLines(memory);
       }
     }
