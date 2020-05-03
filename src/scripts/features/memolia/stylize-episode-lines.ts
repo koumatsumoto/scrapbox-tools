@@ -42,12 +42,11 @@ export const stylizeEpisodeLines = (memory: Memory) => {
     .forEach((ep) => {
       ep.children.forEach((child) => {
         // stylize each line
-        const allLines = [child.headline, ...child.lines];
-        applyDataset(allLines, datakeys.childEpisodeLine, '');
+        applyDataset(child.lines, datakeys.childEpisodeLine, '');
 
         // stylize for line-block (border-radius and so on)
-        applyDataset(allLines[0], datakeys.childEpisodeStartLine, '');
-        applyDataset(allLines[allLines.length - 1], datakeys.childEpisodeEndLine, '');
+        applyDataset(child.lines[0], datakeys.childEpisodeStartLine, '');
+        applyDataset(child.lines[child.lines.length - 1], datakeys.childEpisodeEndLine, '');
       });
     });
 };

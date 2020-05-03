@@ -49,7 +49,7 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
               // type-assertion: specified by case condition
               for: (line.meta as EpisodeTitleLineMetadata).name,
               context: getBaseContext(),
-              lines: [],
+              lines: [line],
             };
           }
           break;
@@ -57,10 +57,10 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
         default: {
           // include
           //   "  [a]" <= "    b"
-          // not include, end episode
           //   "  [a]" == "  b"
+          // not include, end episode
           //   "  [a]" >= "b"
-          if (parentIndentLevel < line.meta.indent) {
+          if (parentIndentLevel <= line.meta.indent) {
             ep.lines.push(line);
           } else {
             store(ep);
@@ -76,7 +76,7 @@ export const parseChildEpisodes = (block: EpisodeBlock): ChildEpisode[] => {
           headline: line,
           for: line.meta.name,
           context: getBaseContext(),
-          lines: [],
+          lines: [line],
         };
       }
     }

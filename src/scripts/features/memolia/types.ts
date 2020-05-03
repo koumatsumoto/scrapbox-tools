@@ -62,7 +62,8 @@ export type ChildEpisode = Phiable<{
   headline: Line;
   for: string;
   context: string[];
-  lines: Line[];
+  // non empty array
+  lines: Line[] & { 0: Line };
 }>;
 
 // Episodic-Memory
@@ -73,7 +74,8 @@ export type Episode = Phiable<{
   // have an array of tag
   context: string[];
   // all lines in episode block
-  lines: Line[];
+  // non empty array
+  lines: Line[] & { 0: Line };
   // all references to linked to episode
   children: ChildEpisode[];
 }>;
