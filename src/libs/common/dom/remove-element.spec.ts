@@ -16,9 +16,9 @@ describe('removeElement', () => {
     expect(document.querySelector(`#${element.id}`)).toBeFalsy();
   });
 
-  it('should throw if element not appended to DOM', () => {
+  it('should nothing if element not appended to DOM', () => {
     const element = document.createElement('DIV');
     element.id = 'test-element';
-    expect(() => removeElement(element)).toThrow();
+    expect(() => removeElement(element)).not.toThrow();
   });
 });

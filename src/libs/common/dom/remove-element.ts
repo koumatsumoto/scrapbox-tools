@@ -1,6 +1,6 @@
 export const removeElement = (element: Element) => {
   if (!element.parentNode) {
-    throw new Error('parent node is not found');
+    return;
   }
 
   element.parentNode.removeChild(element);
