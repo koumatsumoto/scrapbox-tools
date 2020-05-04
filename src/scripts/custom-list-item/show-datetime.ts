@@ -12,7 +12,7 @@ const createDatetimeElement = (timestamp: number) => {
   return elem;
 };
 
-export const addDatetimeOnListItem = () => {
+export const showDatetime = () => {
   const added = new Set<string>(); // page title
 
   const dictionary = getPageTitleMap();

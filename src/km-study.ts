@@ -4,11 +4,9 @@
 import { getApiManager } from './libs/scrapbox/private-api';
 import { runOnScrapboxReady } from './libs/scrapbox/public-api';
 import {
-  addDatetimeOnListItem,
   applyLoginCSSClass,
   enableCustomListItem,
   getDynamicConfig,
-  registerUpdatingNewButton,
   useAddEpisodeButton,
   useMemolia,
   useVersionNotificator,
@@ -23,10 +21,6 @@ const main = () => {
 
     // add custom css class to body tag
     applyLoginCSSClass();
-    // display datetime on list-item
-    addDatetimeOnListItem();
-
-    registerUpdatingNewButton();
 
     // since 2020/04/20
     useAddEpisodeButton();
