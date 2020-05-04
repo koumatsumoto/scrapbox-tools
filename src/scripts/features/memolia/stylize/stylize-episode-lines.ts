@@ -1,7 +1,7 @@
 import { compact, map } from 'fp-ts/es6/Array';
 import { pipe } from 'fp-ts/es6/pipeable';
-import { findElementById, updateDataset } from '../../../libs/common/dom';
-import { Line, Memory } from './types';
+import { findElementById, updateDataset } from '../../../../libs/common/dom';
+import { Line, Memory } from '../types';
 
 // id to dom starts with 'L' char because raw line-id can start with number char (it's invalid for dom)
 const toDOMId = (lineId: string) => `L` + lineId;

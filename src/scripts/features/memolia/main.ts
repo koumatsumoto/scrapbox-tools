@@ -1,5 +1,6 @@
-import { makeMemory } from './internal/memory';
-import { stylizeEpisodeLines } from './stylize-episode-lines';
+import { makeMemory } from './parse/memory';
+import { stylizeEpisodeLines } from './stylize/stylize-episode-lines';
+import { registerOnClick } from './transcript/on-click';
 
 export const useMemolia = () => {
   let prevCount = 0;
@@ -10,6 +11,8 @@ export const useMemolia = () => {
         const memory = makeMemory(window.scrapbox.Page.lines);
         console.log('[sx/memolia] Memory', memory);
         stylizeEpisodeLines(memory);
+
+        registerOnClick();
       }
     }
   };
