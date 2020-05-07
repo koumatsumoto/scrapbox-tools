@@ -1,11 +1,17 @@
+import { getDynamicConfig } from '../..';
 import { getApiManager, getFirstLineOrFail, isEmptyPage, isTitleOnlyPage, loadPage } from '../../../libs/scrapbox';
-import { tagOptions } from './config';
 import { openDialog } from './form-dialog/open-dialog';
 import { makeInsertParams } from './make-insert-params/make-insert-params';
 
 export const openDialogAndWriteTags = async () => {
   try {
-    const dialog = openDialog(tagOptions);
+    const config = await getDynamicConfig();
+    const tags = config.tags;
+    if (tags === undefined) {
+      throw new Error('[sx/add-episode-button] config is not set, set values into config page');
+    }
+
+    const dialog = openDialog(tags);
     const [api, result] = await Promise.all([getApiManager(), dialog.result]);
 
     if (result.ok) {

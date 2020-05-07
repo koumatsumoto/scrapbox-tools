@@ -19,7 +19,6 @@ export type Name = Brand<string, 'Name'>;
 export type Tag = Phiable<{
   name: string;
   raw: TextStartWithHash;
-  type: 'date' | 'time' | 'feeling' | 'activity' | 'ideation' | 'unknown';
 }>;
 
 // TODO: arrange type

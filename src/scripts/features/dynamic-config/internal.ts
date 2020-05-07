@@ -4,13 +4,7 @@ import { Lazy } from 'fp-ts/es6/function';
 import { pipe } from 'fp-ts/es6/pipeable';
 import { ApiClient } from '../../../libs/scrapbox/private-api/api-client/api-client';
 import { ApiResultPageLine, PageResponse } from '../../../libs/scrapbox/private-api/api-client/api-client-types';
-
-// stored in localStorage
-export type ConfigObject = {
-  tagOptions: {
-    value: string;
-  }[][];
-};
+import { DynamicConfig } from '../../config';
 
 export const storageKey = '[sx/dynamic-config] config';
 
@@ -42,7 +36,7 @@ export const parsePageLines = (lines: ApiResultPageLine[]): string => {
   return totalCodeStrings;
 };
 
-export const storeToStorage = (data: ConfigObject, w = window): TaskEither<Error, ConfigObject> => {
+export const storeToStorage = (data: DynamicConfig, w = window): TaskEither<Error, DynamicConfig> => {
   try {
     w.localStorage.setItem(storageKey, JSON.stringify(data));
     return right(data);
@@ -64,11 +58,11 @@ export const isObject = (v: unknown): v is object => {
 };
 
 // TODO: add property key assertions
-export const isValid = (v: unknown): v is ConfigObject => {
+export const isValid = (v: unknown): v is DynamicConfig => {
   return isObject(v);
 };
 
-const makeConfig = (json: string): TaskEither<Error, ConfigObject> => {
+const makeConfig = (json: string): TaskEither<Error, DynamicConfig> => {
   if (json === '') {
     return left(new Error('json string is empty, check contents in config page, it can be errored if an empty line not existed'));
   }
@@ -93,7 +87,7 @@ export const syncAndPersist = pipe(
   chain(makeConfig),
   chain(storeToStorage),
   fold(
-    (error) => () => Promise.resolve<Error | ConfigObject>(error),
-    (config) => () => Promise.resolve<Error | ConfigObject>(config),
+    (error) => () => Promise.resolve<Error | DynamicConfig>(error),
+    (config) => () => Promise.resolve<Error | DynamicConfig>(config),
   ),
 );

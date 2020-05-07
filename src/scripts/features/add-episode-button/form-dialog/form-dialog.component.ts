@@ -1,27 +1,29 @@
+import { groupBy } from 'fp-ts/es6/NonEmptyArray';
 import { removeElement } from '../../../../libs/common/dom';
-import { TagOption } from '../config';
+import { DynamicConfig, DynamicConfigTag } from '../../../config';
 import { addWord, removeWord, splitWords } from './textarea-operation';
+
 const html = require('./form-dialog.component.html');
 
 type CustomDialogResult<T> = { ok: false } | { ok: true; data: T };
 
-const makeCheckboxesHTML = (tagOptions: TagOption[]) => {
+const groupByType = groupBy((tag: DynamicConfigTag) => tag.type);
+const toRecordByType = (tags: DynamicConfigTag[]) => groupByType(tags);
+
+const makeCheckboxesHTML = (tags: DynamicConfigTag[]) => {
   let labelId = 0;
 
-  return tagOptions
-    .map((group) => {
-      const inputs = group
-        .map((obj) => {
-          const id = `tag-${labelId++}`;
-          const value = obj.value;
+  let html = '';
+  for (const [type, items] of Object.entries(toRecordByType(tags))) {
+    html += `<div class="tag-group ${type}">`;
+    for (const tag of items) {
+      const id = `tag-${labelId++}`;
+      html += `<input id="${id}" type="checkbox" name="tags" value="${tag.name}"><label for="${id}">${tag.name}</label>`;
+    }
+    html += `</div>`;
+  }
 
-          return `<input id="${id}" type="checkbox" name="tags" value="${value}"><label for="${id}">${value}</label>`;
-        })
-        .join('');
-
-      return `<div class="tag-group">${inputs}</div>`;
-    })
-    .join('');
+  return html;
 };
 
 const showingIndicatorCSS = '-showing-indicator'; // used in css
@@ -38,7 +40,7 @@ export class MyTagFormDialog extends HTMLElement {
   private textInput: HTMLInputElement;
   private loadingIndicatorContainer: HTMLDivElement;
 
-  constructor(tagOptions: TagOption[] = []) {
+  constructor(tagOptions: DynamicConfig['tags'] = []) {
     super();
 
     this.innerHTML = `${html}`;

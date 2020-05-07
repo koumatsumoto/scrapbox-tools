@@ -2,10 +2,10 @@
 
 $same-color-to-scrapbox-menu-icon: #363c48;
 $ui-color: $same-color-to-scrapbox-menu-icon;
-$dialog-min-width: 400px;
+$dialog-min-width: 454px;
 $dialog-max-width: 84vw;
 // don't use vh because viewport will be changed on keyboard area appeared
-$dialog-min-height: 320px;
+$dialog-min-height: 400px;
 $dialog-max-height: 80vh;
 $loading-indicator-container-width: 200px;
 $loading-indicator-container-height: 200px;

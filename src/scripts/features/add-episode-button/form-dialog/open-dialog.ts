@@ -1,8 +1,8 @@
-import { TagOption } from '../config';
+import { DynamicConfig } from '../../../config';
 import { MyTagFormDialog } from './form-dialog.component';
 
 let isDefined = false;
-export const openDialog = (tagOptions: TagOption[]) => {
+export const openDialog = (tagOptions: DynamicConfig['tags']) => {
   if (!isDefined) {
     customElements.define(MyTagFormDialog.elementName, MyTagFormDialog);
     isDefined = true;
