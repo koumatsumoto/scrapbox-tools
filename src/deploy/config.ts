@@ -33,18 +33,6 @@ export const config = {
    */
   projects: [
     {
-      name: 'km-public',
-      user: 'kou',
-      userCSS: getDistDirPath('km-public.min.css'),
-      userScript: getDistDirPath('km-public.min.js'),
-    },
-    {
-      name: 'km-private',
-      user: 'kou',
-      userCSS: getDistDirPath('km-public.min.css'),
-      userScript: getDistDirPath('km-public.min.js'),
-    },
-    {
       name: 'km-study',
       user: 'kou',
       userCSS: getDistDirPath('km-study.min.css'),
