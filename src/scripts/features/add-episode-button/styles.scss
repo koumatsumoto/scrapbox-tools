@@ -21,35 +21,9 @@ $animation: 158ms map_get($easing, 'easeInOutQuad');
   border-radius: 4px;
 }
 
-add-episode-form-dialog {
+sx-add-episode-form {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 13px;
-
-  // layout size
-  dialog,
-  form,
-  .animation-container {
-    min-width: $dialog-min-width;
-    max-width: $dialog-max-width;
-    min-height: $dialog-min-height;
-    max-height: $dialog-max-height;
-  }
-
-  dialog {
-    position: relative;
-    padding: 0;
-    overflow: hidden;
-    background: transparent;
-    border: none;
-  }
-
-  .animation-container {
-    @include position-center();
-    background: #ffffff;
-    border-radius: 2px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-    transition: min-width $animation, min-height $animation;
-  }
 
   .tag-group {
     display: block;
@@ -60,6 +34,10 @@ add-episode-form-dialog {
   form {
     display: flex; // will change to none by .-showing-indicator
     flex-direction: column;
+    min-width: $dialog-min-width;
+    max-width: $dialog-max-width;
+    min-height: $dialog-min-height;
+    max-height: $dialog-max-height;
     padding: 24px 8px 8px 24px;
     overflow: auto;
     border: none;
@@ -231,32 +209,16 @@ add-episode-form-dialog {
       transition: 0.4s;
     }
   }
+}
 
-  .loading-indicator-container {
-    @include position-center();
-    display: none; // will change to flex by .-showing-indicator
-    align-items: center;
-    justify-content: center;
-    min-width: $loading-indicator-container-width;
-    max-width: $loading-indicator-container-width;
-    min-height: $loading-indicator-container-height;
-    max-height: $loading-indicator-container-height;
-    font-size: 36px;
-    color: $ui-color;
-  }
-
-  &.-showing-indicator {
-    .animation-container {
-      min-width: $loading-indicator-container-width;
-      max-width: $loading-indicator-container-width;
-      min-height: $loading-indicator-container-height;
-      max-height: $loading-indicator-container-height;
-    }
-    form {
-      display: none;
-    }
-    .loading-indicator-container {
-      display: flex;
-    }
-  }
+sx-loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: $loading-indicator-container-width;
+  max-width: $loading-indicator-container-width;
+  min-height: $loading-indicator-container-height;
+  max-height: $loading-indicator-container-height;
+  font-size: 36px;
+  color: $ui-color;
 }

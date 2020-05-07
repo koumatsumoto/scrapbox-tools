@@ -21,7 +21,7 @@
     "ci:deploy": "yarn deploy",
     "deploy": "yarn build:prod && yarn ts-node src/deploy/main.ts",
     "format": "yarn lint:scss --fix && yarn lint:ts --fix && prettier --config .prettierrc --write '{deploy,src,.circleci}/**/*.{ts,js,scss,html,md,yml}' ./*.{js,json}",
-    "lint:scss": "stylelint 'src/{scripts,styles}/**/*.scss'",
+    "lint:scss": "stylelint 'src/{libs,scripts,styles}/**/*.scss'",
     "lint:ts": "eslint 'src/**/*.ts'",
     "make:version-file": "echo \"export const version = '`git rev-parse HEAD`'\" > version.ts",
     "jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",

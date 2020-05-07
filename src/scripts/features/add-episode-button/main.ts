@@ -1,6 +1,7 @@
 import { createElement } from '../../../libs/common/dom';
+import { alertOnFail } from '../../../libs/common/process';
 import { DomManipulator } from '../../../libs/scrapbox/dom/dom-manipulator';
-import { openDialogAndWriteTags } from './open-dialog-and-write-tags';
+import { handleFormAndDialog } from './handle-form-and-dialog';
 
 const createAddEpisodeButton = () => {
   return createElement({
@@ -9,7 +10,7 @@ const createAddEpisodeButton = () => {
     class: 'sx-add-episode-button',
     onClick: (ev) => {
       ev.stopPropagation();
-      openDialogAndWriteTags();
+      alertOnFail(handleFormAndDialog);
     },
   });
 };
