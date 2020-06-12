@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as NodeWebSocket from 'ws';
 
 type BrowserWebsocketConstructor = typeof WebSocket;
@@ -11,18 +12,23 @@ export const getIsomorphicWebsocketConstructor = (): WebsocketConstructor => {
   return typeof window.WebSocket === 'function' ? window.WebSocket : require('ws');
 };
 
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
-export const registerIsomorphicEventHandling = (
+export const getNewWebsocketInstance = (socket: IsomorphicWebsocket) => {
+  // @ts-ignore
+  return new socket.constructor(socket.url);
+};
+
+export const registerIsomorphicWebsocketEventHandling = (
   socket: WebSocket | NodeWebSocket,
-  handlers: {
+  handlers: Partial<{
+    onOpen: () => void;
     onErrorOrClose: () => void;
     onMessage: (ev: { data: unknown }) => void;
-  },
+  }> = {},
 ) => {
   // eslint-disable-next-line
   const onOpen = () => {};
   const onError = () => socket.close();
-  const onMessage = (ev: { data: unknown }) => handlers.onMessage(ev);
+  const onMessage = (ev: { data: unknown }) => handlers.onMessage && handlers.onMessage(ev);
   const onClose = () => {
     // @ts-ignore
     socket.removeEventListener('open', onOpen);
@@ -32,7 +38,7 @@ export const registerIsomorphicEventHandling = (
     socket.removeEventListener('error', onError);
     // @ts-ignore
     socket.removeEventListener('close', onClose);
-    handlers.onErrorOrClose();
+    handlers.onErrorOrClose && handlers.onErrorOrClose();
   };
 
   // @ts-ignore
@@ -44,4 +50,3 @@ export const registerIsomorphicEventHandling = (
   // @ts-ignore
   socket.addEventListener('close', onClose);
 };
-/* eslint-disable @typescript-eslint/ban-ts-ignore */

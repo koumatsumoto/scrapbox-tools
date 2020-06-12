@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "fp-ts": "^2.5.4",
+    "rxjs": "^7.0.0-beta.0",
     "ws": "^7.3.0"
   },
   "devDependencies": {
