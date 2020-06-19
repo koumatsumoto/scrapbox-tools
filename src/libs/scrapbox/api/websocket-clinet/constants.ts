@@ -13,3 +13,5 @@ export const headers = {
   receive: '43',
 };
 export const websocketResponseTimeout = 1000 * 30;
+// NOTE: websocket requires origin header
+export const origin = 'https://scrapbox.io';

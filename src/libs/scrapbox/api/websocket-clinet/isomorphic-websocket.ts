@@ -1,21 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import * as NodeWebSocket from 'ws';
 
-type BrowserWebsocketConstructor = typeof WebSocket;
-type NodeWebsocketConstructor = {
-  new (url: string): NodeWebSocket;
-};
 export type IsomorphicWebsocket = WebSocket | NodeWebSocket;
-export type WebsocketConstructor = BrowserWebsocketConstructor | NodeWebsocketConstructor;
-
-export const getIsomorphicWebsocketConstructor = (): WebsocketConstructor => {
-  return typeof window.WebSocket === 'function' ? window.WebSocket : require('ws');
-};
-
-export const getNewWebsocketInstance = (socket: IsomorphicWebsocket) => {
-  // @ts-ignore
-  return new socket.constructor(socket.url);
-};
 
 export const registerIsomorphicWebsocketEventHandling = (
   socket: WebSocket | NodeWebSocket,

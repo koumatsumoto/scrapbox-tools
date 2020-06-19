@@ -1,15 +1,10 @@
 import { Subject } from 'rxjs';
 import { first, map, timeout } from 'rxjs/operators';
 import { ID } from '../../browser-api';
-import { endpoint, headers, websocketResponseTimeout } from './constants';
+import { endpoint, headers, origin, websocketResponseTimeout } from './constants';
 import { CommitChangeParam, createChanges } from './internal/commit-change-param';
 import { parseMessage } from './internal/parse-message';
-import {
-  getIsomorphicWebsocketConstructor,
-  getNewWebsocketInstance,
-  IsomorphicWebsocket,
-  registerIsomorphicWebsocketEventHandling,
-} from './isomorphic-websocket';
+import { IsomorphicWebsocket, registerIsomorphicWebsocketEventHandling } from './isomorphic-websocket';
 import {
   CommitResponsePayload,
   ConnectionOpenResponsePayload,
@@ -18,16 +13,25 @@ import {
   WebsocketResponsePayload,
 } from './types';
 
-export const scrapboxIsomorphicWebsocketGetterFn = () => {
-  const WebsocketConstructor = getIsomorphicWebsocketConstructor();
+export const scrapboxIsomorphicWebsocketGetterFn = (token?: string) => {
+  const WebsocketConstructor = typeof globalThis.WebSocket === 'function' ? globalThis.WebSocket : require('ws');
 
-  return new WebsocketConstructor(endpoint);
+  const options = token
+    ? {
+        headers: {
+          Origin: origin,
+          Cookie: `connect.sid=${token}`,
+        },
+      }
+    : undefined;
+
+  return new WebsocketConstructor(endpoint, undefined, options);
 };
 
 export class WebsocketClient {
   // messages from server
   private readonly response$ = new Subject<{ sid: string | null; data: WebsocketResponsePayload }>();
-  private socket: IsomorphicWebsocket;
+  private socket!: IsomorphicWebsocket;
   // currently joined-room, need cache to re-join on reconnect
   private room: { projectId: string; pageId: string } | null = null;
 
@@ -35,8 +39,7 @@ export class WebsocketClient {
   private pendingRequests: Function[] = [];
   private sid = 0;
 
-  constructor(socket?: IsomorphicWebsocket) {
-    this.socket = socket || scrapboxIsomorphicWebsocketGetterFn();
+  constructor(private readonly token?: string) {
     this.initialize();
   }
 
@@ -76,7 +79,7 @@ export class WebsocketClient {
       this.socket.close();
     }
 
-    this.socket = getNewWebsocketInstance(this.socket);
+    this.socket = scrapboxIsomorphicWebsocketGetterFn(this.token);
     registerIsomorphicWebsocketEventHandling(this.socket, {
       onOpen: () => {
         // on reconnect
@@ -94,7 +97,7 @@ export class WebsocketClient {
     const sid = `${this.sid++}`;
     const data = `${headers.send}${sid}${body}`;
 
-    if (this.socket.readyState !== WebSocket.OPEN) {
+    if (this.socket.readyState !== this.socket.OPEN) {
       this.pendingRequests.push(() => this.socket.send(data));
     } else {
       this.socket.send(data);

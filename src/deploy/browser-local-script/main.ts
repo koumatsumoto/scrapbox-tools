@@ -19,8 +19,8 @@ const main = async () => {
   runOnScrapboxReady(async () => {
     console.log('[sx/deploy] runOnScrapboxReady');
     // setup server connection
-    const projectId = getCurrentProjectName();
-    const api = await getGlobalScrapboxApi(projectId);
+    const projectName = getCurrentProjectName();
+    const api = await getGlobalScrapboxApi(projectName);
     console.log('[sx/deploy] api is ready');
 
     // setup global context
