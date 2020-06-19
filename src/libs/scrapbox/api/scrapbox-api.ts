@@ -11,6 +11,10 @@ export class ScrapboxApi {
     private readonly websocketClient: WebsocketClient,
   ) {}
 
+  async getPage(pageName: string) {
+    return this.apiClient.getPage(this.project.name, pageName);
+  }
+
   async changeLine(pageName: string, change: CommitChangeParam | CommitChangeParam[]) {
     const { pageId, commitId } = await this.getPageIdAndCommitId(pageName);
 
@@ -43,25 +47,25 @@ export class ScrapboxApi {
 }
 
 export const getGlobalScrapboxApiFn = () => {
-  let manager: ScrapboxApi | null = null;
+  let api: ScrapboxApi | null = null;
 
   return async (projectName: string, token?: string) => {
-    if (manager) {
-      return manager;
+    if (api) {
+      return api;
     }
 
-    const api = new RestApiClient(token);
+    const restApi = new RestApiClient(token);
     const websocket = new WebsocketClient(token);
-    const [user, project] = await Promise.all([api.getMe(), api.getProject(projectName)]);
+    const [user, project] = await Promise.all([restApi.getMe(), restApi.getProject(projectName)]);
 
     // failed to login
     if (user.isGuest) {
       throw new Error('Authentication Error, cookie may not be set');
     }
     // for debug purpose
-    (globalThis as any).api = api;
+    (globalThis as any).api = restApi;
 
-    return (manager = new ScrapboxApi(user, project, api, websocket));
+    return (api = new ScrapboxApi(user, project, restApi, websocket));
   };
 };
 

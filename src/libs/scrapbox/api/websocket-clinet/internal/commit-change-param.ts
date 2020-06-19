@@ -1,4 +1,4 @@
-import { ID } from '../../../browser-api';
+import { ID } from '../../../util';
 import {
   CommitChange,
   createDeletionChange,

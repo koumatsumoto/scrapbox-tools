@@ -1,4 +1,4 @@
-import { ID } from '../../../browser-api';
+import { ID } from '../../../util';
 import { CommitChange } from '../internal/commit-change';
 
 export type CommitRequestPayload = {

@@ -1,5 +1,5 @@
 import { Brand } from '../../common';
-import { ID } from '../browser-api';
+import { ID } from '../util';
 import { DecoFormulaNode, IndentNode, ScrapboxNode } from './node';
 
 export type TextStartWithHash = Brand<string, 'TextStartWithHash'>;

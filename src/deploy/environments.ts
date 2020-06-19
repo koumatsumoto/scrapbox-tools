@@ -1,8 +1,7 @@
-import { isValidToken } from './util';
+// value of auth cookie
+export const isValidToken = (val: unknown): val is string => typeof val === 'string' && 0 < val.length;
 
 type Env = {
-  // whether script run on local environment (for development and debug)
-  LOCAL?: 'yes';
   // value of auth cookie (scrapbox.id connect.sid)
   TOKEN?: string;
 };
@@ -15,7 +14,6 @@ export const getEnv = () => {
   }
 
   return {
-    local: env.LOCAL === 'yes',
     token: env.TOKEN,
   } as const;
 };

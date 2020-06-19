@@ -1,4 +1,4 @@
-import { findLineId, findLineIndex, findNextLineId, isEmptyLine } from './line';
+import { findLineId, findIndex, findNextLineId, isEmptyLine } from './page';
 
 describe('line', () => {
   const lines: any[] = [
@@ -9,10 +9,10 @@ describe('line', () => {
 
   describe('findLineIndex', () => {
     it('should work', () => {
-      expect(findLineIndex('hell', lines)).toBe(0);
-      expect(findLineIndex('hello', lines)).toBe(0);
-      expect(findLineIndex('hello world', lines)).toBe(2);
-      expect(findLineIndex('not found', lines)).toBe(-1);
+      expect(findIndex('hell', lines)).toBe(0);
+      expect(findIndex('hello', lines)).toBe(0);
+      expect(findIndex('hello world', lines)).toBe(2);
+      expect(findIndex('not found', lines)).toBe(-1);
     });
   });
 

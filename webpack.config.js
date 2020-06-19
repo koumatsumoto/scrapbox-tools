@@ -5,11 +5,6 @@ module.exports = {
   entry: {
     'km-study': path.join(__dirname, 'src/km-study.ts'),
     'km-public': path.join(__dirname, 'src/km-public.ts'),
-    // load in puppeteer page context
-    'run-in-puppeteer-page': path.join(
-      __dirname,
-      'src/deploy/browser-local-script/main.ts',
-    ),
   },
   output: {
     path: path.join(__dirname, 'dist'),

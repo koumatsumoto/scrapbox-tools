@@ -1,4 +1,4 @@
-import { generateId, ID } from '../../../browser-api';
+import { generateId, ID } from '../../../util';
 
 export type InsertCommitChange = {
   // point to insert, all after here go down one line.
