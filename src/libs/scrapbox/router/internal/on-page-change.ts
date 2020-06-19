@@ -1,4 +1,4 @@
-import { getScrapbox } from '../../public-api';
+import { getScrapbox } from '../../browser-api';
 
 const pageChangeObserveInterval = 250;
 export const onPageChange = (callback: (title: string | null) => any) => {

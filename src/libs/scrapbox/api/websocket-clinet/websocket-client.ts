@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import { first, map, timeout } from 'rxjs/operators';
-import { ID } from '../../public-api';
+import { ID } from '../../browser-api';
 import { endpoint, headers, websocketResponseTimeout } from './constants';
 import { CommitChangeParam, createChanges } from './internal/commit-change-param';
 import { parseMessage } from './internal/parse-message';

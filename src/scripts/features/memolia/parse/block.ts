@@ -1,4 +1,4 @@
-import { isTagLine } from '../../../../libs/scrapbox/public-api/scrapbox-object/line';
+import { isTagLine } from '../../../../libs/scrapbox/browser-api/scrapbox-object/line';
 import { ScrapboxLine, TagLine } from '../../../../libs/scrapbox/types';
 import { Memory, Name } from '../types';
 

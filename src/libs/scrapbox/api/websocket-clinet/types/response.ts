@@ -1,4 +1,4 @@
-import { ID } from '../../../public-api';
+import { ID } from '../../../browser-api';
 import { CommitChange } from '../internal/commit-change';
 
 export type CommitError = {

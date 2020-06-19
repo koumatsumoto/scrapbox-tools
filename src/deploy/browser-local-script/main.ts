@@ -2,8 +2,8 @@
  * scripts to enable private-api in browser context
  */
 import { waitUntil } from '../../libs/common';
-import { getApiManager } from '../../libs/scrapbox/private-api';
-import { findNextLineId, runOnScrapboxReady } from '../../libs/scrapbox/public-api';
+import { getGlobalScrapboxApi } from '../../libs/scrapbox/api';
+import { findNextLineId, getCurrentPageName, getCurrentProjectName, runOnScrapboxReady } from '../../libs/scrapbox/browser-api';
 import { MyScripts } from './global-type';
 
 const main = async () => {
@@ -19,7 +19,8 @@ const main = async () => {
   runOnScrapboxReady(async () => {
     console.log('[sx/deploy] runOnScrapboxReady');
     // setup server connection
-    const api = await getApiManager();
+    const projectId = getCurrentProjectName();
+    const api = await getGlobalScrapboxApi(projectId);
     console.log('[sx/deploy] api is ready');
 
     // setup global context
@@ -31,7 +32,11 @@ const main = async () => {
           // update existing
           if (lineId) {
             console.log('[sx/deploy] start to try update the line of source code');
-            await api.changeLineOfCurrentPage({ type: 'update', id: lineId, text: newSourceCode });
+            const pageName = getCurrentPageName();
+            if (!pageName) {
+              throw new Error('Page name not found');
+            }
+            await api.changeLine(pageName, { type: 'update', id: lineId, text: newSourceCode });
             console.log('[sx/deploy] complete updation');
           } else {
             // TODO: implement creation

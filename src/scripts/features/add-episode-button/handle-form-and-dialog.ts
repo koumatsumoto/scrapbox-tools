@@ -1,6 +1,13 @@
 import { SxDialogComponent } from '../../../libs/components/dialog';
-import { getApiManager } from '../../../libs/scrapbox/private-api';
-import { getFirstLineOrFail, isEmptyPage, isTitleOnlyPage, loadPage } from '../../../libs/scrapbox/public-api';
+import { getGlobalScrapboxApi } from '../../../libs/scrapbox/api';
+import {
+  getCurrentPageName,
+  getCurrentProjectName,
+  getFirstLineOrFail,
+  isEmptyPage,
+  isTitleOnlyPage,
+  loadPage,
+} from '../../../libs/scrapbox/browser-api';
 import { defineElementsIfNeeded } from './form/define-elements-if-needed';
 import { SxAddEpisodeFormComponent } from './form/form.component';
 import { getConfigOrFail } from './form/get-config-or-fail';
@@ -10,7 +17,7 @@ import { makeInsertParams } from './make-insert-params/make-insert-params';
 export const handleFormAndDialog = async () => {
   defineElementsIfNeeded();
   const tags = await getConfigOrFail();
-  const api = await getApiManager();
+  const api = await getGlobalScrapboxApi(getCurrentProjectName());
   const dialog = new SxDialogComponent();
   const form = new SxAddEpisodeFormComponent(tags);
   const loading = new SxLoadingIndicatorComponent();
@@ -30,7 +37,11 @@ export const handleFormAndDialog = async () => {
 
   // show loading indicator while api request
   dialog.setContent(loading);
-  await api.changeLineOfCurrentPage(makeInsertParams(formResult));
+  const pageName = getCurrentPageName();
+  if (!pageName) {
+    throw new Error('Page name not found');
+  }
+  await api.changeLine(pageName, makeInsertParams(formResult));
 
   const titleLine = getFirstLineOrFail();
   const title = titleLine.text;

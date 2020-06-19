@@ -1,8 +1,8 @@
-import { MeResponse, PageResponse, ProjectResponse } from './api-client-types';
+import { MeResponse, PageResponse, ProjectResponse } from './rest-api-client-types';
 
 const baseURL = 'https://scrapbox.io/api';
 
-export class ApiClient {
+export class RestApiClient {
   async getPage(project: string, page: string): Promise<PageResponse> {
     return this.request<PageResponse>(`${baseURL}/pages/${encodeURIComponent(project)}/${encodeURIComponent(page)}?followRename=true`);
   }

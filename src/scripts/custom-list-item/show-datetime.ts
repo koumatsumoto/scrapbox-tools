@@ -1,6 +1,6 @@
 import { getFormattedDateString } from '../../libs/scrapbox';
+import { getPageTitleMap } from '../../libs/scrapbox/browser-api';
 import { retrieveListItemsWithTitle, selectContainer } from '../../libs/scrapbox/dom';
-import { getPageTitleMap } from '../../libs/scrapbox/public-api';
 import { customCSSClassName } from '../config';
 
 const createDatetimeElement = (timestamp: number) => {

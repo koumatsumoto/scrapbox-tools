@@ -1,6 +1,6 @@
 import { getDateText, getLastLineId, getTimeText, isDiaryPageTitle, isEmptyPage, makeTag } from '../../../../libs/scrapbox';
-import { CommitChangeParam } from '../../../../libs/scrapbox/private-api/websocket-clinet';
-import { endWithEmptyLine, getLines } from '../../../../libs/scrapbox/public-api';
+import { CommitChangeParam } from '../../../../libs/scrapbox/api/websocket-clinet';
+import { endWithEmptyLine, getLines } from '../../../../libs/scrapbox/browser-api';
 import { ScrapboxLine } from '../../../../libs/scrapbox/types';
 
 /**

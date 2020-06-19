@@ -1,8 +1,8 @@
 /**
  * Common variables and functions (Scrapbox loads each scripts into global environment)
  */
-import { getApiManager } from './libs/scrapbox/private-api';
-import { runOnScrapboxReady } from './libs/scrapbox/public-api';
+import { getGlobalScrapboxApi } from './libs/scrapbox/api';
+import { getCurrentProjectName, runOnScrapboxReady } from './libs/scrapbox/browser-api';
 import {
   applyLoginCSSClass,
   enableCustomListItem,
@@ -15,7 +15,7 @@ import {
 const main = () => {
   runOnScrapboxReady(async () => {
     // connect to websocket, fetch initial data from api
-    getApiManager().catch();
+    getGlobalScrapboxApi(getCurrentProjectName()).catch();
 
     enableCustomListItem();
 

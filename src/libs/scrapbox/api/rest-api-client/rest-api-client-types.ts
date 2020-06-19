@@ -1,4 +1,4 @@
-import { ID } from '../../public-api';
+import { ID } from '../../browser-api';
 
 export type ApiResultPageLine = { id: ID; text: string; userId: string; created: number; updated: number };
 

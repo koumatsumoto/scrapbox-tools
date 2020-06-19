@@ -1,7 +1,7 @@
 /**
  * Common variables and functions (Scrapbox loads each scripts into global environment)
  */
-import { runOnScrapboxReady } from './libs/scrapbox/public-api';
+import { runOnScrapboxReady } from './libs/scrapbox/browser-api';
 import { applyLoginCSSClass } from './scripts';
 
 export const main = () => {
