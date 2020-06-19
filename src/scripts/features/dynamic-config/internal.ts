@@ -4,6 +4,7 @@ import { Lazy } from 'fp-ts/es6/function';
 import { pipe } from 'fp-ts/es6/pipeable';
 import { ApiClient } from '../../../libs/scrapbox/private-api/api-client/api-client';
 import { ApiResultPageLine, PageResponse } from '../../../libs/scrapbox/private-api/api-client/api-client-types';
+import { getCurrentProjectName } from '../../../libs/scrapbox/public-api';
 import { DynamicConfig } from '../../config';
 
 export const storageKey = '[sx/dynamic-config] config';
@@ -45,7 +46,7 @@ export const storeToStorage = (data: DynamicConfig, w = window): TaskEither<Erro
   }
 };
 
-const fetchConfigPage: Lazy<Promise<PageResponse>> = () => new ApiClient().getPage('config');
+const fetchConfigPage: Lazy<Promise<PageResponse>> = () => new ApiClient().getPage(getCurrentProjectName(), 'config');
 
 const fromThunk = (thunk: Lazy<Promise<PageResponse>>): TaskEither<Error, PageResponse> => {
   return tryCatch(thunk, toError);

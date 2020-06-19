@@ -1,28 +1,14 @@
-import { getCurrentPageName, getCurrentProjectName } from '../../public-api/deprecated/scrapbox';
 import { MeResponse, PageResponse, ProjectResponse } from './api-client-types';
 
 const baseURL = 'https://scrapbox.io/api';
 
 export class ApiClient {
-  async getPage(title: string): Promise<PageResponse> {
-    return this.request<PageResponse>(
-      `${baseURL}/pages/${encodeURIComponent(getCurrentProjectName())}/${encodeURIComponent(title)}?followRename=true`,
-    );
+  async getPage(project: string, page: string): Promise<PageResponse> {
+    return this.request<PageResponse>(`${baseURL}/pages/${encodeURIComponent(project)}/${encodeURIComponent(page)}?followRename=true`);
   }
 
-  async getCurrentPage(): Promise<PageResponse | null> {
-    const pageName = getCurrentPageName();
-    if (!pageName) {
-      return null;
-    }
-
-    return this.request<PageResponse>(
-      `${baseURL}/pages/${encodeURIComponent(getCurrentProjectName())}/${encodeURIComponent(pageName)}?followRename=true`,
-    );
-  }
-
-  async getCurrentProject(): Promise<ProjectResponse> {
-    return this.request<ProjectResponse>(`${baseURL}/projects/${encodeURIComponent(getCurrentProjectName())}`);
+  async getProject(project: string): Promise<ProjectResponse> {
+    return this.request<ProjectResponse>(`${baseURL}/projects/${encodeURIComponent(project)}`);
   }
 
   async getMe(): Promise<MeResponse> {

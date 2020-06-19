@@ -1,3 +1,4 @@
+import { getCurrentPageName, getCurrentProjectName } from '../public-api';
 import { ApiClient } from './api-client/api-client';
 import { ProjectResponse, User } from './api-client/api-client-types';
 import { CommitChangeParam } from './websocket-clinet';
@@ -12,12 +13,13 @@ export class ApiManager {
   ) {}
 
   async getCurrentPage() {
-    const page = await this.apiClient.getCurrentPage();
-    if (page == null) {
+    const project = getCurrentProjectName();
+    const page = getCurrentPageName();
+    if (!project || !page) {
       throw new Error('current layout is not page');
     }
 
-    return page;
+    return this.apiClient.getPage(project, page);
   }
 
   async changeLine(param: { pageId: string; commitId: string; change: CommitChangeParam | CommitChangeParam[] }) {
@@ -63,7 +65,7 @@ export const getApiManagerFn = () => {
 
     const api = new ApiClient();
     const websocket = new WebsocketClient();
-    const [user, project] = await Promise.all([api.getMe(), api.getCurrentProject()]);
+    const [user, project] = await Promise.all([api.getMe(), api.getProject(getCurrentProjectName())]);
     // for debug purpose
     (window as any).api = api;
 
