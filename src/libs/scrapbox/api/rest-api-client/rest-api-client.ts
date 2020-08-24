@@ -7,9 +7,7 @@ export class RestApiClient {
   constructor(private readonly token?: string) {}
 
   async getPage(projectName: string, pageName: string): Promise<PageResponse> {
-    return this.request<PageResponse>(
-      `${baseURL}/pages/${encodeURIComponent(projectName)}/${encodeURIComponent(pageName)}?followRename=true`,
-    );
+    return this.request<PageResponse>(`${baseURL}/pages/${encodeURIComponent(projectName)}/${encodeURIComponent(pageName)}?followRename=true`);
   }
 
   async getProject(projectName: string): Promise<ProjectResponse> {

@@ -1,11 +1,4 @@
-import {
-  getFormattedDateString,
-  getFormattedTimeString,
-  getTimeText,
-  getDateText,
-  scrapboxCustomFormat,
-  isDiaryPageTitle,
-} from './datetime';
+import { getFormattedDateString, getFormattedTimeString, getTimeText, getDateText, scrapboxCustomFormat, isDiaryPageTitle } from './datetime';
 
 describe('datetime-operations', () => {
   describe('getFormattedDateString', () => {
