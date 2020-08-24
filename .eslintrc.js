@@ -27,8 +27,6 @@ module.exports = {
   rules: {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
-    // for webpack html-loader
-    '@typescript-eslint/no-var-requires': 'off',
     'import/no-duplicates': 'error',
     'import/order': [
       'error',
@@ -40,7 +38,6 @@ module.exports = {
   },
   settings: {
     'import/extensions': ['.js', '.ts'],
-    'import/ignore': ['.html', '.svg'],
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts'],
     },

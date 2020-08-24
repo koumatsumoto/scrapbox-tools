@@ -27,9 +27,7 @@ export const isErrorResponsePayload = (v: CommitResponsePayload | JoinRoomRespon
   return 'error' in v && v.error !== undefined;
 };
 
-export const isJoinRoomSuccessResponsePayload = (
-  v: CommitResponsePayload | JoinRoomResponsePayload,
-): v is JoinRoomSuccessResponsePayload => {
+export const isJoinRoomSuccessResponsePayload = (v: CommitResponsePayload | JoinRoomResponsePayload): v is JoinRoomSuccessResponsePayload => {
   return 'data' in v && !('commitId' in v.data);
 };
 

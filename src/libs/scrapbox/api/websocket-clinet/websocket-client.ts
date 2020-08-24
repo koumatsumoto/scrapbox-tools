@@ -5,13 +5,7 @@ import { endpoint, headers, origin, websocketResponseTimeout } from './constants
 import { CommitChangeParam, createChanges } from './internal/commit-change-param';
 import { parseMessage } from './internal/parse-message';
 import { IsomorphicWebsocket, registerIsomorphicWebsocketEventHandling } from './isomorphic-websocket';
-import {
-  CommitResponsePayload,
-  ConnectionOpenResponsePayload,
-  JoinRoomResponsePayload,
-  WebsocketRequestPayload,
-  WebsocketResponsePayload,
-} from './types';
+import { CommitResponsePayload, ConnectionOpenResponsePayload, JoinRoomResponsePayload, WebsocketRequestPayload, WebsocketResponsePayload } from './types';
 
 export const scrapboxIsomorphicWebsocketGetterFn = (token?: string) => {
   const WebsocketConstructor = typeof globalThis.WebSocket === 'function' ? globalThis.WebSocket : require('ws');

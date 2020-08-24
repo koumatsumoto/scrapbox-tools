@@ -1,17 +1,11 @@
 {
+  "printWidth": 160,
   "tabWidth": 2,
   "useTabs": false,
   "semi": true,
   "singleQuote": true,
+  "quoteProps": "as-needed",
   "trailingComma": "all",
   "bracketSpacing": true,
-  "arrowParens": "always",
-  "overrides": [
-    {
-      "files": "*.ts",
-      "options": {
-        "printWidth": 140
-      }
-    }
-  ]
+  "arrowParens": "always"
 }
