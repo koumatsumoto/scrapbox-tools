@@ -1,8 +1,7 @@
-import { Brand } from '../../common';
 import { ID } from '../util';
 import { DecoFormulaNode, IndentNode, ScrapboxNode } from './node';
 
-export type TextStartWithHash = Brand<string, 'TextStartWithHash'>;
+export type TextStartWithHash = string;
 
 type GeneralLine = {
   id: ID;

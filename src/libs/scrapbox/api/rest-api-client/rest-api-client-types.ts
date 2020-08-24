@@ -25,7 +25,7 @@ export type PageResponse = {
   persistent: boolean;
   lines: ApiResultPageLine[];
   links: [];
-  icons: {};
+  icons: Record<string, unknown>;
   relatedPages: { links1hop: []; links2hop: []; icons1hop: [] };
   collaborators: [];
   lastAccessed: number;

@@ -30,7 +30,7 @@ export class WebsocketClient {
   private room: { projectId: string; pageId: string } | null = null;
 
   // wait request until connection opened
-  private pendingRequests: Function[] = [];
+  private pendingRequests: (() => unknown)[] = [];
   private sid = 0;
 
   constructor(private readonly token?: string) {
