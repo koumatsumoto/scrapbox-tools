@@ -3,8 +3,6 @@ jobs:
   build:
     docker:
       - image: circleci/node:latest
-        environment:
-          CHROME_BIN: '/usr/bin/google-chrome'
     working_directory: ~/repo
     steps:
       - checkout
@@ -27,6 +25,3 @@ workflows:
   ci-cd:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
