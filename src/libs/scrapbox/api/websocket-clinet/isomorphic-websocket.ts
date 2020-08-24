@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
+/* eslint-disable */
 import * as NodeWebSocket from 'ws';
 
 export type IsomorphicWebsocket = WebSocket | NodeWebSocket;

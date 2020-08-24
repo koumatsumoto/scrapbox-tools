@@ -1,6 +1,6 @@
-import { Brand } from '../../common';
+import { Opaque } from 'ts-essentials';
 
-export type ID = Brand<string, 'ID'>;
+export type ID = Opaque<string, 'ID'>;
 
 // copied from official index.js
 export const isIdString = (v: string): v is ID => {

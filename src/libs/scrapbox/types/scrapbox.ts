@@ -36,8 +36,8 @@ export type RawScrapbox = {
   PageMenu: {
     addItem: (param: { title: string; onClick: () => void }) => void;
     addMenu: (param: { title: string; image: string; onClick: () => void }) => void;
-    addSeparator: Function;
-    removeAllItems: Function;
+    addSeparator: () => unknown;
+    removeAllItems: () => unknown;
   };
   PopupMenu: {
     addButton: (param: { title: string; onClick: (selectedText: string) => string }) => void;
