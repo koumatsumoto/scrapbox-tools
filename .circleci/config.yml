@@ -25,6 +25,3 @@ workflows:
   ci-cd:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
