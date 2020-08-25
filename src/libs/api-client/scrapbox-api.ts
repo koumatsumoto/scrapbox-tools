@@ -1,15 +1,10 @@
-import { RestApiClient } from './rest-api-client/rest-api-client';
-import { ProjectResponse, User } from './rest-api-client/rest-api-client-types';
+import { RestApiClient } from './rest-api-client/RestApiClient';
+import { Project, User } from './rest-api-client/types';
 import { CommitChangeParam } from './websocket-clinet';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
 
 export class ScrapboxApi {
-  constructor(
-    readonly user: User,
-    readonly project: ProjectResponse,
-    private readonly apiClient: RestApiClient,
-    private readonly websocketClient: WebsocketClient,
-  ) {}
+  constructor(readonly user: User, readonly project: Project, private readonly apiClient: RestApiClient, private readonly websocketClient: WebsocketClient) {}
 
   async getPage(pageName: string) {
     return this.apiClient.getPage(this.project.name, pageName);
