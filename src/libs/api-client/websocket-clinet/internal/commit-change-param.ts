@@ -1,4 +1,4 @@
-import { ID } from '../../../util';
+import { ID } from '../../common';
 import { CommitChange, createDeletionChange, createDescriptionChange, createInsertionChange, createTitleChange, createUpdationChange } from './commit-change';
 
 type InsertParam = { type: 'insert'; position?: ID; text: string };

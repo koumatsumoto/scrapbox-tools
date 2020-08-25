@@ -1,4 +1,4 @@
-import { ID } from '../../util';
+import { ID } from '../common';
 
 export type ApiResultPageLine = { id: ID; text: string; userId: string; created: number; updated: number };
 
