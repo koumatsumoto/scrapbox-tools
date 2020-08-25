@@ -1,19 +1,37 @@
 import { ID } from '../common';
 
-export type ApiResultPageLine = { id: ID; text: string; userId: string; created: number; updated: number };
+export type Line = {
+  id: ID;
+  text: string;
+  userId: string;
+  created: number;
+  updated: number;
+};
 
-export type PageResponse = {
+export type User = {
+  id: ID;
+  name: string;
+  displayName: string;
+  photo: string;
+  email: string;
+  pro: boolean;
+  provider: 'google' | unknown;
+  created: number;
+  updated: number;
+};
+
+export type Me = User & {
+  config: { userScript: boolean };
+  isGuest: boolean;
+  csrfToken: string;
+};
+
+export type Page = {
   id: string;
   title: string;
-  // not checked
-  image: null | any;
+  image: null | unknown;
   descriptions: [];
-  user: {
-    id: string;
-    name: string;
-    displayName: string;
-    photo: string;
-  };
+  user: Pick<User, 'id' | 'name' | 'displayName' | 'photo'>;
   pin: number;
   views: number;
   linked: number;
@@ -23,7 +41,7 @@ export type PageResponse = {
   accessed: number;
   snapshotCreated: number;
   persistent: boolean;
-  lines: ApiResultPageLine[];
+  lines: Line[];
   links: [];
   icons: Record<string, unknown>;
   relatedPages: { links1hop: []; links2hop: []; icons1hop: [] };
@@ -31,19 +49,7 @@ export type PageResponse = {
   lastAccessed: number;
 };
 
-export interface User {
-  id: ID;
-  name: string;
-  displayName: string;
-  photo: string;
-  email: string;
-  pro: boolean;
-  provider: 'google' | string;
-  created: number;
-  updated: number;
-}
-
-export type ProjectResponse = {
+export type Project = {
   id: string;
   name: string;
   displayName: string;
@@ -63,11 +69,3 @@ export type ProjectResponse = {
   backuped: number;
   isMember: boolean;
 };
-
-export interface MeResponse extends User {
-  config: {
-    userScript: boolean;
-  };
-  isGuest: boolean;
-  csrfToken: string;
-}
