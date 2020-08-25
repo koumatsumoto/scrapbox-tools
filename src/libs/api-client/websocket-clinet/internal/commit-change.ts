@@ -1,4 +1,4 @@
-import { generateId, ID } from '../../../util';
+import { generateId, ID } from '../../common';
 
 export type InsertCommitChange = {
   // point to insert, all after here go down one line.

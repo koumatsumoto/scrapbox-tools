@@ -1,4 +1,4 @@
-import { ID } from '../../../util';
+import { ID } from '../../common';
 import { CommitChange } from '../internal/commit-change';
 
 export type CommitRequestPayload = {
