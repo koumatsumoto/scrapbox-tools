@@ -1,11 +1,18 @@
-import { Subject } from 'rxjs';
-import { first, map, timeout } from 'rxjs/operators';
+import { fromEvent, interval, never, Observable, Subject } from 'rxjs';
+import { filter, first, map, takeUntil, timeout } from 'rxjs/operators';
 import { ID } from '../common';
 import { endpoint, headers, origin, websocketResponseTimeout } from './constants';
 import { CommitChangeParam, createChanges } from './internal/commit-change-param';
 import { parseMessage } from './internal/parse-message';
-import { IsomorphicWebsocket, registerIsomorphicWebsocketEventHandling } from './isomorphic-websocket';
+import { IsomorphicWebsocket } from './isomorphic-websocket';
 import { CommitResponsePayload, ConnectionOpenResponsePayload, JoinRoomResponsePayload, WebsocketRequestPayload, WebsocketResponsePayload } from './types';
+
+const websocketEventNames = {
+  open: 'open',
+  message: 'message',
+  error: 'error',
+  close: 'close',
+};
 
 export const scrapboxIsomorphicWebsocketGetterFn = (token?: string) => {
   const WebsocketConstructor = typeof globalThis.WebSocket === 'function' ? globalThis.WebSocket : require('ws');
@@ -22,15 +29,78 @@ export const scrapboxIsomorphicWebsocketGetterFn = (token?: string) => {
   return new WebsocketConstructor(endpoint, undefined, options);
 };
 
+const handleMessage = (event: { data: unknown }) => {
+  if (typeof event.data !== 'string') {
+    return {
+      type: 'error',
+      error: new Error('UnexpectedResponseError'),
+    } as const;
+  }
+
+  const [header, data] = parseMessage(event.data);
+  switch (header) {
+    // just after connection opened
+    case headers.initialize: {
+      return {
+        type: 'initialized',
+        data: data as ConnectionOpenResponsePayload,
+      } as const;
+    }
+    // updates from other users
+    case headers.send: {
+      return {
+        type: 'notification',
+        data,
+      } as const;
+    }
+    default: {
+      // result of this.send()
+      if (header.startsWith(headers.receive)) {
+        return {
+          type: 'response',
+          sid: header.slice(headers.receive.length),
+          data,
+        } as const;
+      }
+
+      return {
+        type: 'others',
+        data,
+      } as const;
+    }
+  }
+};
+
+const isOpen = (socket: IsomorphicWebsocket) => socket.readyState === socket.OPEN;
+
+const createMessage = (id: string, payload: WebsocketRequestPayload) => {
+  const body = JSON.stringify(['socket.io-request', payload]);
+
+  return [id, `${headers.send}${id}${body}`] as const;
+}
+
+export const waitForFirstResponse = <T>(
+  response$: Observable<{ sid: string; data: T }>,
+  sid: string,
+  timeoutMs = websocketResponseTimeout,
+) =>
+  response$
+    .pipe(
+      timeout(timeoutMs),
+      first((response) => response.sid === sid),
+      map((response) => response.data),
+    )
+    .toPromise();
+
 export class WebsocketClient {
-  // messages from server
-  private readonly response$ = new Subject<{ sid: string | null; data: WebsocketResponsePayload }>();
+  private readonly response$ = new Subject<{ sid: string; data: WebsocketResponsePayload }>();
+  private open$: Observable<any> = never();
+
   private socket!: IsomorphicWebsocket;
   // currently joined-room, need cache to re-join on reconnect
   private room: { projectId: string; pageId: string } | null = null;
 
   // wait request until connection opened
-  private pendingRequests: (() => unknown)[] = [];
   private sid = 0;
 
   constructor(private readonly token?: string) {
@@ -74,64 +144,34 @@ export class WebsocketClient {
     }
 
     this.socket = scrapboxIsomorphicWebsocketGetterFn(this.token);
-    registerIsomorphicWebsocketEventHandling(this.socket, {
-      onOpen: () => {
-        // on reconnect
-        if (this.room) {
-          this.joinRoom(this.room);
-        }
-      },
-      onMessage: (ev) => this.handleResponse(ev),
-      onErrorOrClose: () => this.initialize(), // do reconnect
+    const close$ = fromEvent(this.socket, websocketEventNames.close).pipe(first());
+    this.open$ = fromEvent(this.socket, websocketEventNames.open).pipe(first());
+    const message$ = fromEvent<{ data: unknown }>(this.socket, websocketEventNames.message).pipe(takeUntil(close$), map(handleMessage));
+
+    close$.subscribe(() => this.initialize()); // retry if disconnected
+    message$.pipe(filter((v) => v.type === 'response')).subscribe((message) => this.response$.next({ sid: message.sid!, data: message.data }));
+    message$.pipe(filter((v) => v.type === 'initialized')).subscribe((message) => {
+      interval((message.data as ConnectionOpenResponsePayload).pingInterval).subscribe(() => this.socket.send(headers.ping));
+      // for reconnect after closed
+      if (this.room) {
+        this.joinRoom(this.room);
+      }
     });
   }
 
-  private async send<T extends WebsocketResponsePayload = WebsocketResponsePayload>(payload: WebsocketRequestPayload): Promise<T> {
-    const body = JSON.stringify(['socket.io-request', payload]);
-    const sid = `${this.sid++}`;
-    const data = `${headers.send}${sid}${body}`;
+  private async send<T extends WebsocketResponsePayload = WebsocketResponsePayload>(payload: WebsocketRequestPayload) {
+    const [sid, data] = createMessage(this.getIdAndIncrement(), payload);
 
-    if (this.socket.readyState !== this.socket.OPEN) {
-      this.pendingRequests.push(() => this.socket.send(data));
-    } else {
+    if (isOpen(this.socket)) {
       this.socket.send(data);
+    } else {
+      this.open$.subscribe(() => this.socket.send(data));
     }
 
-    return this.response$
-      .pipe(
-        timeout(websocketResponseTimeout),
-        first((response) => response.sid === sid),
-        map((response) => response.data),
-      )
-      .toPromise() as Promise<T>;
+    return (await waitForFirstResponse(this.response$.asObservable(), sid) as T;
   }
 
-  // for incoming messages
-  private handleResponse(event: { data: unknown }) {
-    if (typeof event.data !== 'string') {
-      throw new Error('unexpected data received');
-    }
-    const [header, data] = parseMessage(event.data);
-
-    // message just after connection opened
-    if (header === headers.initialize) {
-      this.setPingAndConsumeBuffer(data as ConnectionOpenResponsePayload);
-    } else if (header.startsWith(headers.receive)) {
-      // for own send() result
-      const sid = header.slice(headers.receive.length);
-      this.response$.next({ sid, data });
-    } else if (header === headers.send) {
-      // for updation by other users
-      this.response$.next({ sid: null, data });
-    }
-  }
-
-  private setPingAndConsumeBuffer(data: ConnectionOpenResponsePayload) {
-    // ping interval is specified from server
-    setInterval(() => this.socket.send(headers.ping), data.pingInterval);
-
-    // consume buffer
-    this.pendingRequests.forEach((f) => f());
-    this.pendingRequests = [];
+  private getIdAndIncrement() {
+    return String(this.sid++);
   }
 }
