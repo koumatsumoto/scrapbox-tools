@@ -1,5 +1,5 @@
 import { ID } from '../../common';
-import { CommitChange } from '../internal/commit-change';
+import { CommitChange } from '../internal/request/commit-change';
 
 export type CommitRequestPayload = {
   method: 'commit';

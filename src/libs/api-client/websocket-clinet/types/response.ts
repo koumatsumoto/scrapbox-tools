@@ -1,5 +1,5 @@
 import { ID } from '../../common';
-import { CommitChange } from '../internal/commit-change';
+import { CommitChange } from '../internal/request/commit-change';
 
 export type CommitError = {
   message: string;
@@ -68,7 +68,7 @@ export type JoinRoomSuccessResponsePayload = {
 
 export type JoinRoomResponsePayload = JoinRoomSuccessResponsePayload | ErrorResponsePayload;
 
-export type DeprecatedWebsocketSendResponsePayload = CommitResponsePayload[] | JoinRoomResponsePayload[];
+export type SendResponsePayload = CommitResponsePayload[] | JoinRoomResponsePayload[];
 
 export type CursorResponsePayload = [
   'cursor',
@@ -106,10 +106,4 @@ export type ExternalCommitResponsePayload = ['commit', ExternalCommitData];
 export type ExternalResponsePayload = CursorResponsePayload | ExternalCommitResponsePayload;
 
 // include response by ping, onopen, updation by other user
-export type WebsocketResponsePayload =
-  | ConnectionOpenResponsePayload
-  | CursorResponsePayload
-  | ExternalCommitResponsePayload
-  | CommitResponsePayload[]
-  | JoinRoomResponsePayload[]
-  | undefined;
+export type WebsocketResponsePayload = ConnectionOpenResponsePayload | CursorResponsePayload | ExternalCommitResponsePayload | SendResponsePayload;
