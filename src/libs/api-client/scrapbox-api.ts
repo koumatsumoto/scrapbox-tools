@@ -1,6 +1,6 @@
 import { RestApiClient } from './rest-api-client/RestApiClient';
 import { Project, User } from './rest-api-client/types';
-import { CommitChangeParam } from './websocket-clinet';
+import { ChangeRequestParams } from './websocket-clinet/internal/request';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
 
 export class ScrapboxApi {
@@ -10,7 +10,7 @@ export class ScrapboxApi {
     return this.apiClient.getPage(this.project.name, pageName);
   }
 
-  async changeLine(pageName: string, change: CommitChangeParam | CommitChangeParam[]) {
+  async changeLine(pageName: string, change: ChangeRequestParams | ChangeRequestParams[]) {
     const { pageId, commitId } = await this.getPageIdAndCommitId(pageName);
 
     return this.commit({
@@ -27,7 +27,7 @@ export class ScrapboxApi {
     return { pageId: page.id, commitId: page.commitId };
   }
 
-  private async commit(param: { projectId: string; pageId: string; commitId: string; changes: CommitChangeParam[] }) {
+  private async commit(param: { projectId: string; pageId: string; commitId: string; changes: ChangeRequestParams[] }) {
     // to receive result of commit
     // await this.websocketClient.joinRoom({ projectId: param.projectId, pageId: param.pageId });
 

@@ -1,5 +1,5 @@
 export const endpoint = 'wss://scrapbox.io/socket.io/?EIO=3&transport=websocket';
-export const headers = {
+export const socketIoHeaders = {
   initialize: '0',
   ping: '2',
   pong: '3',

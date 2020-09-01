@@ -1,12 +1,19 @@
 import { interval, NEVER, Observable } from 'rxjs';
 import { ID } from '../common';
-import { headers } from './constants';
-import { CommitChangeParam, createChanges } from './internal/request/commit-change-param';
-import { createMessage } from './internal/request/create-message';
-import { getScrapboxWebsocketResponseStreams, waitForResponse } from './internal/response/message-and-stream';
+import { socketIoHeaders } from './constants';
+import { createMessage } from './internal/message';
+import {
+  createCommitPayload,
+  createJoinPayload,
+  RequestPayload,
+  CommitResponsePayload,
+  JoinRoomResponsePayload,
+  SendResponsePayload,
+} from './internal/payload';
+import { ChangeRequestParams } from './internal/request';
+import { getScrapboxWebsocketResponseStreams, retrieveResponse } from './internal/response';
 import { getDefaultWebsocket, getScrapboxWebsocketAuthOptions, Websocket } from './internal/websocket/getter';
 import { isOpen } from './internal/websocket/util';
-import { CommitResponsePayload, JoinRoomResponsePayload, SendResponsePayload, WebsocketRequestPayload } from './types';
 
 export class WebsocketClient {
   private response$: Observable<{ sid: string; data: SendResponsePayload }> = NEVER;
@@ -23,32 +30,13 @@ export class WebsocketClient {
     this.initialize();
   }
 
-  commit(param: { projectId: string; userId: ID; pageId: string; parentId: string; changes: CommitChangeParam[] }) {
-    return this.send<CommitResponsePayload[]>({
-      method: 'commit',
-      data: {
-        kind: 'page',
-        userId: param.userId,
-        projectId: param.projectId,
-        pageId: param.pageId,
-        parentId: param.parentId,
-        changes: createChanges(param.changes, param.userId),
-        cursor: null,
-        freeze: true,
-      },
-    });
+  commit(params: { projectId: string; userId: ID; pageId: string; parentId: string; changes: ChangeRequestParams[] }) {
+    return this.send<CommitResponsePayload[]>(createCommitPayload(params));
   }
 
-  joinRoom(param: { projectId: string; pageId: string }) {
-    this.room = param;
-    return this.send<JoinRoomResponsePayload[]>({
-      method: 'room:join',
-      data: {
-        pageId: param.pageId,
-        projectId: param.projectId,
-        projectUpdatesStream: false,
-      },
-    });
+  join(params: { projectId: string; pageId: string }) {
+    this.room = params;
+    return this.send<JoinRoomResponsePayload[]>(createJoinPayload(params));
   }
 
   /**
@@ -67,15 +55,15 @@ export class WebsocketClient {
     close.subscribe(() => this.initialize()); // retry if disconnected
     initialize.subscribe((message) => {
       // start ping
-      interval(message.data.pingInterval).subscribe(() => this.socket.send(headers.ping));
+      interval(message.data.pingInterval).subscribe(() => this.socket.send(socketIoHeaders.ping));
       // for reconnection after closed
       if (this.room) {
-        this.joinRoom(this.room);
+        this.join(this.room);
       }
     });
   }
 
-  private async send<T extends SendResponsePayload>(payload: WebsocketRequestPayload) {
+  private async send<T extends SendResponsePayload>(payload: RequestPayload) {
     const [sid, data] = createMessage(this.getIdAndIncrement(), payload);
 
     if (isOpen(this.socket)) {
@@ -84,7 +72,7 @@ export class WebsocketClient {
       this.open$.subscribe(() => this.socket.send(data));
     }
 
-    return waitForResponse(this.response$, sid) as Promise<T>;
+    return retrieveResponse(this.response$, sid) as Promise<T>;
   }
 
   private getIdAndIncrement() {

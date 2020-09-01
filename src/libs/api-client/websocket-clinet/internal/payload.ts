@@ -1,32 +1,58 @@
 import { ID } from '../../common';
-import { CommitChange } from '../internal/request/commit-change';
+import { ChangeRequestParams, createChangeRequests, CommitChangeRequest } from './request';
 
-export type CommitError = {
+export const createCommitPayload = (params: { projectId: string; userId: ID; pageId: string; parentId: string; changes: ChangeRequestParams[] }) => {
+  return {
+    method: 'commit',
+    data: {
+      kind: 'page',
+      userId: params.userId,
+      projectId: params.projectId,
+      pageId: params.pageId,
+      parentId: params.parentId,
+      changes: createChangeRequests(params.changes, params.userId),
+      cursor: null,
+      freeze: true,
+    },
+  } as const;
+};
+
+export const createJoinPayload = (params: { projectId: string; pageId: string }) => {
+  return {
+    method: 'room:join',
+    data: {
+      pageId: params.pageId,
+      projectId: params.projectId,
+      projectUpdatesStream: false,
+    },
+  } as const;
+};
+
+export type RequestPayload = ReturnType<typeof createCommitPayload> | ReturnType<typeof createJoinPayload>;
+
+type Error = {
   message: string;
   name: string;
+  value: string;
+  kind: 'required' | 'ObjectId' | string;
+  path: '_id' | 'title' | string;
+  stack: string;
+};
+
+export type CommitError = Error & {
   properties: {
     message: string;
     type: 'required';
     path: 'title';
     value: '';
   };
-  kind: 'required';
-  path: 'title';
-  value: '';
-  stack: string;
 };
 
-export type JoinRoomError = {
-  message: string;
-  name: string;
+export type JoinError = Error & {
   stringValue: string;
-  kind: 'ObjectId';
-  value: string;
-  path: '_id';
-  stack: string;
 };
 
-export type CommitErrorResponsePayload = {
+export type CommitErrorPayload = {
   error: {
     name: string;
     message: string;
@@ -37,13 +63,13 @@ export type CommitErrorResponsePayload = {
   };
 };
 
-export type JoinRoomErrorResponsePayload = {
+export type JoinErrorPayload = {
   error: {
-    errors: JoinRoomError[];
+    errors: JoinError[];
   };
 };
 
-export type ErrorResponsePayload = CommitErrorResponsePayload | JoinRoomErrorResponsePayload;
+export type ErrorResponsePayload = CommitErrorPayload | JoinErrorPayload;
 
 export type ConnectionOpenResponsePayload = {
   sid: string;
@@ -73,15 +99,9 @@ export type SendResponsePayload = CommitResponsePayload[] | JoinRoomResponsePayl
 export type CursorResponsePayload = [
   'cursor',
   {
-    user: {
-      id: string;
-      displayName: string;
-    };
+    user: { id: string; displayName: string };
     pageId: string;
-    position: {
-      line: number;
-      char: number;
-    };
+    position: { line: number; char: number };
     visible: true;
     socketId: string;
   },
@@ -90,7 +110,7 @@ export type CursorResponsePayload = [
 export type ExternalCommitData = {
   kind: 'page';
   parentId: string;
-  changes: CommitChange[];
+  changes: CommitChangeRequest[];
   cursor: null;
   pageId: string;
   userId: ID;
