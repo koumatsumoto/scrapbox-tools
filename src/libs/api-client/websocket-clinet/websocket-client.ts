@@ -1,68 +1,42 @@
-import { Subject } from 'rxjs';
-import { first, map, timeout } from 'rxjs/operators';
+import { interval, NEVER, Observable } from 'rxjs';
 import { ID } from '../common';
-import { endpoint, headers, origin, websocketResponseTimeout } from './constants';
-import { CommitChangeParam, createChanges } from './internal/commit-change-param';
-import { parseMessage } from './internal/parse-message';
-import { IsomorphicWebsocket, registerIsomorphicWebsocketEventHandling } from './isomorphic-websocket';
-import { CommitResponsePayload, ConnectionOpenResponsePayload, JoinRoomResponsePayload, WebsocketRequestPayload, WebsocketResponsePayload } from './types';
-
-export const scrapboxIsomorphicWebsocketGetterFn = (token?: string) => {
-  const WebsocketConstructor = typeof globalThis.WebSocket === 'function' ? globalThis.WebSocket : require('ws');
-
-  const options = token
-    ? {
-        headers: {
-          Origin: origin,
-          Cookie: `connect.sid=${token}`,
-        },
-      }
-    : undefined;
-
-  return new WebsocketConstructor(endpoint, undefined, options);
-};
+import { socketIoHeaders } from './constants';
+import { createMessage } from './internal/message';
+import {
+  createCommitPayload,
+  createJoinPayload,
+  RequestPayload,
+  CommitResponsePayload,
+  JoinRoomResponsePayload,
+  SendResponsePayload,
+} from './internal/payload';
+import { ChangeRequestParams } from './internal/request';
+import { getScrapboxWebsocketResponseStreams, retrieveResponse } from './internal/response';
+import { getDefaultWebsocket, getScrapboxWebsocketAuthOptions, Websocket } from './internal/websocket/getter';
+import { isOpen } from './internal/websocket/util';
 
 export class WebsocketClient {
-  // messages from server
-  private readonly response$ = new Subject<{ sid: string | null; data: WebsocketResponsePayload }>();
-  private socket!: IsomorphicWebsocket;
+  private response$: Observable<{ sid: string; data: SendResponsePayload }> = NEVER;
+  private open$: Observable<unknown> = NEVER;
+
+  private socket!: Websocket;
   // currently joined-room, need cache to re-join on reconnect
   private room: { projectId: string; pageId: string } | null = null;
 
   // wait request until connection opened
-  private pendingRequests: (() => unknown)[] = [];
   private sid = 0;
 
-  constructor(private readonly token?: string) {
+  constructor(private readonly token = '', private readonly websocketGetterFunction = getDefaultWebsocket) {
     this.initialize();
   }
 
-  commit(param: { projectId: string; userId: ID; pageId: string; parentId: string; changes: CommitChangeParam[] }) {
-    return this.send<CommitResponsePayload[]>({
-      method: 'commit',
-      data: {
-        kind: 'page',
-        userId: param.userId,
-        projectId: param.projectId,
-        pageId: param.pageId,
-        parentId: param.parentId,
-        changes: createChanges(param.changes, param.userId),
-        cursor: null,
-        freeze: true,
-      },
-    });
+  commit(params: { projectId: string; userId: ID; pageId: string; parentId: string; changes: ChangeRequestParams[] }) {
+    return this.send<CommitResponsePayload[]>(createCommitPayload(params));
   }
 
-  joinRoom(param: { projectId: string; pageId: string }) {
-    this.room = param;
-    return this.send<JoinRoomResponsePayload[]>({
-      method: 'room:join',
-      data: {
-        pageId: param.pageId,
-        projectId: param.projectId,
-        projectUpdatesStream: false,
-      },
-    });
+  join(params: { projectId: string; pageId: string }) {
+    this.room = params;
+    return this.send<JoinRoomResponsePayload[]>(createJoinPayload(params));
   }
 
   /**
@@ -73,65 +47,35 @@ export class WebsocketClient {
       this.socket.close();
     }
 
-    this.socket = scrapboxIsomorphicWebsocketGetterFn(this.token);
-    registerIsomorphicWebsocketEventHandling(this.socket, {
-      onOpen: () => {
-        // on reconnect
-        if (this.room) {
-          this.joinRoom(this.room);
-        }
-      },
-      onMessage: (ev) => this.handleResponse(ev),
-      onErrorOrClose: () => this.initialize(), // do reconnect
+    this.socket = this.websocketGetterFunction(getScrapboxWebsocketAuthOptions(this.token));
+    const { close, open, initialize, response } = getScrapboxWebsocketResponseStreams(this.socket);
+
+    this.open$ = open;
+    this.response$ = response;
+    close.subscribe(() => this.initialize()); // retry if disconnected
+    initialize.subscribe((message) => {
+      // start ping
+      interval(message.data.pingInterval).subscribe(() => this.socket.send(socketIoHeaders.ping));
+      // for reconnection after closed
+      if (this.room) {
+        this.join(this.room);
+      }
     });
   }
 
-  private async send<T extends WebsocketResponsePayload = WebsocketResponsePayload>(payload: WebsocketRequestPayload): Promise<T> {
-    const body = JSON.stringify(['socket.io-request', payload]);
-    const sid = `${this.sid++}`;
-    const data = `${headers.send}${sid}${body}`;
+  private async send<T extends SendResponsePayload>(payload: RequestPayload) {
+    const [sid, data] = createMessage(this.getIdAndIncrement(), payload);
 
-    if (this.socket.readyState !== this.socket.OPEN) {
-      this.pendingRequests.push(() => this.socket.send(data));
-    } else {
+    if (isOpen(this.socket)) {
       this.socket.send(data);
+    } else {
+      this.open$.subscribe(() => this.socket.send(data));
     }
 
-    return this.response$
-      .pipe(
-        timeout(websocketResponseTimeout),
-        first((response) => response.sid === sid),
-        map((response) => response.data),
-      )
-      .toPromise() as Promise<T>;
+    return retrieveResponse(this.response$, sid) as Promise<T>;
   }
 
-  // for incoming messages
-  private handleResponse(event: { data: unknown }) {
-    if (typeof event.data !== 'string') {
-      throw new Error('unexpected data received');
-    }
-    const [header, data] = parseMessage(event.data);
-
-    // message just after connection opened
-    if (header === headers.initialize) {
-      this.setPingAndConsumeBuffer(data as ConnectionOpenResponsePayload);
-    } else if (header.startsWith(headers.receive)) {
-      // for own send() result
-      const sid = header.slice(headers.receive.length);
-      this.response$.next({ sid, data });
-    } else if (header === headers.send) {
-      // for updation by other users
-      this.response$.next({ sid: null, data });
-    }
-  }
-
-  private setPingAndConsumeBuffer(data: ConnectionOpenResponsePayload) {
-    // ping interval is specified from server
-    setInterval(() => this.socket.send(headers.ping), data.pingInterval);
-
-    // consume buffer
-    this.pendingRequests.forEach((f) => f());
-    this.pendingRequests = [];
+  private getIdAndIncrement() {
+    return String(this.sid++);
   }
 }
