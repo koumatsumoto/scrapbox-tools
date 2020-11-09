@@ -6,7 +6,7 @@
   "author": "kou.matsumoto <kou.matsumoto.jp@gmail.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project ./tsconfig.json",
     "check": "concurrently 'yarn :check:build' 'yarn :check:test' 'yarn :check:lint'",
     "format": "yarn lint --fix && prettier --write .",
     "lint": "eslint 'src/**/*.ts'",
