@@ -18,7 +18,7 @@
     ":check:lint": "yarn format && yarn :check:diff",
     ":check:test": "yarn test --ci --silent --detectOpenHandles --forceExit",
     ":jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
-    "prepare": "yarn build"
+    "postinstall": "yarn build"
   },
   "engines": {
     "node": ">= 14.0.0",
