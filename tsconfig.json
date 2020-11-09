@@ -1,6 +1,6 @@
 {
   "include": ["src/**/*.ts"],
-  "exclude": ["dist", "node_modules"],
+  "exclude": ["**/*.spec.ts", "dist", "node_modules"],
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
