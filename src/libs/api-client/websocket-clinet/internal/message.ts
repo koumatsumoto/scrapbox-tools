@@ -9,7 +9,7 @@ export const createMessage = (id: string, payload: RequestPayload) => {
 
 // 430[{...}}] => 430, [{}]
 export const parseMessage = (message: string) => {
-  // protocol and arbitrary number
+  // header contains protocol and arbitrary number
   let header = '';
   while (message.length) {
     const head = message[0];
@@ -22,5 +22,5 @@ export const parseMessage = (message: string) => {
     }
   }
 
-  throw new Error('body is empty');
+  return ['', ''];
 };
