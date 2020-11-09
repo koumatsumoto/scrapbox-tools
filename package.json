@@ -1,7 +1,7 @@
 {
   "name": "scrapbox-tools",
   "version": "0.0.1",
-  "main": "dist/main.js",
+  "main": "dist/index.js",
   "repository": "git@github.com:kouMatsumoto/scrapbox-tools.git",
   "author": "kou.matsumoto <kou.matsumoto.jp@gmail.com>",
   "license": "UNLICENSED",
@@ -18,7 +18,7 @@
     ":check:lint": "yarn format && yarn :check:diff",
     ":check:test": "yarn test --ci --silent --detectOpenHandles --forceExit",
     ":jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
-    "postinstall": "yarn build"
+    "postinstall": "yarn build --declaration"
   },
   "engines": {
     "node": ">= 14.0.0",
