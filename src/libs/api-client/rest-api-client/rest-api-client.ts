@@ -1,4 +1,4 @@
-import { DefaultHttpClient, HttpClient } from './HttpClient';
+import { DefaultHttpClient, HttpClient } from './http-client';
 import { Me, Page, Project } from './types';
 
 const baseURL = 'https://scrapbox.io/api';

@@ -1,5 +1,5 @@
-import { HttpClient } from './HttpClient';
-import { RestApiClient } from './RestApiClient';
+import { HttpClient } from './http-client';
+import { RestApiClient } from './rest-api-client';
 
 describe('RestApiClient', () => {
   let api: RestApiClient;

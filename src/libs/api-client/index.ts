@@ -1,1 +1,1 @@
-export * from './scrapbox-api';
+export * from './api-client';

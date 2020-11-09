@@ -1,9 +1,9 @@
-import { RestApiClient } from './rest-api-client/RestApiClient';
+import { RestApiClient } from './rest-api-client/rest-api-client';
 import { Project, User } from './rest-api-client/types';
 import { ChangeRequestParams } from './websocket-clinet/internal/request';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
 
-export class ScrapboxApi {
+export class ApiClient {
   constructor(readonly user: User, readonly project: Project, private readonly apiClient: RestApiClient, private readonly websocketClient: WebsocketClient) {}
 
   async getPage(pageName: string) {
@@ -40,29 +40,3 @@ export class ScrapboxApi {
     });
   }
 }
-
-export const getGlobalScrapboxApiFn = () => {
-  let api: ScrapboxApi | null = null;
-
-  return async (projectName: string, token?: string) => {
-    if (api) {
-      return api;
-    }
-
-    const restApi = new RestApiClient(token);
-    const websocket = new WebsocketClient(token);
-    const [user, project] = await Promise.all([restApi.getMe(), restApi.getProject(projectName)]);
-
-    // failed to login
-    if (user.isGuest) {
-      throw new Error('Authentication Error, cookie may not be set');
-    }
-    // for debug purpose
-    (globalThis as any).api = restApi;
-
-    return (api = new ScrapboxApi(user, project, restApi, websocket));
-  };
-};
-
-// singleton
-export const getGlobalScrapboxApi = getGlobalScrapboxApiFn();
