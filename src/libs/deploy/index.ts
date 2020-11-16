@@ -1,1 +1,1 @@
-export { deploy } from './deploy';
+export { runDeployScript } from './deploy';
