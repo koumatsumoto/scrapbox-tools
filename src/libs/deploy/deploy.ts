@@ -1,12 +1,11 @@
-import { ID } from '../api-client/common';
+import { ApiClient } from '../api-client';
 import { loadSourceCode } from './internal/file-loaders';
-import { getGlobalScrapboxApi } from './internal/setup-api';
 import { validateToken } from './internal/validation';
 
 const findIndex = (searchString: string, lines: { text: string }[]) => {
   return lines.findIndex((line) => line.text.includes(searchString));
 };
-const findNextLineId = (searchString: string, lines: { id: ID; text: string }[]): ID | null => {
+const findNextLineId = (searchString: string, lines: { id: string; text: string }[]): string | null => {
   const index = findIndex(searchString, lines);
   if (index === -1) {
     return null;
@@ -17,6 +16,8 @@ const findNextLineId = (searchString: string, lines: { id: ID; text: string }[])
 };
 
 export type DeployConfig = Readonly<{
+  userId: string;
+  projectId: string;
   projectName: string;
   targetPageName: string;
   codeBlockLabel: string;
@@ -25,7 +26,7 @@ export type DeployConfig = Readonly<{
 
 const deploySinglePage = async (token: string, config: DeployConfig) => {
   const sourceCode = await loadSourceCode(config.sourceFilePath);
-  const api = await getGlobalScrapboxApi(config.projectName, token);
+  const api = new ApiClient(token, config.userId, config.projectId, config.projectName);
   const page = await api.getPage(config.targetPageName);
 
   // NOTE: assuming code-block exists already
@@ -56,6 +57,7 @@ export const runDeployScript = async (token: string, configs: DeployConfig[]) =>
       })
       .catch((e) => {
         console.error(`[scrapbox-tools/deploy] task errored: ${taskName}`, e);
+        throw e;
       });
   });
 
