@@ -25,7 +25,7 @@ type DeployConfig = {
 
 const deploySinglePage = async (token: string, config: DeployConfig) => {
   const sourceCode = await loadSourceCode(config.sourceFilePath);
-  const api = await getGlobalScrapboxApi(config.projectName, config.token);
+  const api = await getGlobalScrapboxApi(config.projectName, token);
   const page = await api.getPage(config.targetPageName);
 
   // NOTE: assuming code-block exists already
