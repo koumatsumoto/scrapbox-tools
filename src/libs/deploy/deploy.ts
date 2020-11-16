@@ -17,14 +17,13 @@ const findNextLineId = (searchString: string, lines: { id: ID; text: string }[])
 };
 
 type DeployConfig = {
-  token: string;
   projectName: string;
   targetPageName: string;
   codeBlockLabel: string;
   sourceFilePath: string;
 };
 
-const deploySinglePage = async (config: DeployConfig) => {
+const deploySinglePage = async (token: string, config: DeployConfig) => {
   const sourceCode = await loadSourceCode(config.sourceFilePath);
   const api = await getGlobalScrapboxApi(config.projectName, config.token);
   const page = await api.getPage(config.targetPageName);
@@ -51,7 +50,7 @@ export const deploy = async (token: string, configs: DeployConfig[]) => {
     const taskName = `${config.projectName}/${config.targetPageName}/${config.codeBlockLabel}`;
     console.log(`[scrapbox-tools/deploy] task started: ${taskName}`);
 
-    return deploySinglePage({ ...config, token })
+    return deploySinglePage(token, config)
       .then(() => {
         console.log(`[scrapbox-tools/deploy] task completed: ${taskName}`);
       })
