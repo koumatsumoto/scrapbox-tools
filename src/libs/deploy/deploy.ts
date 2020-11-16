@@ -16,7 +16,7 @@ const findNextLineId = (searchString: string, lines: { id: ID; text: string }[])
   return nextLineOrNone ? nextLineOrNone.id : null;
 };
 
-type DeployConfig = Readonly<{
+export type DeployConfig = Readonly<{
   projectName: string;
   targetPageName: string;
   codeBlockLabel: string;
@@ -36,7 +36,7 @@ const deploySinglePage = async (token: string, config: DeployConfig) => {
   await api.changeLine(config.targetPageName, { type: 'update', id: lineId, text: sourceCode });
 };
 
-export const deploy = async (token: string, configs: DeployConfig[]) => {
+export const runDeployScript = async (token: string, configs: DeployConfig[]) => {
   console.log(`[scrapbox-tools/deploy] script started`);
 
   try {
