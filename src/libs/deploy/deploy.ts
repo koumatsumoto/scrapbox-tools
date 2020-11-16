@@ -26,7 +26,7 @@ export type DeployConfig = Readonly<{
 
 const deploySinglePage = async (token: string, config: DeployConfig) => {
   const sourceCode = await loadSourceCode(config.sourceFilePath);
-  const api = new ApiClient(config.userId, config.projectId, config.projectName);
+  const api = new ApiClient(token, config.userId, config.projectId, config.projectName);
   const page = await api.getPage(config.targetPageName);
 
   // NOTE: assuming code-block exists already

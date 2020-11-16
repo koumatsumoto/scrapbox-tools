@@ -4,11 +4,12 @@ import { WebsocketClient } from './websocket-clinet/websocket-client';
 
 export class ApiClient {
   constructor(
+    readonly token: string,
     readonly userId: string,
     readonly projectId: string,
     readonly projectName: string,
-    private readonly apiClient: RestApiClient = new RestApiClient(),
-    private readonly websocketClient: WebsocketClient = new WebsocketClient(),
+    private readonly apiClient: RestApiClient = new RestApiClient(token),
+    private readonly websocketClient: WebsocketClient = new WebsocketClient(token),
   ) {}
 
   async getPage(pageName: string) {
