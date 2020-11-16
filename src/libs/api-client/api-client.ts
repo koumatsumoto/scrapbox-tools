@@ -1,13 +1,18 @@
 import { RestApiClient } from './rest-api-client/rest-api-client';
-import { Project, User } from './rest-api-client/types';
 import { ChangeRequestParams } from './websocket-clinet/internal/request';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
 
 export class ApiClient {
-  constructor(readonly user: User, readonly project: Project, private readonly apiClient: RestApiClient, private readonly websocketClient: WebsocketClient) {}
+  constructor(
+    readonly userId: string,
+    readonly projectId: string,
+    readonly projectName: string,
+    private readonly apiClient: RestApiClient,
+    private readonly websocketClient: WebsocketClient,
+  ) {}
 
   async getPage(pageName: string) {
-    return this.apiClient.getPage(this.project.name, pageName);
+    return this.apiClient.getPage(this.projectName, pageName);
   }
 
   async changeLine(pageName: string, change: ChangeRequestParams | ChangeRequestParams[]) {
@@ -15,24 +20,24 @@ export class ApiClient {
 
     return this.commit({
       changes: Array.isArray(change) ? change : [change],
-      projectId: this.project.id,
+      projectId: this.projectId,
       pageId: pageId,
       commitId: commitId,
     });
   }
 
   private async getPageIdAndCommitId(pageName: string) {
-    const page = await this.apiClient.getPage(this.project.name, pageName);
+    const page = await this.apiClient.getPage(this.projectName, pageName);
 
     return { pageId: page.id, commitId: page.commitId };
   }
 
   private async commit(param: { projectId: string; pageId: string; commitId: string; changes: ChangeRequestParams[] }) {
     // to receive result of commit
-    // await this.websocketClient.joinRoom({ projectId: param.projectId, pageId: param.pageId });
+    await this.websocketClient.join({ projectId: param.projectId, pageId: param.pageId });
 
     return this.websocketClient.commit({
-      userId: this.user.id,
+      userId: this.userId,
       projectId: param.projectId,
       pageId: param.pageId,
       parentId: param.commitId,

@@ -21,7 +21,7 @@ export const getGlobalScrapboxApiFn = () => {
     // for debug purpose
     (globalThis as any).api = restApi;
 
-    return (api = new ApiClient(user, project, restApi, websocket));
+    return (api = new ApiClient(user.id, project.id, project.name, restApi, websocket));
   };
 };
 
