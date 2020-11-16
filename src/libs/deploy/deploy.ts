@@ -16,12 +16,12 @@ const findNextLineId = (searchString: string, lines: { id: ID; text: string }[])
   return nextLineOrNone ? nextLineOrNone.id : null;
 };
 
-type DeployConfig = {
+type DeployConfig = Readonly<{
   projectName: string;
   targetPageName: string;
   codeBlockLabel: string;
   sourceFilePath: string;
-};
+}>;
 
 const deploySinglePage = async (token: string, config: DeployConfig) => {
   const sourceCode = await loadSourceCode(config.sourceFilePath);
