@@ -7,8 +7,8 @@ export class ApiClient {
     readonly userId: string,
     readonly projectId: string,
     readonly projectName: string,
-    private readonly apiClient: RestApiClient,
-    private readonly websocketClient: WebsocketClient,
+    private readonly apiClient: RestApiClient = new RestApiClient(),
+    private readonly websocketClient: WebsocketClient = new WebsocketClient(),
   ) {}
 
   async getPage(pageName: string) {

@@ -1,9 +1,9 @@
-import { generateId, ID } from '../../common';
+import { generateId } from '../../common';
 
-const createInsertChangeRequest = (param: { text: string; position?: ID; userId: string }) =>
+const createInsertChangeRequest = (param: { text: string; position?: string; userId: string }) =>
   ({ _insert: param.position || '_end', lines: { id: generateId(param.userId), text: param.text } } as const);
-const createUpdateChangeRequest = (param: { id: ID; text: string }) => ({ _update: param.id, lines: { text: param.text } } as const);
-const createDeleteChangeRequest = (param: { id: ID }) => ({ _delete: param.id, lines: -1 } as const);
+const createUpdateChangeRequest = (param: { id: string; text: string }) => ({ _update: param.id, lines: { text: param.text } } as const);
+const createDeleteChangeRequest = (param: { id: string }) => ({ _delete: param.id, lines: -1 } as const);
 const createTitleChangeRequest = (param: { title: string }) => ({ title: param.title } as const);
 const createDescriptionChangeRequest = (param: { text: string }) => ({ descriptions: [param.text] } as const);
 
