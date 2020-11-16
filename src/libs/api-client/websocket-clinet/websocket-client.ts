@@ -1,13 +1,12 @@
 import { interval, NEVER, Observable } from 'rxjs';
-import { ID } from '../common';
 import { socketIoHeaders } from './constants';
 import { createMessage } from './internal/message';
 import {
+  CommitResponsePayload,
   createCommitPayload,
   createJoinPayload,
-  RequestPayload,
-  CommitResponsePayload,
   JoinRoomResponsePayload,
+  RequestPayload,
   SendResponsePayload,
 } from './internal/payload';
 import { ChangeRequestParams } from './internal/request';
@@ -30,7 +29,7 @@ export class WebsocketClient {
     this.initialize();
   }
 
-  commit(params: { projectId: string; userId: ID; pageId: string; parentId: string; changes: ChangeRequestParams[] }) {
+  commit(params: { projectId: string; userId: string; pageId: string; parentId: string; changes: ChangeRequestParams[] }) {
     return this.send<CommitResponsePayload[]>(createCommitPayload(params));
   }
 

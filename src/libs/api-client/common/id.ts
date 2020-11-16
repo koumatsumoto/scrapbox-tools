@@ -16,8 +16,8 @@ const toString16 = (userIdOrNumber: number | string, length: number) => {
 
 // modified original IdGenerator of official index.js
 type IdGenerator = () => ID;
-const map = new Map<ID, IdGenerator>();
-const getIdGenerator = (userId: ID): IdGenerator => {
+const map = new Map<string, IdGenerator>();
+const getIdGenerator = (userId: string): IdGenerator => {
   if (map.has(userId)) {
     return map.get(userId)!;
   }
@@ -37,7 +37,7 @@ const getIdGenerator = (userId: ID): IdGenerator => {
   return generate;
 };
 
-export const generateId = (userId: ID): ID => {
+export const generateId = (userId: string): ID => {
   const generator = getIdGenerator(userId);
 
   return generator();

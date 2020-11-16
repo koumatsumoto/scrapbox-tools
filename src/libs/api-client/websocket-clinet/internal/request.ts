@@ -1,6 +1,6 @@
 import { generateId, ID } from '../../common';
 
-const createInsertChangeRequest = (param: { text: string; position?: ID; userId: ID }) =>
+const createInsertChangeRequest = (param: { text: string; position?: ID; userId: string }) =>
   ({ _insert: param.position || '_end', lines: { id: generateId(param.userId), text: param.text } } as const);
 const createUpdateChangeRequest = (param: { id: ID; text: string }) => ({ _update: param.id, lines: { text: param.text } } as const);
 const createDeleteChangeRequest = (param: { id: ID }) => ({ _delete: param.id, lines: -1 } as const);
@@ -22,7 +22,7 @@ export type ChangeRequestParams =
   | ({ type: 'description' } & Parameters<typeof createDescriptionChangeRequest>[0]);
 
 // NOTE: userId is used to generate new ID
-export const createChangeRequests = (params: ChangeRequestParams[], userId: ID) =>
+export const createChangeRequests = (params: ChangeRequestParams[], userId: string) =>
   params.map((p) => {
     if (p.type === 'insert') {
       return createInsertChangeRequest({ ...p, userId });
