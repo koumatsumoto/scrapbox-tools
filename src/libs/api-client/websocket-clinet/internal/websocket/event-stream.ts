@@ -1,5 +1,5 @@
 // general event names of websocket for both browser and node.js
-import { fromEvent } from 'rxjs';
+import { fromEvent, Observable } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
 import { Websocket } from './getter';
 
@@ -10,7 +10,14 @@ export const websocketEventNames = {
   close: 'close',
 } as const;
 
-export const getWebsocketEventStreams = (socket: Websocket) => {
+export type WebsocketEventStream = {
+  open: Observable<unknown>;
+  close: Observable<unknown>;
+  error: Observable<unknown>;
+  message: Observable<{ data: unknown }>;
+};
+
+export const getWebsocketEventStreams = (socket: Websocket): WebsocketEventStream => {
   const close = fromEvent(socket, websocketEventNames.close).pipe(first());
   const open = fromEvent(socket, websocketEventNames.open).pipe(first(), takeUntil(close));
   const error = fromEvent(socket, websocketEventNames.error).pipe(first(), takeUntil(close));
@@ -21,5 +28,5 @@ export const getWebsocketEventStreams = (socket: Websocket) => {
     close,
     error,
     message,
-  } as const;
+  };
 };

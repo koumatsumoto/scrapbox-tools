@@ -1,6 +1,6 @@
 {
-  "include": ["src/**/*.ts"],
-  "exclude": ["**/*.spec.ts", "dist", "node_modules"],
+  "include": ["src/**/*.ts", "src/**/*.spec.ts"],
+  "exclude": ["dist", "node_modules"],
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
@@ -16,7 +16,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "baseUrl": "./",
-    "sourceMap": false,
+    "sourceMap": true,
     "inlineSources": false
   }
 }
