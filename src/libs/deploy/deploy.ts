@@ -57,6 +57,7 @@ export const runDeployScript = async (token: string, configs: DeployConfig[]) =>
       })
       .catch((e) => {
         console.error(`[scrapbox-tools/deploy] task errored: ${taskName}`, e);
+        throw e;
       });
   });
 
