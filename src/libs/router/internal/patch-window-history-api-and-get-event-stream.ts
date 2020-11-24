@@ -33,8 +33,9 @@ export const patchWindowHistoryApiAndGetEventStream = () => {
   originalPushState = window.history.pushState;
   originalReplaceState = window.history.replaceState;
 
-  window.history.pushState = extendedPushState;
-  window.history.replaceState = extendedReplaceState;
+  // NOTE: use bind(window) to avoid `TypeError: Illegal invocation`
+  window.history.pushState = extendedPushState.bind(window);
+  window.history.replaceState = extendedReplaceState.bind(window);
   window.addEventListener('popstate', (ev) => stream.next({ type: 'popstate', data: getData(), debug: { state: ev.state } }));
 
   return stream;
