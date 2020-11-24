@@ -13,13 +13,13 @@ const getData = () => ({
 });
 
 const extendedPushState = (state: any, title: string, url?: string | null) => {
-  // NOTE: use bind(window) to avoid `TypeError: Illegal invocation`
+  // NOTE: use call(window) to avoid `TypeError: Illegal invocation`
   originalPushState.call(window, state, title, url);
   stream.next({ type: 'pushState', data: getData(), debug: { state, title, url } });
 };
 
 const extendedReplaceState = (state: any, title: string, url?: string | null) => {
-  // NOTE: use bind(window) to avoid `TypeError: Illegal invocation`
+  // NOTE: use call(window) to avoid `TypeError: Illegal invocation`
   originalReplaceState(state, title, url);
   stream.next({ type: 'replaceState', data: getData(), debug: { state, title, url } });
 };
