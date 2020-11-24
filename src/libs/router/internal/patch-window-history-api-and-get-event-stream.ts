@@ -1,8 +1,8 @@
 import { Subject } from 'rxjs';
 import { RouterEvent } from './types';
 
-let rawPushState: typeof window.history.pushState;
-let rawReplaceState: typeof window.history.replaceState;
+let originalPushState: typeof window.history.pushState;
+let originalReplaceState: typeof window.history.replaceState;
 
 let stream: Subject<RouterEvent>;
 const isPatchedOnce = () => stream !== undefined;
@@ -12,28 +12,30 @@ const getData = () => ({
   url: window.document.documentURI,
 });
 
-function customPushState(state: any, title: string, url?: string | null) {
-  rawPushState(state, title, url);
+const extendedPushState = (state: any, title: string, url?: string | null) => {
+  // NOTE: use bind(window) to avoid `TypeError: Illegal invocation`
+  originalPushState.call(window, state, title, url);
   stream.next({ type: 'pushState', data: getData(), debug: { state, title, url } });
-}
+};
 
-function customReplaceState(state: any, title: string, url?: string | null) {
-  rawReplaceState(state, title, url);
+const extendedReplaceState = (state: any, title: string, url?: string | null) => {
+  // NOTE: use bind(window) to avoid `TypeError: Illegal invocation`
+  originalReplaceState(state, title, url);
   stream.next({ type: 'replaceState', data: getData(), debug: { state, title, url } });
-}
+};
 
-export function patchWindowHistoryApiAndGetEventStream() {
+export const patchWindowHistoryApiAndGetEventStream = () => {
   if (isPatchedOnce()) {
     return stream;
   }
 
   stream = new Subject<RouterEvent>();
-  rawPushState = window.history.pushState;
-  rawReplaceState = window.history.replaceState;
+  originalPushState = window.history.pushState;
+  originalReplaceState = window.history.replaceState;
 
-  window.history.pushState = customPushState.bind(window);
-  window.history.replaceState = customReplaceState.bind(window);
+  window.history.pushState = extendedPushState;
+  window.history.replaceState = extendedReplaceState;
   window.addEventListener('popstate', (ev) => stream.next({ type: 'popstate', data: getData(), debug: { state: ev.state } }));
 
   return stream;
-}
+};

@@ -1,6 +1,6 @@
 import { isBrowser } from '../common/env';
 
-// NOTE: use bind(window) to resolve `Illegal invocation` error
+// NOTE: use bind(window) to avoid `TypeError: Illegal invocation`
 export const fetch = isBrowser() ? globalThis.fetch.bind(window) : (require('node-fetch') as typeof globalThis.fetch);
 
 export type HttpClient = {
