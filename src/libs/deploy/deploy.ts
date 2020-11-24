@@ -1,4 +1,4 @@
-import { getScrapboxClient } from '../api-client/get-singleton';
+import { getScrapboxClient } from '../api-client';
 import { loadSourceCode } from './internal/file-loaders';
 import { validateToken } from './internal/validation';
 

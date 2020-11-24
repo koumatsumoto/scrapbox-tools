@@ -1,1 +1,2 @@
-export * from './scrapbox-client';
+export { ScrapboxClient } from './scrapbox-client';
+export { getScrapboxClient } from './get-singleton';
