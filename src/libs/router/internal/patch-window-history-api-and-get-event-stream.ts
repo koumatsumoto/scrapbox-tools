@@ -22,11 +22,11 @@ export const patchWindowHistoryApiAndGetEventStream = (target = window) => {
   rawReplaceState = target.history.replaceState;
 
   target.history.pushState = (state: any, title: string, url?: string | null) => {
-    rawPushState(state, title, url);
+    rawPushState.call(target, state, title, url);
     stream.next({ type: 'pushState', data: getData(), debug: { state, title, url } });
   };
   target.history.replaceState = (state: any, title: string, url?: string | null) => {
-    rawReplaceState(state, title, url);
+    rawReplaceState.call(target, state, title, url);
     stream.next({ type: 'replaceState', data: getData(), debug: { state, title, url } });
   };
   target.addEventListener('popstate', (ev) => {
