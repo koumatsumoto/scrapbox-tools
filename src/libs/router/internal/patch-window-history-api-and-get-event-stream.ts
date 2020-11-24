@@ -13,14 +13,12 @@ const getData = () => ({
 });
 
 const extendedPushState = (state: any, title: string, url?: string | null) => {
-  // NOTE: use call(window) to avoid `TypeError: Illegal invocation`
-  originalPushState.call(window, state, title, url);
+  originalPushState(state, title, url);
   stream.next({ type: 'pushState', data: getData(), debug: { state, title, url } });
 };
 
 const extendedReplaceState = (state: any, title: string, url?: string | null) => {
-  // NOTE: use call(window) to avoid `TypeError: Illegal invocation`
-  originalReplaceState.call(window, state, title, url);
+  originalReplaceState(state, title, url);
   stream.next({ type: 'replaceState', data: getData(), debug: { state, title, url } });
 };
 
@@ -33,9 +31,9 @@ export const patchWindowHistoryApiAndGetEventStream = () => {
   originalPushState = window.history.pushState;
   originalReplaceState = window.history.replaceState;
 
-  // NOTE: use bind(window) to avoid `TypeError: Illegal invocation`
-  window.history.pushState = extendedPushState.bind(window);
-  window.history.replaceState = extendedReplaceState.bind(window);
+  // NOTE: use bind(window.history) to avoid `TypeError: Illegal invocation`
+  window.history.pushState = extendedPushState.bind(window.history);
+  window.history.replaceState = extendedReplaceState.bind(window.history);
   window.addEventListener('popstate', (ev) => stream.next({ type: 'popstate', data: getData(), debug: { state: ev.state } }));
 
   return stream;
