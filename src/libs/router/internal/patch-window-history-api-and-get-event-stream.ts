@@ -13,12 +13,12 @@ const getData = () => ({
 });
 
 const extendedPushState = (state: any, title: string, url?: string | null) => {
-  originalPushState(state, title, url);
+  originalPushState.call(window.history, state, title, url);
   stream.next({ type: 'pushState', data: getData(), debug: { state, title, url } });
 };
 
 const extendedReplaceState = (state: any, title: string, url?: string | null) => {
-  originalReplaceState(state, title, url);
+  originalReplaceState.call(window.history, state, title, url);
   stream.next({ type: 'replaceState', data: getData(), debug: { state, title, url } });
 };
 
