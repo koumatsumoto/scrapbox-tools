@@ -3,6 +3,8 @@
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts", "dist", "node_modules"],
   "compilerOptions": {
+    "rootDir": "./src/libs",
+    "outDir": "./",
     "types": ["node"],
     "declaration": true
   }

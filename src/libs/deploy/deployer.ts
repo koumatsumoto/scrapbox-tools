@@ -1,4 +1,4 @@
-import { getScrapboxClient } from '../api-client';
+import { getScrapboxClient } from '../scrapbox-client';
 import { loadSourceCode } from './internal/file-loaders';
 import { findNextLineIdOrFail } from './internal/find';
 
