@@ -1,2 +1,2 @@
-export const isNode = () => typeof window === 'undefined' || (typeof module !== 'undefined' && !!module.exports);
-export const isBrowser = () => !isNode();
+export const isBrowser = () => typeof window !== 'undefined';
+export const isNode = () => typeof module !== 'undefined' && !!module.exports;
