@@ -1,6 +1,7 @@
 import { isBrowser } from '../common/env';
 
-export const fetch = isBrowser() ? globalThis.fetch : (require('node-fetch') as typeof globalThis.fetch);
+// NOTE: use bind(window) to resolve `Illegal invocation` error
+export const fetch = isBrowser() ? globalThis.fetch.bind(window) : (require('node-fetch') as typeof globalThis.fetch);
 
 export type HttpClient = {
   get<T>(url: string, options?: Partial<{ headers: Record<string, string> }>): Promise<T>;
