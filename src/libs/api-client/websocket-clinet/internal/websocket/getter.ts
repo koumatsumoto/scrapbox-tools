@@ -11,7 +11,7 @@ export const getScrapboxWebsocketAuthOptions = (token: string) =>
 type Options = ReturnType<typeof getScrapboxWebsocketAuthOptions>;
 
 export const getDefaultWebsocket = (options: Options) => {
-  if (isBrowser) {
+  if (isBrowser()) {
     return new WebSocket(endpoint);
   } else {
     // FIXME: bad type annotation

@@ -1,6 +1,6 @@
 import { isBrowser } from '../common/env';
 
-export const fetch = isBrowser ? globalThis.fetch : (require('node-fetch') as typeof globalThis.fetch);
+export const fetch = isBrowser() ? globalThis.fetch : (require('node-fetch') as typeof globalThis.fetch);
 
 export type HttpClient = {
   get<T>(url: string, options?: Partial<{ headers: Record<string, string> }>): Promise<T>;
