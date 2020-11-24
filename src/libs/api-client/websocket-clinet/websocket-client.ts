@@ -9,7 +9,7 @@ import {
   RequestPayload,
   SendResponsePayload,
 } from './internal/payload';
-import { ChangeRequestParams } from './internal/request';
+import { ChangeRequestCreateParams } from './internal/request';
 import { getScrapboxWebsocketResponseStreams, retrieveResponse } from './internal/response';
 import { getDefaultWebsocket, getScrapboxWebsocketAuthOptions, Websocket } from './internal/websocket/getter';
 import { isOpen } from './internal/websocket/util';
@@ -29,7 +29,7 @@ export class WebsocketClient {
     this.initialize();
   }
 
-  commit(params: { projectId: string; userId: string; pageId: string; parentId: string; changes: ChangeRequestParams[] }) {
+  commit(params: { projectId: string; userId: string; pageId: string; parentId: string; changes: ChangeRequestCreateParams[] }) {
     return this.send<CommitResponsePayload[]>(createCommitPayload(params));
   }
 

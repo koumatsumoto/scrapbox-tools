@@ -1,7 +1,7 @@
 import { ID } from '../../common';
-import { ChangeRequestParams, createChangeRequests, CommitChangeRequest } from './request';
+import { ChangeRequestCreateParams, createChangeRequests, CommitChangeRequest } from './request';
 
-export const createCommitPayload = (params: { projectId: string; userId: string; pageId: string; parentId: string; changes: ChangeRequestParams[] }) => {
+export const createCommitPayload = (params: { projectId: string; userId: string; pageId: string; parentId: string; changes: ChangeRequestCreateParams[] }) => {
   return {
     method: 'commit',
     data: {
