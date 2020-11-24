@@ -4,27 +4,30 @@ import { ScrapboxClient } from './scrapbox-client';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
 
 // singleton instance
-let setupClient: Promise<ScrapboxClient>;
+let globalClient: Promise<ScrapboxClient>;
 
-export const getScrapboxClient = async (config: {
-  readonly token?: string;
-  readonly userId: string;
-  readonly projectId: string;
-  readonly projectName: string;
-}) => {
-  if (setupClient) {
-    return setupClient;
+export const getScrapboxClient = async (config: { readonly token?: string; readonly projectName: string }) => {
+  if (globalClient) {
+    return globalClient;
   }
 
+  // NOTE: in browser, cookie is used automatically
   if (isNode() && typeof config.token !== 'string') {
     throw new Error('token required if node environment');
   }
 
-  setupClient = new Promise<ScrapboxClient>((resolve, reject) => {
-    const client = new ScrapboxClient(config.userId, config.projectId, config.projectName, new RestApiClient(config.token), new WebsocketClient(config.token));
-    // TODO: check authority
-    resolve(client);
+  const apiClient = new RestApiClient(config.token);
+  const [user, project] = await Promise.all([apiClient.getMe(), apiClient.getProject(config.projectName)]);
+  if (user.id == '') {
+    throw new Error('token maybe unauthorized');
+  }
+  if (project.id == '') {
+    throw new Error('project name maybe incorrect');
+  }
+
+  globalClient = new Promise<ScrapboxClient>((resolve) => {
+    resolve(new ScrapboxClient(user.id, project.id, config.projectName, new RestApiClient(config.token), new WebsocketClient(config.token)));
   });
 
-  return setupClient;
+  return globalClient;
 };
