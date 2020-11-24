@@ -2,14 +2,13 @@ import { RestApiClient } from './rest-api-client/rest-api-client';
 import { ChangeRequestParams } from './websocket-clinet/internal/request';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
 
-export class ApiClient {
+export class ScrapboxClient {
   constructor(
-    readonly token: string,
-    readonly userId: string,
-    readonly projectId: string,
-    readonly projectName: string,
-    private readonly apiClient: RestApiClient = new RestApiClient(token),
-    private readonly websocketClient: WebsocketClient = new WebsocketClient(token),
+    private readonly userId: string,
+    private readonly projectId: string,
+    private readonly projectName: string,
+    private readonly apiClient: RestApiClient,
+    private readonly websocketClient: WebsocketClient,
   ) {}
 
   async getPage(pageName: string) {

@@ -1,4 +1,4 @@
-import { ApiClient } from '../api-client';
+import { getScrapboxClient } from '../api-client/get-singleton';
 import { loadSourceCode } from './internal/file-loaders';
 import { validateToken } from './internal/validation';
 
@@ -25,16 +25,19 @@ export type DeployConfig = Readonly<{
 }>;
 
 const deploySinglePage = async (token: string, config: DeployConfig) => {
+  const client = await getScrapboxClient({
+    token,
+    ...config,
+  });
   const sourceCode = await loadSourceCode(config.sourceFilePath);
-  const api = new ApiClient(token, config.userId, config.projectId, config.projectName);
-  const page = await api.getPage(config.targetPageName);
+  const page = await client.getPage(config.targetPageName);
 
   // NOTE: assuming code-block exists already
   const lineId = findNextLineId(config.codeBlockLabel, page.lines);
   if (!lineId) {
     throw new Error('Line not found');
   }
-  await api.changeLine(config.targetPageName, { type: 'update', id: lineId, text: sourceCode });
+  await client.changeLine(config.targetPageName, { type: 'update', id: lineId, text: sourceCode });
 };
 
 export const runDeployScript = async (token: string, configs: DeployConfig[]) => {
