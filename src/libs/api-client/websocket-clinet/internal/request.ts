@@ -14,7 +14,7 @@ type TitleChangeRequest = ReturnType<typeof createTitleChangeRequest>;
 type DescriptionChangeRequest = ReturnType<typeof createDescriptionChangeRequest>;
 export type CommitChangeRequest = InsertChangeRequest | UpdateChangeRequest | DeleteChangeRequest | TitleChangeRequest | DescriptionChangeRequest;
 
-type InsertChangeRequestCreateParam = { type: 'insert'; text: string; position?: string; userId: string };
+type InsertChangeRequestCreateParam = { type: 'insert'; text: string; position?: string };
 type UpdateChangeRequestCreateParam = { type: 'update'; id: string; text: string };
 type DeleteChangeRequestCreateParam = { type: 'delete'; id: string };
 type TitleChangeRequestCreateParam = { type: 'title'; title: string };
