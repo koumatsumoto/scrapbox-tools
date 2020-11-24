@@ -1,4 +1,4 @@
-import { isNode } from './common/env';
+import { isBrowser } from './common/env';
 import { RestApiClient } from './rest-api-client/rest-api-client';
 import { ScrapboxClient } from './scrapbox-client';
 import { WebsocketClient } from './websocket-clinet/websocket-client';
@@ -12,7 +12,7 @@ export const getScrapboxClient = async (config: { readonly token?: string; reado
   }
 
   // NOTE: in browser, cookie is used automatically
-  if (isNode() && typeof config.token !== 'string') {
+  if (!isBrowser() && config.token == '') {
     throw new Error('token required if node environment');
   }
 
