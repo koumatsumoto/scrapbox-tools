@@ -12,15 +12,15 @@ const getData = () => ({
   url: window.document.documentURI,
 });
 
-const customPushState = (state: any, title: string, url?: string | null) => {
+function customPushState(state: any, title: string, url?: string | null) {
   rawPushState(state, title, url);
   stream.next({ type: 'pushState', data: getData(), debug: { state, title, url } });
-};
+}
 
-const customReplaceState = (state: any, title: string, url?: string | null) => {
+function customReplaceState(state: any, title: string, url?: string | null) {
   rawReplaceState(state, title, url);
   stream.next({ type: 'replaceState', data: getData(), debug: { state, title, url } });
-};
+}
 
 export const patchWindowHistoryApiAndGetEventStream = (target = window) => {
   if (isPatchedOnce()) {
