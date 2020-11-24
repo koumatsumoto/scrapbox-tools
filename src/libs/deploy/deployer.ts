@@ -22,7 +22,7 @@ export class Deployer {
       // NOTE: assuming code-block exists already
       const lineId = findNextLineIdOrFail(config.codeBlockLabel, page.lines);
       // FIXME: bad type assertion
-      await client.changeLine(config.targetPageName, { type: 'update', id: lineId, text: sourceCode } as any);
+      await client.changeLine(config.targetPageName, { type: 'update', id: lineId, text: sourceCode });
     } catch (e) {
       console.error('[scrapbox-tools/deploy] script errored ', e);
       throw e;

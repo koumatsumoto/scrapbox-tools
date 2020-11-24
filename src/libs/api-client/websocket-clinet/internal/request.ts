@@ -7,34 +7,46 @@ const createDeleteChangeRequest = (param: { id: string }) => ({ _delete: param.i
 const createTitleChangeRequest = (param: { title: string }) => ({ title: param.title } as const);
 const createDescriptionChangeRequest = (param: { text: string }) => ({ descriptions: [param.text] } as const);
 
-export type CommitChangeRequest =
-  | ReturnType<typeof createInsertChangeRequest>
-  | ReturnType<typeof createUpdateChangeRequest>
-  | ReturnType<typeof createDeleteChangeRequest>
-  | ReturnType<typeof createTitleChangeRequest>
-  | ReturnType<typeof createDescriptionChangeRequest>;
+type InsertChangeRequest = ReturnType<typeof createInsertChangeRequest>;
+type UpdateChangeRequest = ReturnType<typeof createUpdateChangeRequest>;
+type DeleteChangeRequest = ReturnType<typeof createDeleteChangeRequest>;
+type TitleChangeRequest = ReturnType<typeof createTitleChangeRequest>;
+type DescriptionChangeRequest = ReturnType<typeof createDescriptionChangeRequest>;
+export type CommitChangeRequest = InsertChangeRequest | UpdateChangeRequest | DeleteChangeRequest | TitleChangeRequest | DescriptionChangeRequest;
 
-export type ChangeRequestParams =
-  | ({ type: 'insert' } & Parameters<typeof createInsertChangeRequest>[0])
-  | ({ type: 'update' } & Parameters<typeof createUpdateChangeRequest>[0])
-  | ({ type: 'delete' } & Parameters<typeof createDeleteChangeRequest>[0])
-  | ({ type: 'title' } & Parameters<typeof createTitleChangeRequest>[0])
-  | ({ type: 'description' } & Parameters<typeof createDescriptionChangeRequest>[0]);
+type InsertChangeRequestCreateParam = { type: 'insert'; text: string; position?: string };
+type UpdateChangeRequestCreateParam = { type: 'update'; id: string; text: string };
+type DeleteChangeRequestCreateParam = { type: 'delete'; id: string };
+type TitleChangeRequestCreateParam = { type: 'title'; title: string };
+type DescriptionChangeRequestCreateParam = { type: 'description'; text: string };
+export type ChangeRequestCreateParams =
+  | InsertChangeRequestCreateParam
+  | UpdateChangeRequestCreateParam
+  | DeleteChangeRequestCreateParam
+  | TitleChangeRequestCreateParam
+  | DescriptionChangeRequestCreateParam;
 
 // NOTE: userId is used to generate new ID
-export const createChangeRequests = (params: ChangeRequestParams[], userId: string) =>
+export const createChangeRequests = (params: ChangeRequestCreateParams[], userId: string) =>
   params.map((p) => {
-    if (p.type === 'insert') {
-      return createInsertChangeRequest({ ...p, userId });
-    } else if (p.type === 'update') {
-      return createUpdateChangeRequest(p);
-    } else if (p.type === 'delete') {
-      return createDeleteChangeRequest(p);
-    } else if (p.type === 'title') {
-      return createTitleChangeRequest(p);
-    } else if (p.type === 'description') {
-      return createDescriptionChangeRequest(p);
-    } else {
-      throw new Error('Bad implement');
+    switch (p.type) {
+      case 'insert': {
+        return createInsertChangeRequest({ ...p, userId });
+      }
+      case 'update': {
+        return createUpdateChangeRequest(p);
+      }
+      case 'delete': {
+        return createDeleteChangeRequest(p);
+      }
+      case 'title': {
+        return createTitleChangeRequest(p);
+      }
+      case 'description': {
+        return createDescriptionChangeRequest(p);
+      }
+      default: {
+        throw new Error('Bad implement');
+      }
     }
   });

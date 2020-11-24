@@ -26,7 +26,7 @@ export const getScrapboxClient = async (config: { readonly token?: string; reado
   }
 
   globalClient = new Promise<ScrapboxClient>((resolve) => {
-    resolve(new ScrapboxClient(user.id, project.id, config.projectName, new RestApiClient(config.token), new WebsocketClient(config.token)));
+    resolve(new ScrapboxClient(user, project, new RestApiClient(config.token), new WebsocketClient(config.token)));
   });
 
   return globalClient;
