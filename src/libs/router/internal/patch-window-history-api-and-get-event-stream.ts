@@ -33,9 +33,7 @@ export const patchWindowHistoryApiAndGetEventStream = (target = window) => {
 
   target.history.pushState = customPushState.bind(target);
   target.history.replaceState = customReplaceState.bind(target);
-  target.addEventListener('popstate', (ev) => {
-    stream.next({ type: 'popstate', data: getData(), debug: { state: ev.state } });
-  });
+  target.addEventListener('popstate', (ev) => stream.next({ type: 'popstate', data: getData(), debug: { state: ev.state } }));
 
   return stream;
 };
