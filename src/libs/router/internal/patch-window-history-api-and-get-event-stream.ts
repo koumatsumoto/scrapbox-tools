@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { RouterEvent } from './types';
+import { RouterEvent } from '../types';
 
 let rawPushState: typeof window.history.pushState;
 let rawReplaceState: typeof window.history.replaceState;
