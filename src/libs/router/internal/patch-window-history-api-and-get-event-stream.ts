@@ -20,7 +20,7 @@ const extendedPushState = (state: any, title: string, url?: string | null) => {
 
 const extendedReplaceState = (state: any, title: string, url?: string | null) => {
   // NOTE: use call(window) to avoid `TypeError: Illegal invocation`
-  originalReplaceState(state, title, url);
+  originalReplaceState.call(window, state, title, url);
   stream.next({ type: 'replaceState', data: getData(), debug: { state, title, url } });
 };
 
