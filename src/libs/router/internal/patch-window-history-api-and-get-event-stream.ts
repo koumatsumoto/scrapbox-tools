@@ -22,18 +22,18 @@ function customReplaceState(state: any, title: string, url?: string | null) {
   stream.next({ type: 'replaceState', data: getData(), debug: { state, title, url } });
 }
 
-export const patchWindowHistoryApiAndGetEventStream = (target = window) => {
+export function patchWindowHistoryApiAndGetEventStream() {
   if (isPatchedOnce()) {
     return stream;
   }
 
   stream = new Subject<RouterEvent>();
-  rawPushState = target.history.pushState;
-  rawReplaceState = target.history.replaceState;
+  rawPushState = window.history.pushState;
+  rawReplaceState = window.history.replaceState;
 
-  target.history.pushState = customPushState.bind(target);
-  target.history.replaceState = customReplaceState.bind(target);
-  target.addEventListener('popstate', (ev) => stream.next({ type: 'popstate', data: getData(), debug: { state: ev.state } }));
+  window.history.pushState = customPushState.bind(window);
+  window.history.replaceState = customReplaceState.bind(window);
+  window.addEventListener('popstate', (ev) => stream.next({ type: 'popstate', data: getData(), debug: { state: ev.state } }));
 
   return stream;
-};
+}
