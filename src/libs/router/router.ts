@@ -22,8 +22,7 @@ export class Router {
   }
 
   private enableDebugLog() {
-    this.stream.subscribe((ev) => {
-      console.log('[st/router] debug: ', ev);
-    });
+    this.events.subscribe((ev) => console.log('[st/router] events: ', ev));
+    this.urlChange.subscribe((ev) => console.log('[st/router] urlChange: ', ev));
   }
 }
