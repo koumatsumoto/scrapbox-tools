@@ -1,7 +1,6 @@
 {
   "name": "scrapbox-tools",
   "version": "0.0.1",
-  "main": "dist/index.js",
   "repository": "git@github.com:kouMatsumoto/scrapbox-tools.git",
   "author": "kou.matsumoto <kou.matsumoto.jp@gmail.com>",
   "license": "UNLICENSED",
@@ -18,7 +17,8 @@
     ":check:lint": "yarn format && yarn :check:diff",
     ":check:test": "yarn test --ci --silent --detectOpenHandles --forceExit",
     ":jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
-    "postinstall": "tsc --project ./tsconfig.package.json"
+    "// NOTE(1)": "postinstall is used when this package is installed from other project",
+    "postinstall": "tsc --project ./tsconfig.package.json && "
   },
   "engines": {
     "node": ">= 14.0.0",
