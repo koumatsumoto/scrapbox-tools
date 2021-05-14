@@ -60,13 +60,10 @@ typings/
 # next.js build output
 .next
 
-# Intelij IDE
+# user defined
 .idea
-
-# build result
+.npmrc
 /dist
-/src/*.js
-/version.ts
 /deploy
 /router
 /scrapbox-client

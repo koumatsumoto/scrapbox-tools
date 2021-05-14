@@ -1,3 +1,12 @@
-# scrapbox-extensions
+# scrapbox-tools
 
-My personal extensions for scrapbox.
+Personal libraries to develop scrapbox user scripts.
+
+## Release
+
+- publish command
+
+  - `yarn release`
+
+- unpublish command
+  - `npm unpublish scrapbox-tools@$VERSION`
