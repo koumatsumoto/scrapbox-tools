@@ -1,14 +1,15 @@
 {
   "name": "scrapbox-tools",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repository": "git@github.com:kouMatsumoto/scrapbox-tools.git",
   "author": "kou.matsumoto <kou.matsumoto.jp@gmail.com>",
   "license": "UNLICENSED",
   "scripts": {
-    "build": "tsc --project ./tsconfig.json",
+    "build": "tsc",
     "ci": "concurrently 'yarn :check:build' 'yarn :check:test' 'yarn :check:lint'",
     "format": "yarn lint --fix && prettier --write .",
     "lint": "eslint 'src/**/*.ts'",
+    "release": "yarn --frozen-lockfile && yarn build --project ./tsconfig.package.json && yarn publish --non-interactive",
     "test": "yarn :jest -c jest.config.js",
     "ts-node": "node --max-old-space-size=8000 node_modules/.bin/ts-node --project tsconfig.json",
     "// 1": "Internal Scripts",
@@ -16,9 +17,7 @@
     ":check:diff": "git diff --exit-code --name-only .",
     ":check:lint": "yarn format && yarn :check:diff",
     ":check:test": "yarn test --ci --silent --detectOpenHandles --forceExit",
-    ":jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest",
-    "// NOTE(1)": "postinstall is used when this package is installed from other project",
-    "postinstall": "tsc --project ./tsconfig.package.json"
+    ":jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest"
   },
   "engines": {
     "node": ">= 14.0.0",
@@ -27,8 +26,7 @@
   "dependencies": {
     "node-fetch": "^2.6.1",
     "rxjs": "^7.0.1",
-    "ws": "^7.4.5",
-    "typescript": "^4.3.1-rc"
+    "ws": "^7.4.5"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
@@ -46,6 +44,7 @@
     "prettier": "^2.3.0",
     "ts-jest": "^26.5.6",
     "ts-node": "^9.1.1",
-    "tslib": "^2.2.0"
+    "tslib": "^2.2.0",
+    "typescript": "^4.3.1-rc"
   }
 }

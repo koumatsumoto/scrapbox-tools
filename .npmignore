@@ -1,0 +1,14 @@
+.idea
+.circleci/
+.github/
+src/
+.editorconfig
+.eslintrc.js
+.gitignore
+.npmignore
+.npmrc
+.prettierrc
+jest.config.js
+jest.setup.js
+tsconfig.json
+yarn-error.log

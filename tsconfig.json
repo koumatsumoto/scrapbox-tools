@@ -10,7 +10,7 @@
     "typeRoots": ["./node_modules/@types"],
     "rootDir": "./src",
     "outDir": "./dist",
-    "declaration": false,
+    "declaration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,

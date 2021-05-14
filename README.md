@@ -1,3 +1,7 @@
-# scrapbox-extensions
+# scrapbox-tools
 
-My personal extensions for scrapbox.
+Personal libraries to develop scrapbox user scripts.
+
+## Release
+
+- `yarn release`
