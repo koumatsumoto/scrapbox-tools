@@ -1,18 +1,13 @@
 module.exports = {
   rootDir: '.',
+  testEnvironment: 'node',
   setupFilesAfterEnv: ['./jest.setup.js'],
   moduleDirectories: ['node_modules'],
   moduleFileExtensions: ['js', 'json', 'ts'],
   globals: {
-    'ts-jest': {
-      tsConfig: 'tsconfig.json',
-    },
+    'ts-jest': { tsConfig: 'tsconfig.json' },
   },
-  transform: {
-    '^.+\\.js$': 'babel-jest',
-    '^.+\\.ts$': 'ts-jest',
-  },
-  transformIgnorePatterns: ['node_modules/(?!(fp-ts)/)'],
+  transform: { '^.+\\.ts$': 'ts-jest' },
   testURL: 'http://localhost/',
   testMatch: ['<rootDir>/src/**/*.spec.ts'],
   collectCoverageFrom: ['<rootDir>/src/**/*.spec.ts'],

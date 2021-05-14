@@ -67,3 +67,6 @@ typings/
 /dist
 /src/*.js
 /version.ts
+/deploy
+/router
+/scrapbox-client
