@@ -53,6 +53,7 @@ export class WebsocketClient {
     this.response$ = response;
     close.subscribe(() => this.initialize()); // retry if disconnected
     initialize.subscribe((message) => {
+      this.socket.send(socketIoHeaders.connected);
       // start ping
       interval(message.data.pingInterval).subscribe(() => this.socket.send(socketIoHeaders.ping));
       // for reconnection after closed
