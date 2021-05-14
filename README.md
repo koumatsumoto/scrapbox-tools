@@ -4,4 +4,9 @@ Personal libraries to develop scrapbox user scripts.
 
 ## Release
 
-- `yarn release`
+- publish command
+
+  - `yarn release`
+
+- unpublish command
+  - `npm unpublish scrapbox-tools@$VERSION`
