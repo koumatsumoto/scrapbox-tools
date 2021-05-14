@@ -1,4 +1,4 @@
-export const endpoint = 'wss://scrapbox.io/socket.io/?EIO=3&transport=websocket';
+export const endpoint = 'wss://scrapbox.io/socket.io/?EIO=4&transport=websocket';
 export const socketIoHeaders = {
   initialize: '0',
   ping: '2',
