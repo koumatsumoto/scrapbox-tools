@@ -1,6 +1,4 @@
-import { Opaque } from 'ts-essentials';
-
-export type ID = Opaque<string, 'ID'>;
+export type ID = string;
 
 // copied from official index.js
 export const isIdString = (v: string): v is ID => {

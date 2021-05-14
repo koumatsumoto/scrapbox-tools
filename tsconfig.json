@@ -2,7 +2,7 @@
   "include": ["src/**/*.ts", "src/**/*.spec.ts"],
   "exclude": ["dist", "node_modules"],
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es2018",
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
