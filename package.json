@@ -1,6 +1,6 @@
 {
   "name": "scrapbox-tools",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "repository": "git@github.com:kouMatsumoto/scrapbox-tools.git",
   "author": "kou.matsumoto <kou.matsumoto.jp@gmail.com>",
   "license": "UNLICENSED",
@@ -9,7 +9,9 @@
     "ci": "concurrently 'yarn :check:build' 'yarn :check:test' 'yarn :check:lint'",
     "format": "yarn lint --fix && prettier --write .",
     "lint": "eslint 'src/**/*.ts'",
-    "release": "yarn --frozen-lockfile && yarn build --project ./tsconfig.package.json && yarn publish --non-interactive",
+    "release": "yarn release:build && yarn release:publish",
+    "release:build": "yarn --frozen-lockfile && yarn build --project ./tsconfig.package.json",
+    "release:publish": "yarn publish --non-interactive",
     "test": "yarn :jest -c jest.config.js",
     "ts-node": "node --max-old-space-size=8000 node_modules/.bin/ts-node --project tsconfig.json",
     "// 1": "Internal Scripts",
