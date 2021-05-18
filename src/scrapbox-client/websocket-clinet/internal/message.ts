@@ -1,26 +1,49 @@
-import { socketIoHeaders } from '../constants';
-import { RequestPayload, WebsocketResponsePayload } from './payload';
+import { packetTypes } from '../constants';
+import { SendResponse } from './response';
+import { isIntegerString } from './util';
 
-export const createMessage = (id: string, payload: RequestPayload) => {
-  const body = JSON.stringify(['socket.io-request', payload]);
-
-  return [id, `${socketIoHeaders.send}${id}${body}`] as const;
+export const toSocketIoPayload = (id: string, data: unknown) => {
+  return `${packetTypes.send}${id}${JSON.stringify(JSON.stringify(['socket.io-request', data]))}`;
 };
 
+export type ParsedMessage = [PacketType: string, Data: unknown];
+export type InitializedMessage = [
+  PacketType: typeof packetTypes.initialize,
+  Data: {
+    sid: string;
+    upgrades: [];
+    pingInterval: number;
+    pingTimeout: number;
+  },
+];
+export type ResponseMessage = [PacketType: `43${string}`, Data: SendResponse];
+
 // 430[{...}}] => 430, [{}]
-export const parseMessage = (message: string) => {
-  // header contains protocol and arbitrary number
-  let header = '';
+// @see https://github.com/socketio/engine.io-protocol
+export const parseMessage = (message: string): ParsedMessage => {
+  let packetType = '';
   while (message.length) {
     const head = message[0];
-    // remove head if it is numeric char (part of protocol)
-    if (Number.isInteger(Number.parseInt(head))) {
-      header += head;
+    if (isIntegerString(head)) {
+      packetType += head;
       message = message.substr(1);
     } else {
-      return [header, JSON.parse(message) as WebsocketResponsePayload] as const;
+      return [packetType, JSON.parse(message)];
     }
   }
 
-  return ['', ''];
+  return [packetType, undefined];
+};
+
+export const isConnectionMessage = (message: ParsedMessage): message is InitializedMessage => {
+  return message[0] === packetTypes.initialize;
+};
+
+export const isResponseMessage = (message: ParsedMessage): message is ResponseMessage => {
+  return message[0].length > 2 && message[0].startsWith(packetTypes.response);
+};
+
+export const getRequestId = (packetType: string) => packetType.slice(2);
+export const isResponseMessageOf = (sid: string) => (message: ParsedMessage) => {
+  return isResponseMessage(message) && sid === getRequestId(message[0]);
 };

@@ -1,5 +1,4 @@
-export const endpoint = 'wss://scrapbox.io/socket.io/?EIO=4&transport=websocket';
-export const socketIoHeaders = {
+export const packetTypes = {
   initialize: '0',
   ping: '2',
   pong: '3',
@@ -11,7 +10,11 @@ export const socketIoHeaders = {
   // e.g.
   //   * 43X: response to user custom request (X is number used for request)
   receive: '43',
+  response: '43',
 };
-export const websocketResponseTimeout = 1000 * 30;
-// NOTE: websocket requires origin header
-export const origin = 'https://scrapbox.io';
+
+export const CONFIG = {
+  endpoint: 'wss://scrapbox.io/socket.io/?EIO=4&transport=websocket',
+  origin: 'https://scrapbox.io',
+  responseTimeout: 1000 * 15,
+};
