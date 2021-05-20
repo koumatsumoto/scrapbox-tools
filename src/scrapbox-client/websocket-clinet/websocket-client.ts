@@ -1,7 +1,7 @@
 import { firstValueFrom, interval, Observable } from 'rxjs';
-import { first, map, shareReplay, take, takeUntil, timeout } from 'rxjs/operators';
+import { first, map, shareReplay, take, takeUntil, tap, timeout } from 'rxjs/operators';
 import { CONFIG, packetTypes } from './constants';
-import { isConnectionMessage, isResponseMessageOf, ParsedMessage, parseMessage, toSocketIoPayload } from './internal/message';
+import { isConnectionMessage, isResponseMessageOf, ParsedMessage, parseMessage, toSocketIoMessagePayload } from './internal/message';
 import { ChangeRequestCreateParams, createChanges } from './internal/request';
 import { CommitResponse, JoinRoomResponse, SendResponse } from './internal/response';
 import { getCookieToAuth } from './internal/util';
@@ -49,6 +49,7 @@ export class WebsocketClient {
 
   join(params: { projectId: string; pageId: string }) {
     this.room = params;
+
     return this.send<JoinRoomResponse[]>({
       method: 'room:join',
       data: {
@@ -74,9 +75,9 @@ export class WebsocketClient {
 
   private async send<T extends SendResponse>(data: any) {
     const sid = String(this.sid++);
-    const message = toSocketIoPayload(sid, data);
+    const message = toSocketIoMessagePayload(sid, data);
 
-    this.open$.pipe(take(1)).subscribe(() => this.socket.send(message));
+    this.socket.send(message);
 
     return firstValueFrom(this.message$.pipe(first(isResponseMessageOf(sid)), timeout(CONFIG.responseTimeout)));
   }

@@ -2,8 +2,8 @@ import { packetTypes } from '../constants';
 import { SendResponse } from './response';
 import { isIntegerString } from './util';
 
-export const toSocketIoPayload = (id: string, data: unknown) => {
-  return `${packetTypes.send}${id}${JSON.stringify(JSON.stringify(['socket.io-request', data]))}`;
+export const toSocketIoMessagePayload = (id: string, data: unknown) => {
+  return `${packetTypes.send}${id}${JSON.stringify(['socket.io-request', data])}`;
 };
 
 export type ParsedMessage = [PacketType: string, Data: unknown];
