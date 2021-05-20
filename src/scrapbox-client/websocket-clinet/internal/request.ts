@@ -1,49 +1,42 @@
 import { generateId } from '../../common';
 
-const createInsertChangeRequest = (param: { text: string; position?: string; userId: string }) =>
-  ({ _insert: param.position || '_end', lines: { id: generateId(param.userId), text: param.text } } as const);
-const createUpdateChangeRequest = (param: { id: string; text: string }) => ({ _update: param.id, lines: { text: param.text } } as const);
-const createDeleteChangeRequest = (param: { id: string }) => ({ _delete: param.id, lines: -1 } as const);
-const createTitleChangeRequest = (param: { title: string }) => ({ title: param.title } as const);
-const createDescriptionChangeRequest = (param: { text: string }) => ({ descriptions: [param.text] } as const);
+type InsertChange = { _insert: string | '_end'; lines: { id: string; text: string } };
+type UpdateChange = { _update: string; lines: { text: string } };
+type DeleteChange = { _delete: string; lines: -1 };
+type TitleChange = { title: string };
+type DescriptionChange = { descriptions: [string] };
+export type CommitChange = InsertChange | UpdateChange | DeleteChange | TitleChange | DescriptionChange;
 
-type InsertChangeRequest = ReturnType<typeof createInsertChangeRequest>;
-type UpdateChangeRequest = ReturnType<typeof createUpdateChangeRequest>;
-type DeleteChangeRequest = ReturnType<typeof createDeleteChangeRequest>;
-type TitleChangeRequest = ReturnType<typeof createTitleChangeRequest>;
-type DescriptionChangeRequest = ReturnType<typeof createDescriptionChangeRequest>;
-export type CommitChangeRequest = InsertChangeRequest | UpdateChangeRequest | DeleteChangeRequest | TitleChangeRequest | DescriptionChangeRequest;
-
-type InsertChangeRequestCreateParam = { type: 'insert'; text: string; position?: string };
-type UpdateChangeRequestCreateParam = { type: 'update'; id: string; text: string };
-type DeleteChangeRequestCreateParam = { type: 'delete'; id: string };
-type TitleChangeRequestCreateParam = { type: 'title'; title: string };
-type DescriptionChangeRequestCreateParam = { type: 'description'; text: string };
+type InsertChangeRequestParams = { type: 'insert'; text: string; position?: string };
+type UpdateChangeRequestParams = { type: 'update'; id: string; text: string };
+type DeleteChangeRequestParams = { type: 'delete'; id: string };
+type TitleChangeRequestParams = { type: 'title'; title: string };
+type DescriptionChangeRequestParams = { type: 'description'; text: string };
 export type ChangeRequestCreateParams =
-  | InsertChangeRequestCreateParam
-  | UpdateChangeRequestCreateParam
-  | DeleteChangeRequestCreateParam
-  | TitleChangeRequestCreateParam
-  | DescriptionChangeRequestCreateParam;
+  | InsertChangeRequestParams
+  | UpdateChangeRequestParams
+  | DeleteChangeRequestParams
+  | TitleChangeRequestParams
+  | DescriptionChangeRequestParams;
 
 // NOTE: userId is used to generate new ID
-export const createChangeRequests = (params: ChangeRequestCreateParams[], userId: string) =>
-  params.map((p) => {
-    switch (p.type) {
+export const createChanges = (params: ChangeRequestCreateParams[], userId: string) =>
+  params.map((param) => {
+    switch (param.type) {
       case 'insert': {
-        return createInsertChangeRequest({ ...p, userId });
+        return { _insert: param.position || '_end', lines: { id: generateId(userId), text: param.text } };
       }
       case 'update': {
-        return createUpdateChangeRequest(p);
+        return { _update: param.id, lines: { text: param.text } };
       }
       case 'delete': {
-        return createDeleteChangeRequest(p);
+        return { _delete: param.id, lines: -1 };
       }
       case 'title': {
-        return createTitleChangeRequest(p);
+        return { title: param.title };
       }
       case 'description': {
-        return createDescriptionChangeRequest(p);
+        return { descriptions: [param.text] };
       }
       default: {
         throw new Error('Bad implement');
