@@ -3,6 +3,9 @@ import { Me, Page, Project } from './types';
 
 const baseURL = 'https://scrapbox.io/api';
 
+export const isObject = (data: unknown): data is Record<string, unknown> => typeof data === 'object' && data !== null;
+export const isNotLoggedInError = (data: unknown) => isObject(data) && data['name'] === 'NotLoggedInError';
+
 export class RestApiClient {
   constructor(private readonly token?: string, private readonly httpClient: HttpClient = new DefaultHttpClient()) {}
 
@@ -19,10 +22,16 @@ export class RestApiClient {
   }
 
   private async request<T>(url: string) {
-    return this.httpClient.get<T>(url, {
+    const result = await this.httpClient.get<T>(url, {
       headers: {
         Cookie: `connect.sid=${this.token}`,
       },
     });
+
+    if (isNotLoggedInError(result)) {
+      throw new Error('NotLoggedInError');
+    }
+
+    return result;
   }
 }

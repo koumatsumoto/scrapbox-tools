@@ -4,6 +4,9 @@
   "repository": "git@github.com:kouMatsumoto/scrapbox-tools.git",
   "author": "kou.matsumoto <kou.matsumoto.jp@gmail.com>",
   "license": "UNLICENSED",
+  "bin": {
+    "scrapbox-tools": "cli/bin.js"
+  },
   "scripts": {
     "build": "tsc",
     "ci": "concurrently 'yarn :check:build' 'yarn :check:test' 'yarn :check:lint'",
@@ -12,13 +15,14 @@
     "release": "yarn release:build && yarn release:publish",
     "release:build": "yarn --frozen-lockfile && yarn build --project ./tsconfig.package.json",
     "release:publish": "yarn publish --non-interactive",
-    "test": "yarn :jest -c jest.config.js",
+    "test:unit": "yarn :jest -c jest.config.js",
+    "test:integration": "yarn ts-node ./src/cli/test/integration-test.ts",
     "ts-node": "node --max-old-space-size=8000 node_modules/.bin/ts-node --project tsconfig.json",
     "// 1": "Internal Scripts",
     ":check:build": "tsc --noEmit",
     ":check:diff": "git diff --exit-code --name-only .",
     ":check:lint": "yarn format && yarn :check:diff",
-    ":check:test": "yarn test --ci --silent --detectOpenHandles --forceExit",
+    ":check:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit",
     ":jest": "node --max_old_space_size=4096 ./node_modules/.bin/jest"
   },
   "engines": {
@@ -26,12 +30,14 @@
     "yarn": ">=1.20.0"
   },
   "dependencies": {
+    "minimist": "^1.2.5",
     "node-fetch": "^2.6.1",
     "rxjs": "^7.0.1",
     "ws": "^7.4.5"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
+    "@types/minimist": "^1.2.1",
     "@types/node": "^15.0.3",
     "@types/ws": "^7.4.4",
     "@typescript-eslint/eslint-plugin": "^4.23.0",

@@ -63,7 +63,7 @@ typings/
 # user defined
 .idea
 .npmrc
+/cli
 /dist
-/deploy
 /router
 /scrapbox-client
