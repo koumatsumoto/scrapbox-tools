@@ -69,3 +69,9 @@ export type Project = {
   backuped: number;
   isMember: boolean;
 };
+
+export interface ErrorResult {
+  name: 'NotLoggedInError' | string;
+  message: string;
+  details: unknown;
+}
