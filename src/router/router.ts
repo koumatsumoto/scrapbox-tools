@@ -1,28 +1,15 @@
-import { Observable } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
-import { patchWindowHistoryApiAndGetEventStream } from './internal/patch-window-history-api-and-get-event-stream';
-import { isSameUrl } from './internal/predicate';
-import { RouterEvent } from './internal/types';
+import { concat, Observable, of } from 'rxjs';
+import { distinctUntilChanged, share } from 'rxjs/operators';
+import { getHistoryEventObservable } from './internal/observable';
 
 export class Router {
-  private readonly stream = patchWindowHistoryApiAndGetEventStream();
+  private readonly event$: Observable<string> = getHistoryEventObservable().pipe(share());
 
-  constructor(private readonly options: { debug?: true } = {}) {
-    if (options.debug) {
-      this.enableDebugLog();
-    }
+  get url(): Observable<string> {
+    return concat(of(window.location.href), this.event$).pipe(distinctUntilChanged());
   }
 
-  get events(): Observable<RouterEvent> {
-    return this.stream.asObservable();
-  }
-
-  get urlChange(): Observable<RouterEvent> {
-    return this.stream.asObservable().pipe(distinctUntilChanged(isSameUrl));
-  }
-
-  private enableDebugLog() {
-    this.events.subscribe((ev) => console.log('[st/router] events: ', ev));
-    this.urlChange.subscribe((ev) => console.log('[st/router] urlChange: ', ev));
+  get urlChange(): Observable<string> {
+    return this.event$.pipe(distinctUntilChanged());
   }
 }
