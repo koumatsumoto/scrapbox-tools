@@ -4,47 +4,48 @@ import { WebsocketClient } from './websocket-clinet/websocket-client';
 
 export class ScrapboxClient {
   constructor(
-    private readonly user: Readonly<{ id: string; name: string }>,
-    private readonly project: Readonly<{ id: string; name: string }>,
-    private readonly apiClient: RestApiClient,
-    private readonly websocketClient: WebsocketClient,
+    token = '',
+    private readonly apiClient: RestApiClient = new RestApiClient(token),
+    private readonly websocketClient: WebsocketClient = new WebsocketClient({ token }),
   ) {}
 
-  getCurrentUser() {
-    return { ...this.user };
+  async getPage(projectName: string, pageName: string) {
+    return this.apiClient.getPage(projectName, pageName);
   }
 
-  getCurrentProject() {
-    return { ...this.project };
-  }
-
-  async getPage(pageName: string) {
-    return this.apiClient.getPage(this.project.name, pageName);
-  }
-
-  async changeLine(pageName: string, change: ChangeRequestCreateParams | ChangeRequestCreateParams[]) {
-    const { pageId, commitId } = await this.getPageIdAndCommitId(pageName);
+  async changeLine(projectName: string, pageName: string, change: ChangeRequestCreateParams | ChangeRequestCreateParams[]) {
+    const project = await this.getProject(projectName);
+    const { pageId, commitId } = await this.getPageIdAndCommitId(projectName, pageName);
 
     return this.commit({
       changes: Array.isArray(change) ? change : [change],
-      projectId: this.project.id,
+      projectId: project.id,
       pageId: pageId,
       commitId: commitId,
     });
   }
 
-  private async getPageIdAndCommitId(pageName: string) {
-    const page = await this.apiClient.getPage(this.project.name, pageName);
+  async getUser() {
+    return await this.apiClient.getMe();
+  }
+
+  private async getProject(projectName: string) {
+    return await this.apiClient.getProject(projectName);
+  }
+
+  private async getPageIdAndCommitId(projectName: string, pageName: string) {
+    const page = await this.apiClient.getPage(projectName, pageName);
 
     return { pageId: page.id, commitId: page.commitId };
   }
 
   private async commit(param: { projectId: string; pageId: string; commitId: string; changes: ChangeRequestCreateParams[] }) {
+    const user = await this.getUser();
     // to receive result of commit
     await this.websocketClient.join({ projectId: param.projectId, pageId: param.pageId });
 
     return this.websocketClient.commit({
-      userId: this.user.id,
+      userId: user.id,
       projectId: param.projectId,
       pageId: param.pageId,
       parentId: param.commitId,
