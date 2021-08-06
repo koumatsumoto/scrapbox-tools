@@ -2,8 +2,8 @@
   "include": ["src/**/*.ts", "src/**/*.spec.ts"],
   "exclude": ["dist", "node_modules"],
   "compilerOptions": {
-    "target": "es2018",
-    "module": "commonjs",
+    "target": "esnext",
+    "module": "es2015",
     "moduleResolution": "node",
     "strict": true,
     "types": ["node", "jest"],
