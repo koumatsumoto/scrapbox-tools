@@ -1,16 +1,16 @@
 import { Layout } from './layout';
 import { PageMenu } from './page-menu';
-import { Page } from './page';
+import { USPage } from './page';
 import { PopupMenu } from './popup-menu';
-import { Project } from './project';
+import { USProject } from './project';
 import { TimeStamp } from './time-stamp';
 
 export interface Scrapbox {
   Layout: Layout;
-  Page: Page;
+  Page: USPage;
   PageMenu: PageMenu;
   PopupMenu: PopupMenu;
-  Project: Project;
+  Project: USProject;
   TimeStamp: TimeStamp;
 }
 

@@ -1,9 +1,9 @@
-import { Line } from './line';
+import { USLine } from './line';
 
-export type Page =
+export type USPage =
   | {
       title: string;
-      lines: Line[];
+      lines: USLine[];
     }
   | {
       // if scrapbox.Layout !== 'page'

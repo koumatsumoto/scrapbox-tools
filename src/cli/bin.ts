@@ -1,6 +1,4 @@
-#!/usr/bin/env node
-
-import * as minimist from 'minimist';
+import minimist from 'minimist';
 import { deploy } from './commands/deploy';
 import { isAllowedCommandType } from './internal/util';
 

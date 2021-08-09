@@ -38,4 +38,4 @@ export type FormulaLine = GeneralLine & {
   nodes: DecoFormulaNode | IndentNode;
 };
 
-export type Line = TitleLine | GeneralLine | IndentedLine | CodeBlockLine | FormulaLine;
+export type USLine = TitleLine | GeneralLine | IndentedLine | CodeBlockLine | FormulaLine;

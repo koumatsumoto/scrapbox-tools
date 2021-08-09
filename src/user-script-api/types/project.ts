@@ -1,4 +1,4 @@
-export type Project = {
+export type USProject = {
   name: string;
   pages: {
     id?: string; // undefined if exists === false
