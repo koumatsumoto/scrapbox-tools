@@ -1,5 +1,6 @@
 import babel from '@rollup/plugin-babel';
 import typescript from '@rollup/plugin-typescript';
+import shebang from 'rollup-plugin-add-shebang';
 
 export default [
   {
@@ -54,6 +55,9 @@ export default [
       sourcemap: true,
     },
     plugins: [
+      shebang({
+        include: 'dist/cli/bin.js',
+      }),
       typescript({
         declaration: false,
         rootDir: 'src',
