@@ -10,26 +10,15 @@
     "scrapbox-tools": "./dist/cli/bin.js"
   },
   "engines": {
-    "node": ">=16.0.0",
-    "yarn": ">=1.20.0"
+    "node": ">=16.0.0"
   },
   "scripts": {
     "build": "rollup --config",
-    "ci": "concurrently 'yarn :check:tsc' 'yarn :check:test' 'yarn :check:lint' 'yarn :check:build'",
-    "format": "yarn lint --fix && prettier --write .",
-    "lint": "eslint 'src/**/*.ts'",
-    "release": "yarn release:build && yarn release:publish",
-    "release:build": "yarn --frozen-lockfile && yarn build",
-    "release:publish": "yarn publish --non-interactive",
-    "test:unit": "jest -c jest.config.js",
-    "test:integration": "yarn ts-node ./src/cli/test/integration-test.ts",
-    "ts-node": "node --max-old-space-size=8000 node_modules/.bin/ts-node --project tsconfig.json",
-    "// 1": "Internal Scripts",
-    ":check:build": "rollup --config",
-    ":check:diff": "git diff --exit-code --name-only .",
-    ":check:lint": "yarn format && yarn :check:diff",
-    ":check:test": "yarn test:unit --ci --silent --detectOpenHandles --forceExit",
-    ":check:tsc": "tsc --noEmit"
+    "check": "concurrently 'tsc --noEmit' 'npm run test' 'npm run check:lint' 'npm run build'",
+    "check:lint": "npm run format && git diff --exit-code --name-only .",
+    "format": "eslint 'src/**/*.ts' --fix && prettier --write .",
+    "prepack": "npm ci && npm run build",
+    "test": "jest -c jest.config.js --ci --silent --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "commander": "^8.1.0",
