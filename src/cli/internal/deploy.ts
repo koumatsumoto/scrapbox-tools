@@ -1,7 +1,7 @@
 import { ScrapboxClient } from '../../scrapbox-client';
-import { loadSourceCode } from '../internal/file-loaders';
-import { findNextLineIdOrFail } from '../internal/find';
-import { isCSSFile, validateDeployArguments } from '../internal/util';
+import { loadSourceCode } from './file-loaders';
+import { findNextLineIdOrFail } from './find';
+import { isCSSFile, validateDeployArguments } from './util';
 
 export const deploy = async ({ page, sourceFilePath, project, token }: { token: string; page: string; project: string; sourceFilePath: string }) => {
   const errors = validateDeployArguments({ token, sourceFilePath, project, page });

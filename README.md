@@ -10,7 +10,8 @@ Personal libraries to develop scrapbox user scripts.
 
 ```shell
 $ export TOKEN=your_login_token
-$ scrapbox-tools deploy project/page script.js
+$ scrapbox --project=${PROJECT_NAME} deploy-userscript ${JS_FILE_PATH}
+$ scrapbox --project=${PROJECT_NAME} deploy-usercss ${CSS_FILE_PATH}
 ```
 
 ## Release

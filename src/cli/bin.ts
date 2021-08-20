@@ -1,29 +1,49 @@
-import minimist from 'minimist';
-import { deploy } from './commands/deploy';
-import { isAllowedCommandType } from './internal/util';
+import { Command } from 'commander';
+import * as path from 'path';
+import { RestApiClient } from '../scrapbox-client/rest-api-client/rest-api-client';
+import { deploy } from './internal/deploy';
+import { selectProject } from './internal/select-project';
+const pkg = require(path.resolve(__dirname, '../../package.json'));
 
-type ParsedArgs = {
-  _: [CommandType: string, ProjectAndPage: string, FilePath: string]; // e.g. $ scrapbox-tools deploy project/page userscript.js
-};
+const program = new Command().version(pkg.version);
 
-const argv = minimist<ParsedArgs>(process.argv.slice(2));
+program
+  .command('deploy-userscript <js-file>')
+  .description('update userscript in user page')
+  .option('-p, --project <type>', 'project name')
+  .action(async (jsFile: string, options: { project?: string }) => {
+    const token = process.env.TOKEN ?? '';
+    if (!token) {
+      throw new Error('TOKEN not set');
+    }
+    const api = new RestApiClient(token);
+    const selectedProject = options.project ?? (await selectProject({ client: api }));
+    const userName = await api.getMe().then(({ name }) => name);
 
-const token = process.env.TOKEN ?? '';
-const [commandType, projectAndPage, sourceFilePath] = argv._;
+    await deploy({ token, project: selectedProject, page: userName, sourceFilePath: jsFile });
+  });
 
-if (!isAllowedCommandType(commandType)) {
-  throw new Error(`InvalidArgumentError: command ${commandType} is not supported`);
-}
+program
+  .command('deploy-usercss <css-file>')
+  .description('update usercss in settings page')
+  .option('-p, --project <type>', 'project name')
+  .action(async (jsFile: string, options: { project?: string }) => {
+    const token = process.env.TOKEN ?? '';
+    if (!token) {
+      throw new Error('TOKEN not set');
+    }
+    const api = new RestApiClient(token);
+    const selectedProject = options.project ?? (await selectProject({ client: api }));
 
-const [project, page] = projectAndPage.split('/');
+    await deploy({ token, project: selectedProject, page: 'settings', sourceFilePath: jsFile });
+  });
 
-// NOTE: 'deploy' is only supported
-deploy({ token, project, page, sourceFilePath })
+program
+  .parseAsync(process.argv)
   .then(() => {
-    console.log('completed');
     process.exit(0);
   })
-  .catch((error) => {
-    console.error('errored', error);
+  .catch((e) => {
+    console.error(e);
     process.exit(1);
   });

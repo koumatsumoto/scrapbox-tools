@@ -1,5 +1,5 @@
 import { DefaultHttpClient, HttpClient } from './http-client';
-import { Me, Page, Project } from './types';
+import { Me, Page, Project, ProjectPublicData } from './types';
 
 const baseURL = 'https://scrapbox.io/api';
 
@@ -15,6 +15,10 @@ export class RestApiClient {
 
   async getProject(projectName: string) {
     return this.request<Project>(`${baseURL}/projects/${encodeURIComponent(projectName)}`);
+  }
+
+  async getProjects() {
+    return this.request<{ projects: ProjectPublicData[] }>(`${baseURL}/projects`);
   }
 
   async getMe() {

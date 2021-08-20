@@ -49,26 +49,30 @@ export type Page = {
   lastAccessed: number;
 };
 
-export type Project = {
-  id: string;
-  name: string;
-  displayName: string;
-  publicVisible: boolean;
-  plan: 'personal' | string;
-  theme: 'winter' | string;
-  gyazoTeamsName: null;
-  googleAnalyticsCode: null;
+export interface ProjectPublicData {
   created: number;
-  updated: number;
-  users: User[];
-  admins: [];
-  owner: string;
+  displayName: string;
+  googleAnalyticsCode: null;
+  gyazoTeamsName: null;
+  id: string;
+  isMember: boolean;
+  loginStrategies: unknown[];
+  name: string;
+  plan: 'personal' | null;
+  publicVisible: boolean;
+  theme: 'winter' | 'default' | string;
   trialing: boolean;
+  updated: number;
+}
+
+export interface Project extends ProjectPublicData {
+  admins: [];
+  backuped: number;
+  owner: string;
   trialMaxPages: 100;
   skipPayment: boolean;
-  backuped: number;
-  isMember: boolean;
-};
+  users: User[];
+}
 
 export interface ErrorResult {
   name: 'NotLoggedInError' | string;
