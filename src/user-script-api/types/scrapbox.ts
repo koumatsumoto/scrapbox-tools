@@ -1,6 +1,6 @@
 import { Layout } from './layout';
-import { PageMenu } from './page-menu';
 import { USPage } from './page';
+import { PageMenu } from './page-menu';
 import { PopupMenu } from './popup-menu';
 import { USProject } from './project';
 import { TimeStamp } from './time-stamp';
