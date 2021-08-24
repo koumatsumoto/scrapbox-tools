@@ -1,4 +1,4 @@
-import { ScrapboxClient } from '../../scrapbox-client';
+import { ScrapboxClient } from '../../libs/scrapbox-client';
 import { loadSourceCode } from './file-loaders';
 import { findNextLineIdOrFail } from './find';
 import { isCSSFile, validateDeployArguments } from './util';

@@ -4,8 +4,8 @@
   "repository": "git@github.com:kouMatsumoto/scrapbox-tools.git",
   "author": "Kou Matsumoto <developer@kou-matsumoto.jp>",
   "license": "MIT",
-  "main": "./dist/commonjs/index.js",
-  "module": "./dist/es/index.js",
+  "main": "./dist/commonjs/libs/index.js",
+  "module": "./dist/es/libs/index.js",
   "bin": {
     "scrapbox-tools": "./dist/cli/bin.js"
   },
@@ -13,7 +13,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "build": "rollup --config",
+    "build": "rm -fr .dist && rollup --config",
     "check": "concurrently 'tsc --noEmit' 'npm run test' 'npm run check:lint' 'npm run build'",
     "check:lint": "npm run format && git diff --exit-code --name-only .",
     "format": "eslint 'src/**/*.ts' --fix && prettier --write .",

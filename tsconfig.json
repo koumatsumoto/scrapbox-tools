@@ -5,17 +5,14 @@
     "target": "esnext",
     "module": "es6",
     "moduleResolution": "node",
-    "esModuleInterop": true,
     "strict": true,
     "types": ["node", "jest"],
-    "typeRoots": ["./node_modules/@types"],
     "declaration": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "baseUrl": "./",
-    "sourceMap": true,
-    "inlineSources": false
+    "inlineSources": true
   }
 }

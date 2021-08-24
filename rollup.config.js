@@ -4,11 +4,11 @@ import shebang from 'rollup-plugin-add-shebang';
 
 export default [
   {
-    input: 'src/index.ts',
+    input: 'src/libs/index.ts',
     preserveModules: true,
     external: ['rxjs', 'rxjs/operators'],
     output: {
-      dir: 'dist/commonjs',
+      dir: 'dist/commonjs/libs',
       format: 'cjs',
       exports: 'named',
       sourcemap: true,
@@ -19,27 +19,27 @@ export default [
         babelHelpers: 'bundled',
       }),
       typescript({
+        include: ['src/libs/**/*.ts'],
+        outDir: 'dist/commonjs/libs',
         declaration: true,
-        rootDir: 'src',
-        declarationDir: 'dist/commonjs',
       }),
     ],
   },
   {
-    input: 'src/index.ts',
+    input: 'src/libs/index.ts',
     preserveModules: true,
     external: ['rxjs', 'rxjs/operators'],
     output: {
-      dir: 'dist/es',
+      dir: 'dist/es/libs',
       format: 'es',
       exports: 'named',
       sourcemap: true,
     },
     plugins: [
       typescript({
+        include: ['src/libs/**/*.ts'],
+        outDir: 'dist/es/libs',
         declaration: true,
-        rootDir: 'src',
-        declarationDir: 'dist/es',
       }),
     ],
   },

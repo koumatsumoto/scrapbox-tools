@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import * as path from 'path';
-import { RestApiClient } from '../scrapbox-client/rest-api-client/rest-api-client';
+import { RestApiClient } from '../libs/scrapbox-client/rest-api-client/rest-api-client';
 import { deploy } from './internal/deploy';
 import { selectProject } from './internal/select-project';
 const pkg = require(path.resolve(__dirname, '../../package.json'));
