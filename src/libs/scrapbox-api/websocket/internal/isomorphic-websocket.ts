@@ -59,13 +59,6 @@ export class IsomorphicWebSocket<ParsedMessage = any> {
     this.close$.subscribe(() => {
       this.send$.complete();
     });
-
-    // debug
-    this.open$.subscribe((e) => console.log('[ws] open$'));
-    this.error$.subscribe((e) => console.log('[ws] error$'));
-    this.close$.subscribe((e) => console.log('[ws] close$'));
-    this.message$.subscribe((e) => console.log('[ws] message$', JSON.stringify(e)));
-    this.send$.subscribe((e) => console.log('[ws] send$', e));
   }
 
   get open() {
