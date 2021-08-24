@@ -1,8 +1,8 @@
 import { HttpClient } from './http-client';
-import { RestApiClient } from './rest-api-client';
+import { RestApi } from './rest-api';
 
 describe('RestApiClient', () => {
-  let api: RestApiClient;
+  let api: RestApi;
   let http: HttpClient;
   const token = 'auth-token in cookie';
   const dummyResponse = {} as any;
@@ -10,7 +10,7 @@ describe('RestApiClient', () => {
 
   beforeEach(() => {
     http = { get: jest.fn(() => Promise.resolve(dummyResponse)) };
-    api = new RestApiClient(token, http);
+    api = new RestApi(token, http);
   });
 
   describe('getMe', () => {

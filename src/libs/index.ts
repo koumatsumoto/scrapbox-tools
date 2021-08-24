@@ -1,3 +1,3 @@
 export * from './router';
-export * from './scrapbox-client';
+export * from './scrapbox-api';
 export * from './user-script-api';

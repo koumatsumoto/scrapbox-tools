@@ -6,7 +6,7 @@ const baseURL = 'https://scrapbox.io/api';
 export const isObject = (data: unknown): data is Record<string, unknown> => typeof data === 'object' && data !== null;
 export const isNotLoggedInError = (data: unknown) => isObject(data) && data['name'] === 'NotLoggedInError';
 
-export class RestApiClient {
+export class RestApi {
   constructor(private readonly token?: string, private readonly httpClient: HttpClient = new DefaultHttpClient()) {}
 
   async getPage(projectName: string, pageName: string) {

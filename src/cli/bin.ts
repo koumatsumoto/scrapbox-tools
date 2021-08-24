@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import * as path from 'path';
-import { RestApiClient } from '../libs/scrapbox-client/rest-api-client/rest-api-client';
+import { RestApi } from '../libs/scrapbox-api/rest-api/rest-api';
 import { deploy } from './internal/deploy';
 import { selectProject } from './internal/select-project';
 const pkg = require(path.resolve(__dirname, '../../package.json'));
@@ -16,7 +16,7 @@ program
     if (!token) {
       throw new Error('TOKEN not set');
     }
-    const api = new RestApiClient(token);
+    const api = new RestApi(token);
     const selectedProject = options.project ?? (await selectProject({ client: api }));
     const userName = await api.getMe().then(({ name }) => name);
 
@@ -32,7 +32,7 @@ program
     if (!token) {
       throw new Error('TOKEN not set');
     }
-    const api = new RestApiClient(token);
+    const api = new RestApi(token);
     const selectedProject = options.project ?? (await selectProject({ client: api }));
 
     await deploy({ token, project: selectedProject, page: 'settings', sourceFilePath: jsFile });

@@ -1,7 +1,7 @@
 import * as inquirer from 'inquirer';
-import { RestApiClient } from '../../libs/scrapbox-client/rest-api-client/rest-api-client';
+import { RestApi } from '../../libs/scrapbox-api/rest-api/rest-api';
 
-export const selectProject = async ({ client }: { client: RestApiClient }) => {
+export const selectProject = async ({ client }: { client: RestApi }) => {
   const projectOptions = await client.getProjects().then(({ projects }) => projects.map(({ name }) => name));
   const answers = await inquirer.prompt<{ project: string }>([{ type: 'list', name: 'project', message: 'select target project', choices: projectOptions }]);
 

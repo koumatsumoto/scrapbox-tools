@@ -1,4 +1,4 @@
-import { ScrapboxClient } from '../../libs/scrapbox-client';
+import { ScrapboxApi } from '../../libs/scrapbox-api';
 import { loadSourceCode } from './file-loaders';
 import { findNextLineIdOrFail } from './find';
 import { isCSSFile, validateDeployArguments } from './util';
@@ -12,7 +12,7 @@ export const deploy = async ({ page, sourceFilePath, project, token }: { token: 
   const codeBlockLabel = isCSSFile(sourceFilePath) ? 'style.css' : 'script.js';
   const sourceCode = await loadSourceCode(sourceFilePath);
 
-  const scrapboxClient = new ScrapboxClient(token);
+  const scrapboxClient = new ScrapboxApi(token);
   const pageData = await scrapboxClient.getPage(project, page);
 
   // NOTE: assuming code-block exists already
