@@ -5,7 +5,12 @@ module.exports = {
   moduleDirectories: ['node_modules'],
   moduleFileExtensions: ['js', 'json', 'ts'],
   globals: {
-    'ts-jest': { tsConfig: 'tsconfig.json' },
+    'ts-jest': {
+      'ts-config': {
+        ...require('./tsconfig.json').compilerOptions,
+        sourceMap: true,
+      },
+    },
   },
   transform: { '^.+\\.ts$': 'ts-jest' },
   testURL: 'http://localhost/',
