@@ -1,5 +1,5 @@
 import * as inquirer from 'inquirer';
-import { RestApi } from '../../libs/scrapbox-api/rest-api/rest-api';
+import { RestApi } from '../../libs';
 
 export const selectProject = async ({ client }: { client: RestApi }) => {
   const projectOptions = await client.getProjects().then(({ projects }) => projects.map(({ name }) => name));
