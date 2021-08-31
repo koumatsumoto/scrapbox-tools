@@ -1,14 +1,14 @@
-import { packetTypes } from '../constants';
+import { constants } from '../../common';
 import { SendResponse } from './response';
 import { isIntegerString } from './util';
 
 export const toSocketIoMessagePayload = (id: string, data: unknown) => {
-  return `${packetTypes.send}${id}${JSON.stringify(['socket.io-request', data])}`;
+  return `${constants.websocket.packetTypes.send}${id}${JSON.stringify(['socket.io-request', data])}`;
 };
 
 export type ParsedMessage = [PacketType: string, Data: unknown];
 export type InitializedMessage = [
-  PacketType: typeof packetTypes.initialize,
+  PacketType: typeof constants.websocket.packetTypes.initialize,
   Data: {
     sid: string;
     upgrades: [];
@@ -19,11 +19,11 @@ export type InitializedMessage = [
 export type ResponseMessage = [PacketType: `43${string}`, Data: SendResponse];
 
 export const isConnectionMessage = (message: ParsedMessage): message is InitializedMessage => {
-  return message[0] === packetTypes.initialize;
+  return message[0] === constants.websocket.packetTypes.initialize;
 };
 
 export const isResponseMessage = (message: ParsedMessage): message is ResponseMessage => {
-  return message[0].length > 2 && message[0].startsWith(packetTypes.response);
+  return message[0].length > 2 && message[0].startsWith(constants.websocket.packetTypes.response);
 };
 
 export const getRequestId = (packetType: string) => packetType.slice(2);

@@ -1,7 +1,6 @@
+import { constants } from '../common';
 import { DefaultHttpClient, HttpClient } from './http-client';
 import { Me, Page, Project, ProjectPublicData } from './types';
-
-const baseURL = 'https://scrapbox.io/api';
 
 export const isObject = (data: unknown): data is Record<string, unknown> => typeof data === 'object' && data !== null;
 export const isNotLoggedInError = (data: unknown) => isObject(data) && data['name'] === 'NotLoggedInError';
@@ -10,19 +9,19 @@ export class RestApi {
   constructor(private readonly token?: string, private readonly httpClient: HttpClient = new DefaultHttpClient()) {}
 
   async getPage(projectName: string, pageName: string) {
-    return this.request<Page>(`${baseURL}/pages/${encodeURIComponent(projectName)}/${encodeURIComponent(pageName)}?followRename=true`);
+    return this.request<Page>(`${constants.rest.baseUrl}/pages/${encodeURIComponent(projectName)}/${encodeURIComponent(pageName)}?followRename=true`);
   }
 
   async getProject(projectName: string) {
-    return this.request<Project>(`${baseURL}/projects/${encodeURIComponent(projectName)}`);
+    return this.request<Project>(`${constants.rest.baseUrl}/projects/${encodeURIComponent(projectName)}`);
   }
 
   async getProjects() {
-    return this.request<{ projects: ProjectPublicData[] }>(`${baseURL}/projects`);
+    return this.request<{ projects: ProjectPublicData[] }>(`${constants.rest.baseUrl}/projects`);
   }
 
   async getMe() {
-    return this.request<Me>(`${baseURL}/users/me`);
+    return this.request<Me>(`${constants.rest.baseUrl}/users/me`);
   }
 
   private async request<T>(url: string) {

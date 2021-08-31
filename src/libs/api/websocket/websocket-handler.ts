@@ -1,6 +1,6 @@
 import { BehaviorSubject, firstValueFrom, interval, mergeMap } from 'rxjs';
 import { first, takeUntil, timeout } from 'rxjs/operators';
-import { CONFIG, packetTypes } from './constants';
+import { constants } from '../common';
 import { isConnectionMessage, isResponseMessageOf, isResponseOf, scrapboxDeserializer, scrapboxSerializer, toSocketIoMessagePayload } from './internal/message';
 import { ChangeRequestCreateParams, createChanges } from './internal/request';
 import { CommitResponse, JoinRoomResponse, SendResponse } from './internal/response';
@@ -62,7 +62,9 @@ export class ScrapboxWebsocketHandler {
     return firstValueFrom(
       this.#getSocket().pipe(
         first(isNotNull),
-        mergeMap((socket) => socket.send(toSocketIoMessagePayload(sid, data)).pipe(first(isResponseMessageOf(sid)), timeout(CONFIG.responseTimeout))),
+        mergeMap((socket) =>
+          socket.send(toSocketIoMessagePayload(sid, data)).pipe(first(isResponseMessageOf(sid)), timeout(constants.websocket.responseTimeout)),
+        ),
       ),
     );
   }
@@ -77,8 +79,8 @@ export class ScrapboxWebsocketHandler {
 
   #openNewSocket() {
     const socket = new RxWebSocket({
-      url: CONFIG.endpoint,
-      options: { headers: { Origin: CONFIG.origin, Cookie: getAuthCookieValue(this.options.token ?? '') } },
+      url: constants.websocket.endpoint,
+      options: { headers: { Origin: constants.websocket.origin, Cookie: getAuthCookieValue(this.options.token ?? '') } },
       serializer: scrapboxSerializer,
       deserializer: scrapboxDeserializer,
       debug: this.options.debug,
@@ -87,12 +89,12 @@ export class ScrapboxWebsocketHandler {
     return socket.message.pipe(
       first(isConnectionMessage),
       mergeMap(([, data]) => {
-        return socket.send(packetTypes.connected).pipe(
-          first(isResponseOf(packetTypes.connected)),
+        return socket.send(constants.websocket.packetTypes.connected).pipe(
+          first(isResponseOf(constants.websocket.packetTypes.connected)),
           mergeMap(() => {
             interval(data.pingInterval)
               .pipe(takeUntil(socket.message))
-              .subscribe(() => socket.send(packetTypes.ping));
+              .subscribe(() => socket.send(constants.websocket.packetTypes.ping));
 
             this.#socket$.next(socket);
             return this.#socket$.asObservable();
