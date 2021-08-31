@@ -1,26 +1,16 @@
-import { concatMap, firstValueFrom, interval, Subject } from 'rxjs';
+import { interval } from 'rxjs';
 import { first, takeUntil, timeout } from 'rxjs/operators';
 import { CONFIG, packetTypes } from './constants';
-import { IsomorphicWebSocket } from './internal/isomorphic-websocket';
-import {
-  isConnectionMessage,
-  isResponseMessageOf,
-  isResponseOf,
-  ParsedMessage,
-  scrapboxDeserializer,
-  scrapboxSerializer,
-  toSocketIoMessagePayload,
-} from './internal/message';
+import { isConnectionMessage, isResponseOf, scrapboxDeserializer, scrapboxSerializer, toSocketIoMessagePayload } from './internal/message';
 import { ChangeRequestCreateParams, createChanges } from './internal/request';
 import { CommitResponse, JoinRoomResponse, SendResponse } from './internal/response';
 import { getAuthCookieValue } from './internal/util';
+import { RxWebSocket } from './internal/websocket';
 
 export class ScrapboxWebsocketHandler {
-  private socket: IsomorphicWebSocket | null = null;
+  private socket: RxWebSocket | null = null;
   private room: { projectId: string; pageId: string } | null = null;
   private sid = 0;
-  private readonly request$ = new Subject<{ sid: string; data: any; projectId: string; pageId: string }>();
-  private readonly response$ = new Subject<{ sid: string; result: any }>();
 
   constructor(
     private readonly options: {
@@ -28,19 +18,7 @@ export class ScrapboxWebsocketHandler {
       autoOpen?: boolean;
       autoReconnect?: boolean;
     },
-  ) {
-    this.request$
-      .pipe(
-        concatMap(async ({ sid, data, projectId, pageId }) => {
-          const socket = await this.getActiveSocket();
-          socket.send(toSocketIoMessagePayload(sid, data));
-          const result = await firstValueFrom(socket.message.pipe(first(isResponseMessageOf(sid)), timeout(CONFIG.responseTimeout)));
-
-          return { sid, result };
-        }),
-      )
-      .subscribe(this.response$);
-  }
+  ) {}
 
   async commit({
     projectId,
@@ -87,36 +65,30 @@ export class ScrapboxWebsocketHandler {
 
   private async send<T extends SendResponse>({ data, projectId, pageId }: { data: any; projectId: string; pageId: string }) {
     const sid = String(this.sid++);
-    this.request$.next({ sid, data, projectId, pageId });
 
-    return firstValueFrom(this.response$.pipe(first(isResponseOf(sid)), timeout(CONFIG.responseTimeout)));
+    this.getActiveSocket()
+      .send(toSocketIoMessagePayload(sid, data))
+      .pipe(first(isResponseOf(sid)), timeout(CONFIG.responseTimeout));
   }
 
-  private async getActiveSocket() {
-    if (this.socket && this.socket.readyState < 2) {
-      return this.socket;
-    }
-
-    const socket = await this.openNewSocket();
-    this.room = null;
-
-    return (this.socket = socket);
+  private getActiveSocket() {
+    return !this.socket?.active ? (this.socket = this.openNewSocket()) : this.socket!;
   }
 
-  private async openNewSocket() {
-    const socket = new IsomorphicWebSocket<ParsedMessage>({
+  private openNewSocket() {
+    const socket = new RxWebSocket({
       url: CONFIG.endpoint,
       options: { headers: { Origin: CONFIG.origin, Cookie: getAuthCookieValue(this.options.token ?? '') } },
       serializer: scrapboxSerializer,
       deserializer: scrapboxDeserializer,
     });
 
-    const [, data] = await firstValueFrom(socket.message.pipe(first(isConnectionMessage)));
-    socket.send(packetTypes.connected);
-
-    interval(data.pingInterval)
-      .pipe(takeUntil(socket.close))
-      .subscribe(() => socket.send(packetTypes.ping));
+    socket.message.pipe(first(isConnectionMessage)).subscribe(([, data]) => {
+      socket.send(packetTypes.connected);
+      interval(data.pingInterval)
+        .pipe(takeUntil(socket.message))
+        .subscribe(() => socket.send(packetTypes.ping));
+    });
 
     return socket;
   }
