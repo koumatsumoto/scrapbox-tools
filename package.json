@@ -16,11 +16,11 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "build": "rm -fr .dist && rollup --config",
-    "check": "concurrently 'tsc --noEmit' 'npm run test' 'npm run check:lint' 'npm run build'",
-    "check:lint": "npm run format && git diff --exit-code --name-only .",
+    "build": "tsc --noEmit && rollup --config",
+    "check": "run-p lint build test",
     "format": "eslint 'src/**/*.ts' --fix && prettier --write .",
-    "prepack": "npm ci && npm run build",
+    "lint": "npm run format && git diff --exit-code --name-only .",
+    "prepack": "npm ci && rm -fr dist && npm run build",
     "test": "jest -c jest.config.js --ci --silent --detectOpenHandles --forceExit"
   },
   "dependencies": {
@@ -43,12 +43,12 @@
     "@types/ws": "^7.4.7",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
-    "concurrently": "^6.2.1",
     "dotenv": "^10.0.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.24.1",
     "jest": "^27.0.6",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.3.2",
     "rollup": "^2.56.2",
     "rollup-plugin-add-shebang": "^0.3.1",
