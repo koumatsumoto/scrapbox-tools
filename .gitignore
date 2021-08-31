@@ -60,8 +60,6 @@ typings/
 # next.js build output
 .next
 
-# user defined
+# for this project
 .idea
-.npmrc
-/cli
-/dist
+dist
