@@ -30,6 +30,7 @@ export class RxWebSocket {
   private readonly events$ = new Subject<WebSocketEvents>();
   private readonly serializer = defaultSerializer;
   private readonly deserializer = defaultDeserializer;
+  private readonly debug: boolean;
 
   constructor({
     url,
@@ -37,12 +38,14 @@ export class RxWebSocket {
     options,
     serializer = defaultSerializer,
     deserializer = defaultDeserializer,
+    debug = false,
   }: {
     url: string;
     protocols?: string | string[];
     options?: NodeWebSocket.ClientOptions;
-    serializer: MessageSerializer;
-    deserializer: MessageDeserializer;
+    serializer?: MessageSerializer;
+    deserializer?: MessageDeserializer;
+    debug?: boolean;
   }) {
     const websocket = isBrowser() ? new WebSocket(url, protocols) : (new (require('ws'))(url, protocols, options) as NodeWebSocket);
     const close$ = fromEvent<CloseEvent | NodeWebSocket.CloseEvent>(websocket as NodeWebSocket, 'close').pipe(take(1), share());
@@ -56,6 +59,11 @@ export class RxWebSocket {
     this.opened$ = open$;
     this.serializer = serializer.bind(this);
     this.deserializer = deserializer.bind(this);
+    this.debug = debug;
+
+    if (this.debug) {
+      this.events$.subscribe((ev) => console.log(`[websocket] message: type=${ev.type}`, 'data' in ev ? ev.data : undefined));
+    }
   }
 
   get active() {
@@ -66,10 +74,16 @@ export class RxWebSocket {
     return this.events$.asObservable().pipe(filter(isMessageEvent), map(this.deserializer));
   }
 
-  send(message: string) {
+  send(data: string) {
     return this.opened$.pipe(
       mergeMap(() => {
-        this.websocket.send(this.serializer(message));
+        const message = this.serializer(data);
+
+        if (this.debug) {
+          console.log('[websocket] send:', message);
+        }
+
+        this.websocket.send(message);
 
         return this.message;
       }),

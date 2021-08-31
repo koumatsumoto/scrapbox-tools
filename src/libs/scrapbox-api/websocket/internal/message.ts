@@ -31,10 +31,9 @@ export const isResponseMessageOf = (sid: string) => (message: ParsedMessage) => 
   return isResponseMessage(message) && sid === getRequestId(message[0]);
 };
 
-export const isResponseOf =
-  (expected: string) =>
-  ({ sid }: { sid: string }) =>
-    expected === sid;
+export const isResponseOf = (expected: string) => {
+  return ([sid]: ParsedMessage) => expected === sid;
+};
 
 // 430[{...}}] => 430, [{}]
 // @see https://github.com/socketio/engine.io-protocol

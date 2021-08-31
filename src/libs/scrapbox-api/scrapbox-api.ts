@@ -5,8 +5,9 @@ import { ScrapboxWebsocketHandler } from './websocket/websocket-handler';
 export class ScrapboxApi {
   constructor(
     token = '',
+    debug = false,
     private readonly restApi: RestApi = new RestApi(token),
-    private readonly websocketHandler: ScrapboxWebsocketHandler = new ScrapboxWebsocketHandler({ token }),
+    private readonly websocketHandler: ScrapboxWebsocketHandler = new ScrapboxWebsocketHandler({ token, debug }),
   ) {}
 
   async getPage(projectName: string, pageName: string) {

@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import * as path from 'path';
-import { RestApi } from '../libs/scrapbox-api/rest-api/rest-api';
+import { RestApi } from '../libs';
 import { deploy } from './internal/deploy';
 import { selectProject } from './internal/select-project';
 const pkg = require(path.resolve(__dirname, '../../package.json'));
@@ -11,7 +11,8 @@ program
   .command('deploy-userscript <js-file>')
   .description('update userscript in user page')
   .option('-p, --project <type>', 'project name')
-  .action(async (jsFile: string, options: { project?: string }) => {
+  .option('-d, --debug', 'output extra debugging')
+  .action(async (jsFile: string, options: { project?: string; debug: boolean }) => {
     const token = process.env.TOKEN ?? '';
     if (!token) {
       throw new Error('TOKEN not set');
@@ -20,14 +21,15 @@ program
     const selectedProject = options.project ?? (await selectProject({ client: api }));
     const userName = await api.getMe().then(({ name }) => name);
 
-    await deploy({ token, project: selectedProject, page: userName, sourceFilePath: jsFile });
+    await deploy({ token, project: selectedProject, page: userName, sourceFilePath: jsFile, debug: options.debug });
   });
 
 program
   .command('deploy-usercss <css-file>')
   .description('update usercss in settings page')
   .option('-p, --project <type>', 'project name')
-  .action(async (jsFile: string, options: { project?: string }) => {
+  .option('-d, --debug', 'output extra debugging')
+  .action(async (jsFile: string, options: { project?: string; debug: boolean }) => {
     const token = process.env.TOKEN ?? '';
     if (!token) {
       throw new Error('TOKEN not set');
@@ -35,7 +37,7 @@ program
     const api = new RestApi(token);
     const selectedProject = options.project ?? (await selectProject({ client: api }));
 
-    await deploy({ token, project: selectedProject, page: 'settings', sourceFilePath: jsFile });
+    await deploy({ token, project: selectedProject, page: 'settings', sourceFilePath: jsFile, debug: options.debug });
   });
 
 program
