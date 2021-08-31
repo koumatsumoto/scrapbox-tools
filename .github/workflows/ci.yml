@@ -4,6 +4,7 @@ on:
   pull_request:
   page_build:
   release:
+    types: [created]
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -15,3 +16,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+  deploy:
+    if: github.event_name == 'release'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: npm
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
