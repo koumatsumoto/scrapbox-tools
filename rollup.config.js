@@ -47,7 +47,7 @@ export default [
   {
     input: 'src/cli/bin.ts',
     preserveModules: false,
-    external: ['rxjs', 'rxjs/operators', 'minimist', 'fs'],
+    external: ['rxjs', 'rxjs/operators', 'fs', 'path', 'commander', 'inquirer'],
     output: {
       dir: 'dist/cli',
       format: 'cjs',
