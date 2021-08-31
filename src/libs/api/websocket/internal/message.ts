@@ -1,12 +1,12 @@
 import { constants } from '../../common';
 import { SendResponse } from './response';
-import { isIntegerString } from './util';
+import { isIntegerString } from './utils';
 
 export const toSocketIoMessagePayload = (id: string, data: unknown) => {
   return `${constants.websocket.packetTypes.send}${id}${JSON.stringify(['socket.io-request', data])}`;
 };
 
-export type ParsedMessage = [PacketType: string, Data: unknown];
+export type DeserializedMessage = [PacketType: string, Data: unknown];
 export type InitializedMessage = [
   PacketType: typeof constants.websocket.packetTypes.initialize,
   Data: {
@@ -18,26 +18,26 @@ export type InitializedMessage = [
 ];
 export type ResponseMessage = [PacketType: `43${string}`, Data: SendResponse];
 
-export const isConnectionMessage = (message: ParsedMessage): message is InitializedMessage => {
+export const isConnectionMessage = (message: DeserializedMessage): message is InitializedMessage => {
   return message[0] === constants.websocket.packetTypes.initialize;
 };
 
-export const isResponseMessage = (message: ParsedMessage): message is ResponseMessage => {
+export const isResponseMessage = (message: DeserializedMessage): message is ResponseMessage => {
   return message[0].length > 2 && message[0].startsWith(constants.websocket.packetTypes.response);
 };
 
 export const getRequestId = (packetType: string) => packetType.slice(2);
-export const isResponseMessageOf = (sid: string) => (message: ParsedMessage) => {
+export const isResponseMessageOf = (sid: string) => (message: DeserializedMessage) => {
   return isResponseMessage(message) && sid === getRequestId(message[0]);
 };
 
 export const isResponseOf = (expected: string) => {
-  return ([sid]: ParsedMessage) => expected === sid;
+  return ([sid]: DeserializedMessage) => expected === sid;
 };
 
 // 430[{...}}] => 430, [{}]
 // @see https://github.com/socketio/engine.io-protocol
-export const scrapboxDeserializer = (event: { data: any }): ParsedMessage => {
+export const scrapboxDeserializer = (event: { data: any }): DeserializedMessage => {
   let packetType = '';
   let message = String(event.data);
 

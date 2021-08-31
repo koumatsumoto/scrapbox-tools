@@ -1,4 +1,4 @@
-import { isBrowser } from '../common/env';
+import { isBrowser } from '../common';
 
 // NOTE: use bind(window) to avoid `TypeError: Illegal invocation`
 export const fetch = isBrowser() ? globalThis.fetch.bind(window) : (require('node-fetch') as typeof globalThis.fetch);

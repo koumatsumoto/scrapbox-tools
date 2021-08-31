@@ -1,17 +1,13 @@
-import { filter, fromEvent, merge, mergeMap, Observable, shareReplay, Subject, take, throwError } from 'rxjs';
+import { fromEvent, merge, mergeMap, Observable, shareReplay, Subject, take, tap, throwError } from 'rxjs';
 import { map, share, takeUntil } from 'rxjs/operators';
 import type NodeWebSocket from 'ws';
-import { isBrowser } from '../../common/env';
+import { isBrowser } from '../../common';
 
-export interface MessageDeserializer<T = MessageEvent | NodeWebSocket.MessageEvent, U = any> {
-  (event: T): U;
-}
-export interface MessageSerializer<T = any, U = any> {
-  (event: T): U;
+export interface MessageDeserializer<T> {
+  (event: MessageEvent | NodeWebSocket.MessageEvent): T;
 }
 
-const defaultSerializer: MessageSerializer = (data: any): string => JSON.stringify(data);
-const defaultDeserializer: MessageDeserializer = (message: MessageEvent | NodeWebSocket.MessageEvent) => message.data;
+const defaultDeserializer: MessageDeserializer<any> = (message: MessageEvent | NodeWebSocket.MessageEvent) => message.data;
 
 type WebSocketEvents =
   | Event
@@ -22,47 +18,40 @@ type WebSocketEvents =
   | CloseEvent
   | NodeWebSocket.CloseEvent;
 
-const isMessageEvent = (event: WebSocketEvents): event is MessageEvent | NodeWebSocket.MessageEvent => event.type === 'message';
+interface Options<T> {
+  protocols?: string | string[];
+  clientOptions?: NodeWebSocket.ClientOptions;
+  deserializer?: MessageDeserializer<T>;
+  debug?: boolean;
+}
 
-export class RxWebSocket {
+export class RxWebSocket<DeserializedMessage> {
   readonly #websocket: WebSocket | NodeWebSocket;
-  readonly #opened$: Observable<unknown>;
+  readonly #opened$: Observable<Event | NodeWebSocket.OpenEvent>;
+  readonly #message$: Observable<DeserializedMessage>;
   readonly #events$ = new Subject<WebSocketEvents>();
-  readonly #serializer = defaultSerializer;
-  readonly #deserializer = defaultDeserializer;
-  readonly #debug: boolean;
 
-  constructor({
-    url,
-    protocols,
-    options,
-    serializer = defaultSerializer,
-    deserializer = defaultDeserializer,
-    debug = false,
-  }: {
-    url: string;
-    protocols?: string | string[];
-    options?: NodeWebSocket.ClientOptions;
-    serializer?: MessageSerializer;
-    deserializer?: MessageDeserializer;
-    debug?: boolean;
-  }) {
-    const websocket = isBrowser() ? new WebSocket(url, protocols) : (new (require('ws'))(url, protocols, options) as NodeWebSocket);
-    const close$ = fromEvent<CloseEvent | NodeWebSocket.CloseEvent>(websocket as NodeWebSocket, 'close').pipe(take(1), share());
-    const open$ = fromEvent<Event | NodeWebSocket.OpenEvent>(websocket as NodeWebSocket, 'open').pipe(takeUntil(close$), shareReplay(1), take(1));
-    const message$ = fromEvent<MessageEvent | NodeWebSocket.MessageEvent>(websocket as NodeWebSocket, 'message').pipe(takeUntil(close$), shareReplay(1));
-    const error$ = fromEvent<Event | NodeWebSocket.ErrorEvent>(websocket as NodeWebSocket, 'error').pipe(takeUntil(close$), mergeMap(throwError));
-
+  constructor(url: string, { protocols, clientOptions, deserializer = defaultDeserializer, debug = false }: Options<DeserializedMessage>) {
+    const websocket = isBrowser() ? new WebSocket(url, protocols) : (new (require('ws'))(url, protocols, clientOptions) as NodeWebSocket);
+    const close$ = fromEvent<CloseEvent | NodeWebSocket.CloseEvent>(websocket as WebSocket, 'close').pipe(take(1), share());
+    const open$ = fromEvent<Event | NodeWebSocket.OpenEvent>(websocket as WebSocket, 'open').pipe(takeUntil(close$), shareReplay(1), take(1));
+    const message$ = fromEvent<MessageEvent | NodeWebSocket.MessageEvent>(websocket as WebSocket, 'message').pipe(takeUntil(close$), shareReplay(1));
+    const error$ = fromEvent<Event | NodeWebSocket.ErrorEvent>(websocket as WebSocket, 'error').pipe(takeUntil(close$), mergeMap(throwError));
     merge(open$, message$, error$, close$).subscribe(this.#events$);
 
     this.#websocket = websocket;
     this.#opened$ = open$;
-    this.#serializer = serializer.bind(this);
-    this.#deserializer = deserializer.bind(this);
-    this.#debug = debug;
+    this.#message$ = message$.pipe(map(deserializer));
 
-    if (this.#debug) {
-      this.#events$.subscribe((ev) => console.log(`[websocket] message: type=${ev.type}`, 'data' in ev ? ev.data : undefined));
+    if (debug) {
+      this.#events$.subscribe((ev) => console.log(`[websocket] event: ${ev.type},`, (ev as any)?.data));
+      this.#websocket.send = new Proxy(this.#websocket.send, {
+        apply: (target, thisArg, args) => {
+          console.log('[websocket] send:', args[0]);
+
+          return target.call(this.#websocket, args[0]);
+        },
+      });
     }
   }
 
@@ -71,19 +60,13 @@ export class RxWebSocket {
   }
 
   get message() {
-    return this.#events$.asObservable().pipe(filter(isMessageEvent), map(this.#deserializer));
+    return this.#message$;
   }
 
   send(data: string) {
     return this.#opened$.pipe(
       mergeMap(() => {
-        const message = this.#serializer(data);
-
-        if (this.#debug) {
-          console.log('[websocket] send:', message);
-        }
-
-        this.#websocket.send(message);
+        this.#websocket.send(data);
 
         return this.message;
       }),

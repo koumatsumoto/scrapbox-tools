@@ -1,25 +1,35 @@
 import { BehaviorSubject, firstValueFrom, interval, mergeMap } from 'rxjs';
 import { first, takeUntil, timeout } from 'rxjs/operators';
 import { constants } from '../common';
-import { isConnectionMessage, isResponseMessageOf, isResponseOf, scrapboxDeserializer, scrapboxSerializer, toSocketIoMessagePayload } from './internal/message';
+import {
+  isConnectionMessage,
+  isResponseMessageOf,
+  isResponseOf,
+  DeserializedMessage,
+  scrapboxDeserializer,
+  toSocketIoMessagePayload,
+} from './internal/message';
 import { ChangeRequestCreateParams, createChanges } from './internal/request';
 import { CommitResponse, JoinRoomResponse, SendResponse } from './internal/response';
-import { getAuthCookieValue, isNotNull } from './internal/util';
+import { getAuthCookieValue, isNotNull } from './internal/utils';
 import { RxWebSocket } from './internal/websocket';
 
+interface Options {
+  token?: string; // required if node.js env
+  autoOpen?: boolean;
+  autoReconnect?: boolean;
+  debug?: boolean;
+}
+
 export class ScrapboxWebsocketHandler {
-  #socket$ = new BehaviorSubject<RxWebSocket | null>(null);
+  #socket$ = new BehaviorSubject<RxWebSocket<DeserializedMessage> | null>(null);
   #room: { projectId: string; pageId: string } | null = null;
   #sid = 0;
+  #options: Options;
 
-  constructor(
-    private readonly options: {
-      token?: string; // required if node.js
-      autoOpen?: boolean;
-      autoReconnect?: boolean;
-      debug?: boolean;
-    },
-  ) {}
+  constructor(options: Options) {
+    this.#options = options;
+  }
 
   async commit({
     projectId,
@@ -78,12 +88,10 @@ export class ScrapboxWebsocketHandler {
   }
 
   #openNewSocket() {
-    const socket = new RxWebSocket({
-      url: constants.websocket.endpoint,
-      options: { headers: { Origin: constants.websocket.origin, Cookie: getAuthCookieValue(this.options.token ?? '') } },
-      serializer: scrapboxSerializer,
+    const socket = new RxWebSocket(constants.websocket.endpoint, {
+      clientOptions: { headers: { Origin: constants.websocket.origin, Cookie: getAuthCookieValue(this.#options.token ?? '') } },
       deserializer: scrapboxDeserializer,
-      debug: this.options.debug,
+      debug: this.#options.debug,
     });
 
     return socket.message.pipe(
