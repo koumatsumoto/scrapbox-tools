@@ -25,12 +25,12 @@ type WebSocketEvents =
 const isMessageEvent = (event: WebSocketEvents): event is MessageEvent | NodeWebSocket.MessageEvent => event.type === 'message';
 
 export class RxWebSocket {
-  private readonly websocket: WebSocket | NodeWebSocket;
-  private readonly opened$: Observable<unknown>;
-  private readonly events$ = new Subject<WebSocketEvents>();
-  private readonly serializer = defaultSerializer;
-  private readonly deserializer = defaultDeserializer;
-  private readonly debug: boolean;
+  readonly #websocket: WebSocket | NodeWebSocket;
+  readonly #opened$: Observable<unknown>;
+  readonly #events$ = new Subject<WebSocketEvents>();
+  readonly #serializer = defaultSerializer;
+  readonly #deserializer = defaultDeserializer;
+  readonly #debug: boolean;
 
   constructor({
     url,
@@ -53,37 +53,37 @@ export class RxWebSocket {
     const message$ = fromEvent<MessageEvent | NodeWebSocket.MessageEvent>(websocket as NodeWebSocket, 'message').pipe(takeUntil(close$), shareReplay(1));
     const error$ = fromEvent<Event | NodeWebSocket.ErrorEvent>(websocket as NodeWebSocket, 'error').pipe(takeUntil(close$), mergeMap(throwError));
 
-    merge(open$, message$, error$, close$).subscribe(this.events$);
+    merge(open$, message$, error$, close$).subscribe(this.#events$);
 
-    this.websocket = websocket;
-    this.opened$ = open$;
-    this.serializer = serializer.bind(this);
-    this.deserializer = deserializer.bind(this);
-    this.debug = debug;
+    this.#websocket = websocket;
+    this.#opened$ = open$;
+    this.#serializer = serializer.bind(this);
+    this.#deserializer = deserializer.bind(this);
+    this.#debug = debug;
 
-    if (this.debug) {
-      this.events$.subscribe((ev) => console.log(`[websocket] message: type=${ev.type}`, 'data' in ev ? ev.data : undefined));
+    if (this.#debug) {
+      this.#events$.subscribe((ev) => console.log(`[websocket] message: type=${ev.type}`, 'data' in ev ? ev.data : undefined));
     }
   }
 
   get active() {
-    return !this.events$.closed;
+    return !this.#events$.closed;
   }
 
   get message() {
-    return this.events$.asObservable().pipe(filter(isMessageEvent), map(this.deserializer));
+    return this.#events$.asObservable().pipe(filter(isMessageEvent), map(this.#deserializer));
   }
 
   send(data: string) {
-    return this.opened$.pipe(
+    return this.#opened$.pipe(
       mergeMap(() => {
-        const message = this.serializer(data);
+        const message = this.#serializer(data);
 
-        if (this.debug) {
+        if (this.#debug) {
           console.log('[websocket] send:', message);
         }
 
-        this.websocket.send(message);
+        this.#websocket.send(message);
 
         return this.message;
       }),

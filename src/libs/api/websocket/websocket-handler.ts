@@ -8,9 +8,9 @@ import { getAuthCookieValue, isNotNull } from './internal/util';
 import { RxWebSocket } from './internal/websocket';
 
 export class ScrapboxWebsocketHandler {
-  private socket$ = new BehaviorSubject<RxWebSocket | null>(null);
-  private room: { projectId: string; pageId: string } | null = null;
-  private sid = 0;
+  #socket$ = new BehaviorSubject<RxWebSocket | null>(null);
+  #room: { projectId: string; pageId: string } | null = null;
+  #sid = 0;
 
   constructor(
     private readonly options: {
@@ -34,56 +34,48 @@ export class ScrapboxWebsocketHandler {
     parentId: string;
     changes: ChangeRequestCreateParams[];
   }) {
-    await this.join({ projectId, pageId });
+    await this.#join({ projectId, pageId });
 
-    return this.send<CommitResponse[]>({
-      projectId,
-      pageId,
-      data: {
-        method: 'commit',
-        data: { kind: 'page', userId, projectId, pageId, parentId, changes: createChanges(changes, userId), cursor: null, freeze: true },
-      },
+    return this.#send<CommitResponse[]>({
+      method: 'commit',
+      data: { kind: 'page', userId, projectId, pageId, parentId, changes: createChanges(changes, userId), cursor: null, freeze: true },
     });
   }
 
-  async join({ projectId, pageId }: { projectId: string; pageId: string }) {
+  async #join({ projectId, pageId }: { projectId: string; pageId: string }) {
     // join room if needed
-    if (this.room?.projectId === projectId && this.room?.pageId === pageId) {
+    if (this.#room?.projectId === projectId && this.#room?.pageId === pageId) {
       return;
     }
 
-    await this.send<JoinRoomResponse[]>({
-      projectId,
-      pageId,
-      data: {
-        method: 'room:join',
-        data: { pageId, projectId, projectUpdatesStream: false },
-      },
+    await this.#send<JoinRoomResponse[]>({
+      method: 'room:join',
+      data: { pageId, projectId, projectUpdatesStream: false },
     });
 
-    this.room = { projectId, pageId };
+    this.#room = { projectId, pageId };
   }
 
-  private send<T extends SendResponse>({ data, projectId, pageId }: { data: any; projectId: string; pageId: string }) {
-    const sid = String(this.sid++);
+  #send<T extends SendResponse>(data: any) {
+    const sid = String(this.#sid++);
 
     return firstValueFrom(
-      this.getSocket().pipe(
+      this.#getSocket().pipe(
         first(isNotNull),
         mergeMap((socket) => socket.send(toSocketIoMessagePayload(sid, data)).pipe(first(isResponseMessageOf(sid)), timeout(CONFIG.responseTimeout))),
       ),
     );
   }
 
-  private getSocket() {
-    if (!this.socket$.getValue()?.active) {
-      return this.openNewSocket();
+  #getSocket() {
+    if (!this.#socket$.getValue()?.active) {
+      return this.#openNewSocket();
     }
 
-    return this.socket$.asObservable();
+    return this.#socket$.asObservable();
   }
 
-  private openNewSocket() {
+  #openNewSocket() {
     const socket = new RxWebSocket({
       url: CONFIG.endpoint,
       options: { headers: { Origin: CONFIG.origin, Cookie: getAuthCookieValue(this.options.token ?? '') } },
@@ -102,8 +94,8 @@ export class ScrapboxWebsocketHandler {
               .pipe(takeUntil(socket.message))
               .subscribe(() => socket.send(packetTypes.ping));
 
-            this.socket$.next(socket);
-            return this.socket$.asObservable();
+            this.#socket$.next(socket);
+            return this.#socket$.asObservable();
           }),
         );
       }),
