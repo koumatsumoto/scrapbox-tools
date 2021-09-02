@@ -18,7 +18,7 @@ export class ScrapboxApi {
     const project = await this.getProject(projectName);
     const { pageId, commitId } = await this.getPageIdAndCommitId(projectName, pageName);
 
-    return this.commit({
+    await this.commit({
       changes: Array.isArray(change) ? change : [change],
       projectId: project.id,
       pageId: pageId,
@@ -28,6 +28,10 @@ export class ScrapboxApi {
 
   async getUser() {
     return await this.restApi.getMe();
+  }
+
+  closeConnection() {
+    this.websocketHandler.close();
   }
 
   private async getProject(projectName: string) {

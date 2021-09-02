@@ -1,17 +1,17 @@
-import { BehaviorSubject, firstValueFrom, interval, mergeMap } from 'rxjs';
+import { concatMap, delayWhen, filter, firstValueFrom, interval, mapTo, mergeMap, Observable, of, shareReplay, Subject, take, tap } from 'rxjs';
 import { first, takeUntil, timeout } from 'rxjs/operators';
 import { constants } from '../common';
 import {
+  DeserializedMessage,
   isConnectionMessage,
   isResponseMessageOf,
   isResponseOf,
-  DeserializedMessage,
   scrapboxDeserializer,
   toSocketIoMessagePayload,
 } from './internal/message';
 import { ChangeRequestCreateParams, createChanges } from './internal/request';
 import { CommitResponse, JoinRoomResponse, SendResponse } from './internal/response';
-import { getAuthCookieValue, isNotNull } from './internal/utils';
+import { getAuthCookieValue } from './internal/utils';
 import { RxWebSocket } from './internal/websocket';
 
 interface Options {
@@ -22,13 +22,45 @@ interface Options {
 }
 
 export class ScrapboxWebsocketHandler {
-  #socket$ = new BehaviorSubject<RxWebSocket<DeserializedMessage> | null>(null);
   #room: { projectId: string; pageId: string } | null = null;
   #sid = 0;
-  #options: Options;
+  #socket$: Observable<RxWebSocket<DeserializedMessage>>;
+  #close$ = new Subject();
 
-  constructor(options: Options) {
-    this.#options = options;
+  constructor({ token = '', debug }: Options) {
+    this.#socket$ = new Observable<RxWebSocket<DeserializedMessage>>((subscriber) => {
+      const socket = new RxWebSocket(constants.websocket.endpoint, {
+        clientOptions: { headers: { Origin: constants.websocket.origin, Cookie: getAuthCookieValue(token) } },
+        deserializer: scrapboxDeserializer,
+        debug,
+      });
+
+      socket
+        .pipe(
+          takeUntil(this.#close$),
+          filter(isConnectionMessage),
+          // send ack
+          tap(() => {
+            socket.send(constants.websocket.packetTypes.connected);
+          }),
+          // set ping
+          tap(([, data]) =>
+            interval(data.pingInterval)
+              .pipe(takeUntil(socket))
+              .subscribe(() => socket.send(constants.websocket.packetTypes.ping)),
+          ),
+          delayWhen(() => socket.pipe(first(isResponseOf(constants.websocket.packetTypes.connected)))),
+          mapTo(socket),
+          timeout(constants.websocket.responseTimeout),
+        )
+        .subscribe(subscriber);
+
+      return () => socket.close();
+    }).pipe(shareReplay(1));
+  }
+
+  close() {
+    this.#close$.next(undefined);
   }
 
   async commit({
@@ -44,71 +76,41 @@ export class ScrapboxWebsocketHandler {
     parentId: string;
     changes: ChangeRequestCreateParams[];
   }) {
-    await this.#join({ projectId, pageId });
-
-    return this.#send<CommitResponse[]>({
-      method: 'commit',
-      data: { kind: 'page', userId, projectId, pageId, parentId, changes: createChanges(changes, userId), cursor: null, freeze: true },
-    });
+    return firstValueFrom(
+      this.#join({ projectId, pageId }).pipe(
+        concatMap(() => {
+          return this.#send<CommitResponse[]>({
+            method: 'commit',
+            data: { kind: 'page', userId, projectId, pageId, parentId, changes: createChanges(changes, userId), cursor: null, freeze: true },
+          });
+        }),
+      ),
+    );
   }
 
-  async #join({ projectId, pageId }: { projectId: string; pageId: string }) {
-    // join room if needed
-    if (this.#room?.projectId === projectId && this.#room?.pageId === pageId) {
-      return;
-    }
-
-    await this.#send<JoinRoomResponse[]>({
-      method: 'room:join',
-      data: { pageId, projectId, projectUpdatesStream: false },
-    });
-
-    this.#room = { projectId, pageId };
+  #join({ projectId, pageId }: { projectId: string; pageId: string }) {
+    return this.#room?.projectId === projectId && this.#room?.pageId === pageId
+      ? of({})
+      : this.#send<JoinRoomResponse[]>({
+          method: 'room:join',
+          data: { pageId, projectId, projectUpdatesStream: false },
+        }).pipe(
+          tap({
+            complete: () => {
+              this.#room = { projectId, pageId };
+            },
+          }),
+        );
   }
 
   #send<T extends SendResponse>(data: any) {
     const sid = String(this.#sid++);
 
-    return firstValueFrom(
-      this.#getSocket().pipe(
-        first(isNotNull),
-        mergeMap((socket) =>
-          socket.send(toSocketIoMessagePayload(sid, data)).pipe(first(isResponseMessageOf(sid)), timeout(constants.websocket.responseTimeout)),
-        ),
+    return this.#socket$.pipe(
+      take(1),
+      mergeMap((socket) =>
+        socket.send(toSocketIoMessagePayload(sid, data)).pipe(first(isResponseMessageOf(sid)), timeout(constants.websocket.responseTimeout)),
       ),
-    );
-  }
-
-  #getSocket() {
-    if (!this.#socket$.getValue()?.active) {
-      return this.#openNewSocket();
-    }
-
-    return this.#socket$.asObservable();
-  }
-
-  #openNewSocket() {
-    const socket = new RxWebSocket(constants.websocket.endpoint, {
-      clientOptions: { headers: { Origin: constants.websocket.origin, Cookie: getAuthCookieValue(this.#options.token ?? '') } },
-      deserializer: scrapboxDeserializer,
-      debug: this.#options.debug,
-    });
-
-    return socket.message.pipe(
-      first(isConnectionMessage),
-      mergeMap(([, data]) => {
-        return socket.send(constants.websocket.packetTypes.connected).pipe(
-          first(isResponseOf(constants.websocket.packetTypes.connected)),
-          mergeMap(() => {
-            interval(data.pingInterval)
-              .pipe(takeUntil(socket.message))
-              .subscribe(() => socket.send(constants.websocket.packetTypes.ping));
-
-            this.#socket$.next(socket);
-            return this.#socket$.asObservable();
-          }),
-        );
-      }),
     );
   }
 }

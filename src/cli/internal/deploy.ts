@@ -31,4 +31,5 @@ export const deploy = async ({
   const lineId = findNextLineIdOrFail(codeBlockLabel, pageData.lines);
   // FIXME: bad type assertion
   await scrapboxClient.changeLine(project, page, { type: 'update', id: lineId, text: sourceCode });
+  scrapboxClient.closeConnection();
 };

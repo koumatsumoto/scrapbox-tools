@@ -40,12 +40,7 @@ program
     await deploy({ token, project: selectedProject, page: 'settings', sourceFilePath: jsFile, debug: options.debug });
   });
 
-program
-  .parseAsync(process.argv)
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+program.parseAsync(process.argv).catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

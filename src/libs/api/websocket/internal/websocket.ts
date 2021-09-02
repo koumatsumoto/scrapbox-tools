@@ -1,22 +1,14 @@
-import { fromEvent, merge, mergeMap, Observable, shareReplay, Subject, take, tap, throwError } from 'rxjs';
+import { fromEvent, ignoreElements, merge, mergeMap, Observable, shareReplay, Subject, take, throwError } from 'rxjs';
 import { map, share, takeUntil } from 'rxjs/operators';
 import type NodeWebSocket from 'ws';
 import { isBrowser } from '../../common';
+import { debugWebsocket } from './debug-websocket';
 
 export interface MessageDeserializer<T> {
   (event: MessageEvent | NodeWebSocket.MessageEvent): T;
 }
 
 const defaultDeserializer: MessageDeserializer<any> = (message: MessageEvent | NodeWebSocket.MessageEvent) => message.data;
-
-type WebSocketEvents =
-  | Event
-  | NodeWebSocket.OpenEvent
-  | MessageEvent
-  | NodeWebSocket.MessageEvent
-  | NodeWebSocket.ErrorEvent
-  | CloseEvent
-  | NodeWebSocket.CloseEvent;
 
 interface Options<T> {
   protocols?: string | string[];
@@ -25,51 +17,36 @@ interface Options<T> {
   debug?: boolean;
 }
 
-export class RxWebSocket<DeserializedMessage> {
+export class RxWebSocket<DeserializedMessage> extends Subject<DeserializedMessage> {
   readonly #websocket: WebSocket | NodeWebSocket;
-  readonly #opened$: Observable<Event | NodeWebSocket.OpenEvent>;
-  readonly #message$: Observable<DeserializedMessage>;
-  readonly #events$ = new Subject<WebSocketEvents>();
+  readonly #open$: Observable<Event | NodeWebSocket.OpenEvent>;
 
   constructor(url: string, { protocols, clientOptions, deserializer = defaultDeserializer, debug = false }: Options<DeserializedMessage>) {
-    const websocket = isBrowser() ? new WebSocket(url, protocols) : (new (require('ws'))(url, protocols, clientOptions) as NodeWebSocket);
-    const close$ = fromEvent<CloseEvent | NodeWebSocket.CloseEvent>(websocket as WebSocket, 'close').pipe(take(1), share());
-    const open$ = fromEvent<Event | NodeWebSocket.OpenEvent>(websocket as WebSocket, 'open').pipe(takeUntil(close$), shareReplay(1), take(1));
-    const message$ = fromEvent<MessageEvent | NodeWebSocket.MessageEvent>(websocket as WebSocket, 'message').pipe(takeUntil(close$), shareReplay(1));
-    const error$ = fromEvent<Event | NodeWebSocket.ErrorEvent>(websocket as WebSocket, 'error').pipe(takeUntil(close$), mergeMap(throwError));
-    merge(open$, message$, error$, close$).subscribe(this.#events$);
+    super();
 
-    this.#websocket = websocket;
-    this.#opened$ = open$;
-    this.#message$ = message$.pipe(map(deserializer));
-
+    const websocket = isBrowser() ? new WebSocket(url, protocols) : (new (require('ws'))(url, protocols, clientOptions) as WebSocket);
     if (debug) {
-      this.#events$.subscribe((ev) => console.log(`[websocket] event: ${ev.type},`, (ev as any)?.data));
-      this.#websocket.send = new Proxy(this.#websocket.send, {
-        apply: (target, thisArg, args) => {
-          console.log('[websocket] send:', args[0]);
-
-          return target.call(this.#websocket, args[0]);
-        },
-      });
+      debugWebsocket(websocket);
     }
-  }
 
-  get active() {
-    return !this.#events$.closed;
-  }
+    const open$ = fromEvent<Event | NodeWebSocket.OpenEvent>(websocket, 'open').pipe(take(1), shareReplay());
+    const error$ = fromEvent<Event | NodeWebSocket.ErrorEvent>(websocket, 'error').pipe(take(1), shareReplay());
+    const close$ = fromEvent<CloseEvent | NodeWebSocket.CloseEvent>(websocket, 'close').pipe(take(1), share());
+    const message$ = fromEvent<MessageEvent | NodeWebSocket.MessageEvent>(websocket, 'message').pipe(takeUntil(close$), shareReplay(1));
 
-  get message() {
-    return this.#message$;
+    merge(open$.pipe(ignoreElements()), message$.pipe(map(deserializer)), error$.pipe(mergeMap(throwError)), close$.pipe(ignoreElements())).subscribe(this);
+    this.#open$ = open$;
+    this.#websocket = websocket;
   }
 
   send(data: string) {
-    return this.#opened$.pipe(
-      mergeMap(() => {
-        this.#websocket.send(data);
+    this.#open$.subscribe(() => this.#websocket.send(data));
 
-        return this.message;
-      }),
-    );
+    return this;
+  }
+
+  close() {
+    this.#websocket.close();
+    this.unsubscribe();
   }
 }
