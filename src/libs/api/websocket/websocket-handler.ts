@@ -23,8 +23,9 @@ import {
   isConnectionMessage,
   isResponseMessageOf,
   isResponseOf,
-  scrapboxDeserializer,
-  toSocketIoMessagePayload,
+  SendParam,
+  socketIoMessageDeserializer,
+  socketIoMessageSerializer,
 } from './internal/message';
 import { ChangeRequestCreateParams, createChanges } from './internal/request';
 import { CommitResponse, JoinRoomResponse, SendResponse } from './internal/response';
@@ -49,16 +50,17 @@ const isSameRoom = (a: Room | null, b: Room | null) => {
 
 export class ScrapboxWebsocketHandler {
   #sid = 0;
-  #socket$: Observable<RxWebSocket<DeserializedMessage>>;
+  #socket$: Observable<RxWebSocket<SendParam, DeserializedMessage>>;
   #joinRequest$ = new BehaviorSubject<Room | null>(null);
   #joinResult$ = new BehaviorSubject<Room | null>(null);
   #close$ = new Subject();
 
   constructor({ token = '', debug }: Options) {
-    this.#socket$ = new Observable<RxWebSocket<DeserializedMessage>>((subscriber) => {
+    this.#socket$ = new Observable<RxWebSocket<SendParam, DeserializedMessage>>((subscriber) => {
       const socket = new RxWebSocket(constants.websocket.endpoint, {
         clientOptions: { headers: { Origin: constants.websocket.origin, Cookie: getAuthCookieValue(token) } },
-        deserializer: scrapboxDeserializer,
+        serializer: socketIoMessageSerializer,
+        deserializer: socketIoMessageDeserializer,
         debug,
       });
 
@@ -141,7 +143,7 @@ export class ScrapboxWebsocketHandler {
     const sid = String(this.#sid++);
 
     return this.#socket$.pipe(
-      tap((socket) => socket.send(toSocketIoMessagePayload(sid, data))),
+      tap((socket) => socket.send([sid, data])),
       mergeMap((socket) => socket.messageOf(isResponseMessageOf(sid), constants.websocket.responseTimeout)),
     );
   }

@@ -4,10 +4,14 @@ import type NodeWebSocket from 'ws';
 import { isBrowser } from '../../common';
 import { debugWebsocket } from './debug-websocket';
 
+export interface MessageSerializer<T> {
+  (data: T): string;
+}
 export interface MessageDeserializer<T> {
   (event: MessageEvent | NodeWebSocket.MessageEvent): T;
 }
 
+const defaultSerializer: MessageSerializer<any> = (data: any) => String(data);
 const defaultDeserializer: MessageDeserializer<any> = (message: MessageEvent | NodeWebSocket.MessageEvent) => message.data;
 
 type WebSocketEvents =
@@ -19,18 +23,27 @@ type WebSocketEvents =
   | CloseEvent
   | NodeWebSocket.CloseEvent;
 
-interface Options<T> {
-  protocols?: string | string[];
-  clientOptions?: NodeWebSocket.ClientOptions;
-  deserializer?: MessageDeserializer<T>;
-  debug?: boolean;
-}
-
-export class RxWebSocket<DeserializedMessage> extends Subject<WebSocketEvents> {
+export class RxWebSocket<SendParam, DeserializedMessage> extends Subject<WebSocketEvents> {
   readonly #websocket: WebSocket | NodeWebSocket;
   readonly #message$: Observable<DeserializedMessage>;
+  readonly #serializer: MessageSerializer<SendParam>;
 
-  constructor(url: string, { protocols, clientOptions, deserializer = defaultDeserializer, debug = false }: Options<DeserializedMessage>) {
+  constructor(
+    url: string,
+    {
+      protocols,
+      clientOptions,
+      serializer = defaultSerializer,
+      deserializer = defaultDeserializer,
+      debug = false,
+    }: {
+      protocols?: string | string[];
+      clientOptions?: NodeWebSocket.ClientOptions;
+      serializer?: MessageSerializer<SendParam>;
+      deserializer?: MessageDeserializer<DeserializedMessage>;
+      debug?: boolean;
+    },
+  ) {
     super();
 
     const websocket = isBrowser() ? new WebSocket(url, protocols) : (new (require('ws'))(url, protocols, clientOptions) as WebSocket);
@@ -46,11 +59,12 @@ export class RxWebSocket<DeserializedMessage> extends Subject<WebSocketEvents> {
 
     this.#websocket = websocket;
     this.#message$ = message$.pipe(map(deserializer));
+    this.#serializer = serializer;
     events$.subscribe(this);
   }
 
-  send(data: string) {
-    this.#websocket.send(data);
+  send(data: SendParam) {
+    this.#websocket.send(this.#serializer(data));
 
     return this;
   }

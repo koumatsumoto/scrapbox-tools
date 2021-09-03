@@ -2,11 +2,9 @@ import { constants } from '../../common';
 import { SendResponse } from './response';
 import { isIntegerString } from './utils';
 
-export const toSocketIoMessagePayload = (id: string, data: unknown) => {
-  return `${constants.websocket.packetTypes.send}${id}${JSON.stringify(['socket.io-request', data])}`;
-};
-
 export type DeserializedMessage = [PacketType: string, Data: unknown];
+export type SendParam = string | [RequestId: string, Data: string];
+
 export type InitializedMessage = [
   PacketType: typeof constants.websocket.packetTypes.initialize,
   Data: {
@@ -37,7 +35,7 @@ export const isResponseOf = (expected: string) => {
 
 // 430[{...}}] => 430, [{}]
 // @see https://github.com/socketio/engine.io-protocol
-export const scrapboxDeserializer = (event: { data: any }): DeserializedMessage => {
+export const socketIoMessageDeserializer = (event: { data: any }): DeserializedMessage => {
   let packetType = '';
   let message = String(event.data);
 
@@ -54,6 +52,6 @@ export const scrapboxDeserializer = (event: { data: any }): DeserializedMessage 
   return [packetType, undefined];
 };
 
-export const scrapboxSerializer = (message: unknown): string => {
-  return typeof message === 'string' ? message : JSON.stringify(message);
+export const socketIoMessageSerializer = (data: SendParam): string => {
+  return !Array.isArray(data) ? String(data) : `${constants.websocket.packetTypes.send}${data[0]}${JSON.stringify(['socket.io-request', data[1]])}`;
 };
