@@ -19,18 +19,18 @@ import {
 import { takeUntil } from 'rxjs/operators';
 import { constants } from '../common';
 import {
-  DeserializedMessage,
-  isConnectionMessage,
+  CommitResultMessage,
+  isConnectedMessage,
+  isInitializedMessage,
   isResponseMessageOf,
-  isResponseOf,
-  SendParam,
-  socketIoMessageDeserializer,
-  socketIoMessageSerializer,
+  JoinResultMessage,
+  Message,
+  packetTypes,
+  ResponseMessage,
 } from './internal/message';
 import { ChangeRequestCreateParams, createChanges } from './internal/request';
-import { CommitResponse, JoinRoomResponse, SendResponse } from './internal/response';
-import { getAuthCookieValue } from './internal/utils';
-import { RxWebSocket } from './internal/websocket';
+import { RequestParam, socketIoMessageDeserializer, socketIoMessageSerializer } from './internal/serializer';
+import { RxWebSocket } from './websocket';
 
 interface Options {
   token?: string; // required if node.js env
@@ -50,31 +50,31 @@ const isSameRoom = (a: Room | null, b: Room | null) => {
 
 export class ScrapboxWebsocketHandler {
   #sid = 0;
-  #socket$: Observable<RxWebSocket<SendParam, DeserializedMessage>>;
+  #socket$: Observable<RxWebSocket<RequestParam, Message>>;
   #joinRequest$ = new BehaviorSubject<Room | null>(null);
   #joinResult$ = new BehaviorSubject<Room | null>(null);
   #close$ = new Subject();
 
   constructor({ token = '', debug }: Options) {
-    this.#socket$ = new Observable<RxWebSocket<SendParam, DeserializedMessage>>((subscriber) => {
+    this.#socket$ = new Observable<RxWebSocket<RequestParam, Message>>((subscriber) => {
       const socket = new RxWebSocket(constants.websocket.endpoint, {
-        clientOptions: { headers: { Origin: constants.websocket.origin, Cookie: getAuthCookieValue(token) } },
+        clientOptions: { headers: { Origin: constants.websocket.origin, Cookie: `connect.sid=${token}` } },
         serializer: socketIoMessageSerializer,
         deserializer: socketIoMessageDeserializer,
         debug,
       });
 
-      const connected$ = socket.messageOf(isConnectionMessage);
-      connected$.subscribe(([, data]) => {
+      const connected$ = socket.messageOf(isInitializedMessage);
+      connected$.subscribe(({ data }) => {
         // send ack
         socket
-          .send(constants.websocket.packetTypes.connected)
-          .messageOf(isResponseOf(constants.websocket.packetTypes.connected))
+          .send(packetTypes.connectedMessage)
+          .messageOf(isConnectedMessage)
           .subscribe(() => {
             // set ping
-            interval((data as any).pingInterval)
+            interval(data.pingInterval)
               .pipe(takeUntil(socket))
-              .subscribe(() => socket.send(constants.websocket.packetTypes.ping));
+              .subscribe(() => socket.send(packetTypes.ping));
 
             subscriber.next(socket);
           });
@@ -95,8 +95,9 @@ export class ScrapboxWebsocketHandler {
             of(room),
             of(room).pipe(
               delayWhen(() =>
-                this.#send<JoinRoomResponse[]>({
+                this.#send<JoinResultMessage>({
                   method: 'room:join',
+                  // TODO(feat): can join without pageId
                   data: { pageId: room?.pageId, projectId: room?.projectId, projectUpdatesStream: false },
                 }),
               ),
@@ -127,7 +128,7 @@ export class ScrapboxWebsocketHandler {
           skip(1), // ignore cache of BehaviorSubject
           take(1),
         ),
-        this.#send<CommitResponse[]>({
+        this.#send<CommitResultMessage>({
           method: 'commit',
           data: { kind: 'page', userId, projectId, pageId, parentId, changes: createChanges(changes, userId), cursor: null, freeze: true },
         }),
@@ -139,12 +140,12 @@ export class ScrapboxWebsocketHandler {
     this.#close$.next(undefined);
   }
 
-  #send<T extends SendResponse>(data: any) {
-    const sid = String(this.#sid++);
+  #send<T extends ResponseMessage>(data: any) {
+    const sid = this.#sid++;
 
     return this.#socket$.pipe(
       tap((socket) => socket.send([sid, data])),
-      mergeMap((socket) => socket.messageOf(isResponseMessageOf(sid), constants.websocket.responseTimeout)),
+      mergeMap((socket) => socket.messageOf(isResponseMessageOf<T>(sid), constants.websocket.responseTimeout)),
     );
   }
 }

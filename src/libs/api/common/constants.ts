@@ -6,22 +6,5 @@ export const constants = {
     endpoint: 'wss://scrapbox.io/socket.io/?EIO=4&transport=websocket',
     origin: 'https://scrapbox.io',
     responseTimeout: 15 * 1000,
-    // e.g.
-    //   onmessage 40{"sid":"mAsOl9ZNGQ8vRWA_AABt"}
-    //   onmessage 42["graceful-shutdown"]
-    packetTypes: {
-      initialize: '0',
-      ping: '2',
-      pong: '3',
-      connected: '40',
-      // e.g.
-      //   * 42: 'cursor'
-      //   * 42X: user custom request (X is arbitrary natural number to specify response)
-      send: '42',
-      // e.g.
-      //   * 43X: response to user custom request (X is number used for request)
-      receive: '43',
-      response: '43',
-    },
   },
 };

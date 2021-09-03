@@ -1,8 +1,8 @@
 import { fromEvent, merge, mergeMap, Observable, shareReplay, Subject, take, throwError } from 'rxjs';
 import { first, map, takeUntil, timeout } from 'rxjs/operators';
 import type NodeWebSocket from 'ws';
-import { isBrowser } from '../../common';
-import { debugWebsocket } from './debug-websocket';
+import { isBrowser } from '../common';
+import { debugWebsocket } from './internal/debug-websocket';
 
 export interface MessageSerializer<T> {
   (data: T): string;
@@ -11,8 +11,8 @@ export interface MessageDeserializer<T> {
   (event: MessageEvent | NodeWebSocket.MessageEvent): T;
 }
 
-const defaultSerializer: MessageSerializer<any> = (data: any) => String(data);
-const defaultDeserializer: MessageDeserializer<any> = (message: MessageEvent | NodeWebSocket.MessageEvent) => message.data;
+const defaultSerializer = (data: unknown) => String(data);
+const defaultDeserializer = (message: MessageEvent | NodeWebSocket.MessageEvent) => message.data;
 
 type WebSocketEvents =
   | Event
@@ -23,10 +23,10 @@ type WebSocketEvents =
   | CloseEvent
   | NodeWebSocket.CloseEvent;
 
-export class RxWebSocket<SendParam, DeserializedMessage> extends Subject<WebSocketEvents> {
+export class RxWebSocket<Request, Response> extends Subject<WebSocketEvents> {
   readonly #websocket: WebSocket | NodeWebSocket;
-  readonly #message$: Observable<DeserializedMessage>;
-  readonly #serializer: MessageSerializer<SendParam>;
+  readonly #message$: Observable<Response>;
+  readonly #serializer: MessageSerializer<Request>;
 
   constructor(
     url: string,
@@ -39,8 +39,8 @@ export class RxWebSocket<SendParam, DeserializedMessage> extends Subject<WebSock
     }: {
       protocols?: string | string[];
       clientOptions?: NodeWebSocket.ClientOptions;
-      serializer?: MessageSerializer<SendParam>;
-      deserializer?: MessageDeserializer<DeserializedMessage>;
+      serializer?: MessageSerializer<Request>;
+      deserializer?: MessageDeserializer<Response>;
       debug?: boolean;
     },
   ) {
@@ -63,7 +63,7 @@ export class RxWebSocket<SendParam, DeserializedMessage> extends Subject<WebSock
     events$.subscribe(this);
   }
 
-  send(data: SendParam) {
+  send(data: Request) {
     this.#websocket.send(this.#serializer(data));
 
     return this;
@@ -73,8 +73,12 @@ export class RxWebSocket<SendParam, DeserializedMessage> extends Subject<WebSock
     return this.#message$;
   }
 
-  messageOf(responseSelector: (data: DeserializedMessage) => boolean, timeoutMs?: number) {
-    return timeoutMs ? this.#message$.pipe(first(responseSelector), timeout(timeoutMs)) : this.#message$.pipe(first(responseSelector));
+  messageOf<T extends Response>(predicate: (value: Response) => value is T, timeoutMs?: number): Observable<T>;
+  messageOf<T extends Response>(predicate: (value: Response) => boolean, timeoutMs?: number): Observable<Response>;
+  messageOf<T extends Response>(predicate: (value: Response) => value is T, timeoutMs?: number): Observable<T> {
+    const response = this.#message$.pipe(first(predicate));
+
+    return timeoutMs ? response.pipe(timeout(timeoutMs)) : response;
   }
 
   close() {
