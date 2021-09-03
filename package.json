@@ -17,8 +17,9 @@
   },
   "scripts": {
     "build": "tsc --noEmit && rollup --config",
-    "check": "run-p format lint build test && git diff --exit-code --name-only .",
-    "format": "prettier --write --ignore-path=.gitignore .",
+    "check": "npm-run-all --parallel format lint --serial diff --parallel build test",
+    "diff": "git diff --exit-code --name-only ./",
+    "format": "prettier --write --ignore-path=.gitignore ./",
     "lint": "eslint --ext=.ts --fix src",
     "prepack": "npm ci && rm -fr dist && npm run build",
     "test": "jest -c jest.config.js --ci --silent --detectOpenHandles --forceExit"
