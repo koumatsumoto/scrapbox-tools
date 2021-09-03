@@ -1,5 +1,5 @@
-import { fromEvent, ignoreElements, merge, mergeMap, Observable, shareReplay, Subject, take, throwError } from 'rxjs';
-import { map, share, takeUntil } from 'rxjs/operators';
+import { fromEvent, merge, mergeMap, Observable, shareReplay, Subject, take, throwError } from 'rxjs';
+import { first, map, takeUntil, timeout } from 'rxjs/operators';
 import type NodeWebSocket from 'ws';
 import { isBrowser } from '../../common';
 import { debugWebsocket } from './debug-websocket';
@@ -10,6 +10,15 @@ export interface MessageDeserializer<T> {
 
 const defaultDeserializer: MessageDeserializer<any> = (message: MessageEvent | NodeWebSocket.MessageEvent) => message.data;
 
+type WebSocketEvents =
+  | Event
+  | NodeWebSocket.OpenEvent
+  | MessageEvent
+  | NodeWebSocket.MessageEvent
+  | NodeWebSocket.ErrorEvent
+  | CloseEvent
+  | NodeWebSocket.CloseEvent;
+
 interface Options<T> {
   protocols?: string | string[];
   clientOptions?: NodeWebSocket.ClientOptions;
@@ -17,9 +26,9 @@ interface Options<T> {
   debug?: boolean;
 }
 
-export class RxWebSocket<DeserializedMessage> extends Subject<DeserializedMessage> {
+export class RxWebSocket<DeserializedMessage> extends Subject<WebSocketEvents> {
   readonly #websocket: WebSocket | NodeWebSocket;
-  readonly #open$: Observable<Event | NodeWebSocket.OpenEvent>;
+  readonly #message$: Observable<DeserializedMessage>;
 
   constructor(url: string, { protocols, clientOptions, deserializer = defaultDeserializer, debug = false }: Options<DeserializedMessage>) {
     super();
@@ -29,24 +38,33 @@ export class RxWebSocket<DeserializedMessage> extends Subject<DeserializedMessag
       debugWebsocket(websocket);
     }
 
-    const open$ = fromEvent<Event | NodeWebSocket.OpenEvent>(websocket, 'open').pipe(take(1), shareReplay());
-    const error$ = fromEvent<Event | NodeWebSocket.ErrorEvent>(websocket, 'error').pipe(take(1), shareReplay());
-    const close$ = fromEvent<CloseEvent | NodeWebSocket.CloseEvent>(websocket, 'close').pipe(take(1), share());
+    const open$ = fromEvent<Event | NodeWebSocket.OpenEvent>(websocket, 'open').pipe(take(1));
+    const error$ = fromEvent<Event | NodeWebSocket.ErrorEvent>(websocket, 'error').pipe(take(1));
+    const close$ = fromEvent<CloseEvent | NodeWebSocket.CloseEvent>(websocket, 'close').pipe(take(1));
     const message$ = fromEvent<MessageEvent | NodeWebSocket.MessageEvent>(websocket, 'message').pipe(takeUntil(close$), shareReplay(1));
+    const events$ = merge(open$, message$, error$.pipe(mergeMap(throwError)), close$).pipe(takeUntil(close$), shareReplay(1));
 
-    merge(open$.pipe(ignoreElements()), message$.pipe(map(deserializer)), error$.pipe(mergeMap(throwError)), close$.pipe(ignoreElements())).subscribe(this);
-    this.#open$ = open$;
     this.#websocket = websocket;
+    this.#message$ = message$.pipe(map(deserializer));
+    events$.subscribe(this);
   }
 
   send(data: string) {
-    this.#open$.subscribe(() => this.#websocket.send(data));
+    this.#websocket.send(data);
 
     return this;
   }
 
+  get message() {
+    return this.#message$;
+  }
+
+  messageOf(responseSelector: (data: DeserializedMessage) => boolean, timeoutMs?: number) {
+    return timeoutMs ? this.#message$.pipe(first(responseSelector), timeout(timeoutMs)) : this.#message$.pipe(first(responseSelector));
+  }
+
   close() {
     this.#websocket.close();
-    this.unsubscribe();
+    this.complete();
   }
 }

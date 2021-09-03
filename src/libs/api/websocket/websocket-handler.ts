@@ -3,11 +3,10 @@ import {
   concat,
   concatMap,
   delayWhen,
-  filter,
+  ignoreElements,
   iif,
   interval,
   lastValueFrom,
-  mapTo,
   mergeMap,
   Observable,
   of,
@@ -17,7 +16,7 @@ import {
   take,
   tap,
 } from 'rxjs';
-import { first, takeUntil, timeout } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { constants } from '../common';
 import {
   DeserializedMessage,
@@ -63,28 +62,27 @@ export class ScrapboxWebsocketHandler {
         debug,
       });
 
-      socket
-        .pipe(
-          takeUntil(this.#close$),
-          filter(isConnectionMessage),
-          // send ack
-          tap(() => {
-            socket.send(constants.websocket.packetTypes.connected);
-          }),
-          // set ping
-          tap(([, data]) =>
-            interval(data.pingInterval)
+      const connected$ = socket.messageOf(isConnectionMessage);
+      connected$.subscribe(([, data]) => {
+        // send ack
+        socket
+          .send(constants.websocket.packetTypes.connected)
+          .messageOf(isResponseOf(constants.websocket.packetTypes.connected))
+          .subscribe(() => {
+            // set ping
+            interval((data as any).pingInterval)
               .pipe(takeUntil(socket))
-              .subscribe(() => socket.send(constants.websocket.packetTypes.ping)),
-          ),
-          delayWhen(() => socket.pipe(first(isResponseOf(constants.websocket.packetTypes.connected)))),
-          mapTo(socket),
-          timeout(constants.websocket.responseTimeout),
-        )
-        .subscribe(subscriber);
+              .subscribe(() => socket.send(constants.websocket.packetTypes.ping));
+
+            subscriber.next(socket);
+          });
+      });
+
+      // TODO: use share with { resetOnComplete: true } to allow re-connect
+      socket.pipe(ignoreElements(), takeUntil(this.#close$)).subscribe(subscriber);
 
       return () => socket.close();
-    }).pipe(shareReplay(1));
+    }).pipe(shareReplay(1), take(1));
 
     this.#joinRequest$
       .pipe(
@@ -143,10 +141,8 @@ export class ScrapboxWebsocketHandler {
     const sid = String(this.#sid++);
 
     return this.#socket$.pipe(
-      take(1),
-      mergeMap((socket) =>
-        socket.send(toSocketIoMessagePayload(sid, data)).pipe(first(isResponseMessageOf(sid)), timeout(constants.websocket.responseTimeout)),
-      ),
+      tap((socket) => socket.send(toSocketIoMessagePayload(sid, data))),
+      mergeMap((socket) => socket.messageOf(isResponseMessageOf(sid), constants.websocket.responseTimeout)),
     );
   }
 }

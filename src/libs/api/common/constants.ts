@@ -6,6 +6,9 @@ export const constants = {
     endpoint: 'wss://scrapbox.io/socket.io/?EIO=4&transport=websocket',
     origin: 'https://scrapbox.io',
     responseTimeout: 15 * 1000,
+    // e.g.
+    //   onmessage 40{"sid":"mAsOl9ZNGQ8vRWA_AABt"}
+    //   onmessage 42["graceful-shutdown"]
     packetTypes: {
       initialize: '0',
       ping: '2',
