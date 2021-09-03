@@ -5,7 +5,7 @@ export const constants = {
   websocket: {
     endpoint: 'wss://scrapbox.io/socket.io/?EIO=4&transport=websocket',
     origin: 'https://scrapbox.io',
-    responseTimeout: 1000 * 15,
+    responseTimeout: 15 * 1000,
     packetTypes: {
       initialize: '0',
       ping: '2',

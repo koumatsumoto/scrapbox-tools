@@ -1,4 +1,22 @@
-import { concatMap, delayWhen, filter, firstValueFrom, interval, mapTo, mergeMap, Observable, of, shareReplay, Subject, take, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  concat,
+  concatMap,
+  delayWhen,
+  filter,
+  iif,
+  interval,
+  lastValueFrom,
+  mapTo,
+  mergeMap,
+  Observable,
+  of,
+  shareReplay,
+  skip,
+  Subject,
+  take,
+  tap,
+} from 'rxjs';
 import { first, takeUntil, timeout } from 'rxjs/operators';
 import { constants } from '../common';
 import {
@@ -21,10 +39,20 @@ interface Options {
   debug?: boolean;
 }
 
+interface Room {
+  projectId: string;
+  pageId: string;
+}
+
+const isSameRoom = (a: Room | null, b: Room | null) => {
+  return a?.projectId === b?.projectId && a?.pageId === b?.pageId;
+};
+
 export class ScrapboxWebsocketHandler {
-  #room: { projectId: string; pageId: string } | null = null;
   #sid = 0;
   #socket$: Observable<RxWebSocket<DeserializedMessage>>;
+  #joinRequest$ = new BehaviorSubject<Room | null>(null);
+  #joinResult$ = new BehaviorSubject<Room | null>(null);
   #close$ = new Subject();
 
   constructor({ token = '', debug }: Options) {
@@ -57,50 +85,58 @@ export class ScrapboxWebsocketHandler {
 
       return () => socket.close();
     }).pipe(shareReplay(1));
-  }
 
-  close() {
-    this.#close$.next(undefined);
+    this.#joinRequest$
+      .pipe(
+        takeUntil(this.#close$),
+        concatMap((room) =>
+          iif(
+            () => isSameRoom(this.#joinResult$.getValue(), room),
+            of(room),
+            of(room).pipe(
+              delayWhen(() =>
+                this.#send<JoinRoomResponse[]>({
+                  method: 'room:join',
+                  data: { pageId: room?.pageId, projectId: room?.projectId, projectUpdatesStream: false },
+                }),
+              ),
+            ),
+          ),
+        ),
+      )
+      .subscribe(this.#joinResult$);
   }
 
   async commit({
-    projectId,
     userId,
+    projectId,
     pageId,
     parentId,
     changes,
   }: {
-    projectId: string;
     userId: string;
+    projectId: string;
     pageId: string;
     parentId: string;
     changes: ChangeRequestCreateParams[];
   }) {
-    return firstValueFrom(
-      this.#join({ projectId, pageId }).pipe(
-        concatMap(() => {
-          return this.#send<CommitResponse[]>({
-            method: 'commit',
-            data: { kind: 'page', userId, projectId, pageId, parentId, changes: createChanges(changes, userId), cursor: null, freeze: true },
-          });
+    return lastValueFrom(
+      concat(
+        this.#joinResult$.pipe(
+          tap(() => this.#joinRequest$.next({ projectId, pageId })),
+          skip(1), // ignore cache of BehaviorSubject
+          take(1),
+        ),
+        this.#send<CommitResponse[]>({
+          method: 'commit',
+          data: { kind: 'page', userId, projectId, pageId, parentId, changes: createChanges(changes, userId), cursor: null, freeze: true },
         }),
       ),
     );
   }
 
-  #join({ projectId, pageId }: { projectId: string; pageId: string }) {
-    return this.#room?.projectId === projectId && this.#room?.pageId === pageId
-      ? of({})
-      : this.#send<JoinRoomResponse[]>({
-          method: 'room:join',
-          data: { pageId, projectId, projectUpdatesStream: false },
-        }).pipe(
-          tap({
-            complete: () => {
-              this.#room = { projectId, pageId };
-            },
-          }),
-        );
+  close() {
+    this.#close$.next(undefined);
   }
 
   #send<T extends SendResponse>(data: any) {
