@@ -1,6 +1,6 @@
 import { ID } from '../../common';
+import { CommitChange } from './change';
 import { Error } from './error';
-import { CommitChange } from './request';
 
 export type Message = {
   packetType: string;

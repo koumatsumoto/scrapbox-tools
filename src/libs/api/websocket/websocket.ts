@@ -1,8 +1,8 @@
-import { fromEvent, merge, mergeMap, Observable, shareReplay, Subject, take, throwError } from 'rxjs';
-import { first, map, takeUntil, timeout } from 'rxjs/operators';
+import { fromEvent, merge, Observable, shareReplay, Subject, throwError } from 'rxjs';
+import { first, map, mergeMap, takeUntil, take, timeout } from 'rxjs/operators';
 import type NodeWebSocket from 'ws';
 import { isBrowser } from '../common';
-import { debugWebsocket } from './internal/debug-websocket';
+import { debugWebsocket } from './internal';
 
 export interface MessageSerializer<T> {
   (data: T): string;

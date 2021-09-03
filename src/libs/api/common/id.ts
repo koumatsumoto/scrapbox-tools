@@ -14,14 +14,11 @@ const toString16 = (userIdOrNumber: number | string, length: number) => {
 
 // modified original IdGenerator of official index.js
 type IdGenerator = () => ID;
-const map = new Map<string, IdGenerator>();
-const getIdGenerator = (userId: string): IdGenerator => {
-  if (map.has(userId)) {
-    return map.get(userId)!;
-  }
 
+export const createIdGenerator = (userId: string): IdGenerator => {
   let counter = Math.floor(16777215 * Math.random());
-  const generate = () => {
+
+  return () => {
     const t = Math.floor(Date.now() / 1e3);
     if ((counter += 1) > 16777215) {
       counter = 0;
@@ -29,14 +26,4 @@ const getIdGenerator = (userId: string): IdGenerator => {
 
     return (toString16(t, 8) + toString16(userId, 6) + toString16(0, 4) + toString16(counter, 6)) as ID;
   };
-
-  map.set(userId, generate);
-
-  return generate;
-};
-
-export const generateId = (userId: string): ID => {
-  const generator = getIdGenerator(userId);
-
-  return generator();
 };

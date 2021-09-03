@@ -1,25 +1,10 @@
-import {
-  BehaviorSubject,
-  concat,
-  concatMap,
-  delayWhen,
-  ignoreElements,
-  iif,
-  interval,
-  lastValueFrom,
-  mergeMap,
-  Observable,
-  of,
-  shareReplay,
-  skip,
-  Subject,
-  take,
-  tap,
-} from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, concat, iif, interval, lastValueFrom, Observable, of, Subject } from 'rxjs';
+import { takeUntil, take, tap, shareReplay, skip, mergeMap, concatMap, delayWhen, ignoreElements } from 'rxjs/operators';
 import { constants } from '../common';
 import {
+  ChangeRequest,
   CommitResultMessage,
+  createChanges,
   isConnectedMessage,
   isInitializedMessage,
   isResponseMessageOf,
@@ -27,26 +12,13 @@ import {
   Message,
   packetTypes,
   ResponseMessage,
-} from './internal/message';
-import { ChangeRequestCreateParams, createChanges } from './internal/request';
-import { RequestParam, socketIoMessageDeserializer, socketIoMessageSerializer } from './internal/serializer';
+  RequestParam,
+  socketIoMessageDeserializer,
+  socketIoMessageSerializer,
+  isSameRoom,
+  Room,
+} from './internal';
 import { RxWebSocket } from './websocket';
-
-interface Options {
-  token?: string; // required if node.js env
-  autoOpen?: boolean;
-  autoReconnect?: boolean;
-  debug?: boolean;
-}
-
-interface Room {
-  projectId: string;
-  pageId: string;
-}
-
-const isSameRoom = (a: Room | null, b: Room | null) => {
-  return a?.projectId === b?.projectId && a?.pageId === b?.pageId;
-};
 
 export class ScrapboxWebsocketHandler {
   #sid = 0;
@@ -55,7 +27,15 @@ export class ScrapboxWebsocketHandler {
   #joinResult$ = new BehaviorSubject<Room | null>(null);
   #close$ = new Subject();
 
-  constructor({ token = '', debug }: Options) {
+  constructor({
+    token = '',
+    debug,
+  }: {
+    token?: string; // required if node.js env
+    debug?: boolean;
+    // TODO(feat): support auto reconnect
+    autoReconnect?: boolean;
+  }) {
     this.#socket$ = new Observable<RxWebSocket<RequestParam, Message>>((subscriber) => {
       const socket = new RxWebSocket(constants.websocket.endpoint, {
         clientOptions: { headers: { Origin: constants.websocket.origin, Cookie: `connect.sid=${token}` } },
@@ -119,7 +99,7 @@ export class ScrapboxWebsocketHandler {
     projectId: string;
     pageId: string;
     parentId: string;
-    changes: ChangeRequestCreateParams[];
+    changes: ChangeRequest[];
   }) {
     return lastValueFrom(
       concat(
@@ -140,6 +120,7 @@ export class ScrapboxWebsocketHandler {
     this.#close$.next(undefined);
   }
 
+  // TODO(feat): add error handling
   #send<T extends ResponseMessage>(data: any) {
     const sid = this.#sid++;
 
