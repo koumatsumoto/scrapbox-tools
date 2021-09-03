@@ -16,7 +16,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "build": "tsc --noEmit && rollup",
+    "build": "tsc --noEmit && rollup --config",
     "check": "npm-run-all --parallel format lint --serial diff --parallel build test",
     "diff": "git diff --exit-code --name-only ./",
     "format": "prettier --write --ignore-path=.gitignore ./",
@@ -55,6 +55,6 @@
     "rollup-plugin-add-shebang": "^0.3.1",
     "rxjs": "^7.3.0",
     "ts-jest": "^27.0.5",
-    "typescript": "^4.4.2"
+    "typescript": "4.3.5"
   }
 }
