@@ -1,5 +1,5 @@
-import { fromEvent, merge, Observable, shareReplay, Subject, throwError } from 'rxjs';
-import { first, map, mergeMap, takeUntil, take, timeout } from 'rxjs/operators';
+import { fromEvent, merge, Observable, Subject, throwError } from 'rxjs';
+import { first, map, mergeMap, shareReplay, takeUntil, take, timeout } from 'rxjs/operators';
 import type NodeWebSocket from 'ws';
 import { isBrowser } from '../common';
 import { debugWebsocket } from './internal';

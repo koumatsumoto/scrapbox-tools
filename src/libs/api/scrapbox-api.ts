@@ -1,12 +1,12 @@
 import { RestApi } from './rest-api';
-import { ChangeRequest, ScrapboxWebsocketHandler } from './websocket';
+import { ChangeRequest, WebsocketClient } from './websocket';
 
 export class ScrapboxApi {
   constructor(
     token = '',
     debug = false,
     private readonly restApi: RestApi = new RestApi(token),
-    private readonly websocketHandler: ScrapboxWebsocketHandler = new ScrapboxWebsocketHandler({ token, debug }),
+    private readonly websocketHandler: WebsocketClient = new WebsocketClient({ token, debug }),
   ) {}
 
   async getPage(projectName: string, pageName: string) {

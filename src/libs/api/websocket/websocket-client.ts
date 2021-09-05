@@ -20,7 +20,7 @@ import {
 } from './internal';
 import { RxWebSocket } from './websocket';
 
-export class ScrapboxWebsocketHandler {
+export class WebsocketClient {
   #sid = 0;
   #socket$: Observable<RxWebSocket<RequestParam, Message>>;
   #joinRequest$ = new BehaviorSubject<Room | null>(null);
