@@ -28,7 +28,6 @@
     "commander": "^8.1.0",
     "date-fns": "^2.23.0",
     "inquirer": "^8.1.2",
-    "lodash-es": "^4.17.21",
     "node-fetch": "^2.6.1",
     "ws": "^8.2.1"
   },
