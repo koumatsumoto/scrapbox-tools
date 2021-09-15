@@ -1,9 +1,9 @@
 import { concat, Observable, of } from 'rxjs';
 import { distinctUntilChanged, share } from 'rxjs/operators';
-import { getHistoryEventObservable } from './internal/observable';
+import { documentReady, historyState } from './internal';
 
 export class Router {
-  private readonly event$: Observable<string> = getHistoryEventObservable().pipe(share());
+  private readonly event$: Observable<string> = historyState().pipe(share());
 
   get url(): Observable<string> {
     return concat(of(window.location.href), this.event$).pipe(distinctUntilChanged());
@@ -11,5 +11,9 @@ export class Router {
 
   get urlChange(): Observable<string> {
     return this.event$.pipe(distinctUntilChanged());
+  }
+
+  get documentReady(): Observable<void> {
+    return documentReady();
   }
 }

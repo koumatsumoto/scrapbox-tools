@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 
-export const getHistoryEventObservable = (w = window) => {
+export const historyState = (w = window) => {
   return new Observable<string>((subscriber) => {
     const originPushState = w.history.pushState;
     const originReplaceState = w.history.replaceState;
