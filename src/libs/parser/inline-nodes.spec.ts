@@ -1,7 +1,7 @@
-import { parseInlineNodes } from './inline-nodes';
+import { parseInlineText } from './inline-nodes';
 
-test('parseInlineNodes', () => {
-  expect(parseInlineNodes('> quote')).toEqual({
+test('parseInlineText', () => {
+  expect(parseInlineText('> quote')).toEqual({
     type: 'quote',
     unit: {
       content: 'quote',
@@ -10,7 +10,7 @@ test('parseInlineNodes', () => {
     },
   });
 
-  expect(parseInlineNodes('#tag')).toEqual({
+  expect(parseInlineText('#tag')).toEqual({
     type: 'hashTag',
     unit: {
       content: 'tag',
@@ -19,7 +19,7 @@ test('parseInlineNodes', () => {
       whole: '#tag',
     },
   });
-  expect(parseInlineNodes('##tag')).toEqual({
+  expect(parseInlineText('##tag')).toEqual({
     type: 'hashTag',
     unit: {
       content: '#tag',
@@ -29,7 +29,7 @@ test('parseInlineNodes', () => {
     },
   });
 
-  expect(parseInlineNodes('[* strong][**  more stronger][/ italic][*/ strong and italic][- strike][_ underline]')).toEqual([
+  expect(parseInlineText('[* strong][**  more stronger][/ italic][*/ strong and italic][- strike][_ underline]')).toEqual([
     {
       type: 'deco',
       unit: {
@@ -104,7 +104,7 @@ test('parseInlineNodes', () => {
     },
   ]);
 
-  expect(parseInlineNodes('[$ formula]')).toEqual({
+  expect(parseInlineText('[$ formula]')).toEqual({
     type: 'deco-formula',
     unit: {
       content: '$ formula',
@@ -113,7 +113,7 @@ test('parseInlineNodes', () => {
     },
   });
 
-  expect(parseInlineNodes('[[bold]]')).toEqual({
+  expect(parseInlineText('[[bold]]')).toEqual({
     type: 'strong',
     unit: {
       content: 'bold',
@@ -121,7 +121,7 @@ test('parseInlineNodes', () => {
     },
   });
 
-  expect(parseInlineNodes('[/icons/hr.icon]')).toEqual({
+  expect(parseInlineText('[/icons/hr.icon]')).toEqual({
     type: 'icon',
     unit: {
       content: 'hr.icon',
@@ -131,7 +131,7 @@ test('parseInlineNodes', () => {
       whole: '[/icons/hr.icon]',
     },
   });
-  expect(parseInlineNodes('[user.icon]')).toEqual({
+  expect(parseInlineText('[user.icon]')).toEqual({
     type: 'icon',
     unit: {
       content: 'user.icon',
@@ -141,14 +141,14 @@ test('parseInlineNodes', () => {
     },
   });
 
-  expect(parseInlineNodes('`code`')).toEqual({
+  expect(parseInlineText('`code`')).toEqual({
     type: 'code',
     unit: {
       content: 'code',
       whole: '`code`',
     },
   });
-  expect(parseInlineNodes('``')).toEqual({
+  expect(parseInlineText('``')).toEqual({
     type: 'code',
     unit: {
       content: '',
@@ -156,7 +156,7 @@ test('parseInlineNodes', () => {
     },
   });
 
-  expect(parseInlineNodes('[link]')).toEqual({
+  expect(parseInlineText('[link]')).toEqual({
     type: 'link',
     unit: {
       content: 'link',
@@ -165,5 +165,5 @@ test('parseInlineNodes', () => {
     },
   });
 
-  expect(parseInlineNodes('text')).toEqual('text');
+  expect(parseInlineText('text')).toEqual('text');
 });

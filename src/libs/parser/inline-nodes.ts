@@ -112,7 +112,7 @@ type ParseInlineNodesResult = {
   char?: string;
 };
 
-export const parseInlineNodes = (text: string): InlineNode | InlineNode[] => {
+export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
   if (text === '') {
     return '';
   }
