@@ -1,5 +1,3 @@
-import { isString } from './functions';
-
 export type InlineNode =
   | string
   | {
@@ -82,7 +80,7 @@ const inlineNodesRegexp = new RegExp(
     '(?<icon>\\[(\\/(?<iconProject>\\S+?)\\/)?(?<iconContent>(?<iconPage>\\S+)?\\.icon)\\])',
     '(?<code>`(?<codeContent>.*?)`)',
     '(?<link>\\[(?<linkContent>.+?)\\])',
-    '(?<char>.)',
+    '(?<text>.+(?!(?:#\\S+)|(?:`.*?`)|(?:\\[.+?\\])))',
   ].join('|'),
   'gu',
 );
@@ -109,7 +107,7 @@ type ParseInlineNodesResult = {
   codeContent?: string;
   link?: string;
   linkContent?: string;
-  char?: string;
+  text?: string;
 };
 
 export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
@@ -118,11 +116,11 @@ export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
   }
 
   const nodes = [...text.matchAll(inlineNodesRegexp)]
-    .map((match) => match.groups as ParseInlineNodesResult)
+    .map((match) => (match.groups ?? {}) as ParseInlineNodesResult)
     .map((match) => {
       switch (true) {
-        case typeof match.char === 'string': {
-          return match.char;
+        case typeof match.text === 'string': {
+          return match.text;
         }
         case typeof match.quote === 'string': {
           return {
@@ -214,20 +212,7 @@ export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
           throw new Error('unreachable');
         }
       }
-    })
-    // concat chars to string
-    .reduce((acc, node) => {
-      const prev = acc.at(-1);
-
-      if (isString(node) && isString(prev)) {
-        acc.pop();
-        acc.push(prev + node);
-      } else {
-        acc.push(node as any); // TODO(fix): correct type inference
-      }
-
-      return acc;
-    }, [] as InlineNode[]);
+    }) as InlineNode[];
 
   return nodes.length === 1 ? nodes[0] : nodes;
 };
