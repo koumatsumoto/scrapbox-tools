@@ -1,6 +1,6 @@
 import { isString, threewise } from './functions';
-import { parseLineText } from './line';
 import { InlineNode, parseInlineText } from './inline-nodes';
+import { parseLineText } from './line';
 
 interface LineInput {
   id: string;
