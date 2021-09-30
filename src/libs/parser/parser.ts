@@ -2,21 +2,16 @@ import { isString, threewise } from './functions';
 import { InlineNode, parseInlineText } from './inline-nodes';
 import { parseLineText } from './line';
 
-interface LineInput {
-  id: string;
+export interface LineInput {
   text: string;
-  userId: string;
   created: number;
   updated: number;
+  id?: string;
+  userId?: string;
   title?: boolean;
 }
 
-interface Line {
-  id: string;
-  text: string;
-  userId: string;
-  created: number;
-  updated: number;
+export interface Line extends LineInput {
   title?: true;
   section?: { number: number; start: boolean; end: boolean };
   nodes?:
@@ -51,22 +46,28 @@ interface Line {
   // sx custom fields
   indent: number;
   empty: boolean;
+  number: number;
+  isFirst: boolean;
+  isLast: boolean;
 }
 
 export const parseLines = (lines: LineInput[]): Line[] => {
-  const results = lines.map((line) => {
+  const results = lines.map((line, index) => {
     const result = parseLineText(line.text);
 
     return {
       ...line,
+      number: index + 1,
+      isFirst: index === 0,
+      isLast: index === lines.length - 1,
       indent: result.indent.length,
       empty: isString(result.text) && result.text.length === 0, // e.g. '', ' ', '  ', ...
       section: {},
       codeBlock: isString(result.codeBlock)
         ? {
-            filename: result.codeBlockFileName!,
+            filename: result.codeBlockFileName,
             indent: result.indent.length,
-            lang: result.codeBlockLang!,
+            lang: result.codeBlockLang ?? '',
           }
         : undefined,
       tableBlock: isString(result.tableBlock)

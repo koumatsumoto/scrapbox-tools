@@ -46,17 +46,6 @@ test('parseLines', () => {
       end: true,
     });
   }
-  {
-    const lines = parseLines(makeLines(['title', ' code:index.js', ' not content']));
-    expect(lines[1].codeBlock).toEqual({
-      filename: 'index.js',
-      indent: 1,
-      lang: '.js',
-      start: true,
-      end: true,
-    });
-    expect(lines[2].codeBlock).toBeUndefined();
-  }
 
   // table block
   {
