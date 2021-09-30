@@ -11,7 +11,7 @@ export interface LineInput {
   title?: boolean;
 }
 
-export interface Line extends LineInput {
+export interface ParsedLine extends LineInput {
   title?: true;
   section?: { number: number; start: boolean; end: boolean };
   nodes?:
@@ -51,7 +51,7 @@ export interface Line extends LineInput {
   isLast: boolean;
 }
 
-export const parseLines = (lines: LineInput[]): Line[] => {
+export const parseLines = (lines: LineInput[]): ParsedLine[] => {
   const results = lines.map((line, index) => {
     const result = parseLineText(line.text);
 
@@ -99,7 +99,7 @@ export const parseLines = (lines: LineInput[]): Line[] => {
     };
   });
 
-  for (const [previous, value, next] of threewise<typeof results[number], Line>(results)) {
+  for (const [previous, value, next] of threewise<typeof results[number], ParsedLine>(results)) {
     const isFirstLine = previous === null;
     const isLastLine = next === null;
     const isSectionStart = isFirstLine || previous.section!.end;
@@ -155,5 +155,5 @@ export const parseLines = (lines: LineInput[]): Line[] => {
     }
   }
 
-  return results as Line[];
+  return results as ParsedLine[];
 };
