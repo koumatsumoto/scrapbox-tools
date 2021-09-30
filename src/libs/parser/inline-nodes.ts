@@ -64,9 +64,19 @@ export type InlineNode =
   | {
       type: 'link';
       unit: {
+        whole: string;
         content: string;
         page: string;
+        project?: string;
+      };
+    }
+  | {
+      type: 'urlLink';
+      unit: {
         whole: string;
+        content: string;
+        link: string;
+        title?: string;
       };
     };
 
@@ -79,7 +89,7 @@ const inlineNodesRegexp = new RegExp(
     '(?<decoFormula>\\[(?<decoFormulaContent>\\$ (?<formula>.+?))\\])',
     '(?<icon>\\[(\\/(?<iconProject>\\S+?)\\/)?(?<iconContent>(?<iconPage>\\S+)?\\.icon)\\])',
     '(?<code>`(?<codeContent>.*?)`)',
-    '(?<link>\\[(?<linkContent>.+?)\\])',
+    '(?<link>\\[(?<linkContent>(?:/(?<linkProject>\\S|[^/]+)/)?(?<linkPage>\\S+?))\\])',
     '(?<text>.+(?!(?:#\\S+)|(?:`.*?`)|(?:\\[.+?\\])))',
   ].join('|'),
   'gu',
@@ -107,6 +117,8 @@ type ParseInlineNodesResult = {
   codeContent?: string;
   link?: string;
   linkContent?: string;
+  linkProject?: string;
+  linkPage?: string;
   text?: string;
 };
 
@@ -202,9 +214,10 @@ export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
           return {
             type: 'link',
             unit: {
-              content: match.linkContent,
-              page: match.linkContent, // TODO(feat): support page
               whole: match.link,
+              content: match.linkContent,
+              page: match.linkPage,
+              project: match.linkProject,
             },
           };
         }

@@ -159,9 +159,27 @@ test('parseInlineText', () => {
   expect(parseInlineText('[link]')).toEqual({
     type: 'link',
     unit: {
+      whole: '[link]',
       content: 'link',
       page: 'link',
-      whole: '[link]',
+    },
+  });
+  expect(parseInlineText('[/project/page]')).toEqual({
+    type: 'link',
+    unit: {
+      whole: '[/project/page]',
+      content: '/project/page',
+      page: 'page',
+      project: 'project',
+    },
+  });
+  expect(parseInlineText('[/a/b/c/]')).toEqual({
+    type: 'link',
+    unit: {
+      whole: '[/a/b/c/]',
+      content: '/a/b/c/',
+      page: 'b/c/',
+      project: 'a',
     },
   });
 
