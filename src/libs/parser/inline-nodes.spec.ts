@@ -234,4 +234,45 @@ test('parseInlineNodes', () => {
   });
 
   expect(parseInlineNodes('text')).toEqual('text');
+  expect(parseInlineNodes('text with https://pass link')).toEqual([
+    'text with ',
+    {
+      type: 'url',
+      unit: {
+        content: 'https://pass',
+        whole: 'https://pass',
+      },
+    },
+    ' link',
+  ]);
+  expect(parseInlineNodes('text [link], #tag, `code` and more')).toEqual([
+    'text ',
+    {
+      type: 'link',
+      unit: {
+        content: 'link',
+        page: 'link',
+        whole: '[link]',
+      },
+    },
+    ', ',
+    {
+      type: 'hashTag',
+      unit: {
+        content: 'tag,',
+        page: 'tag,',
+        tag: '#',
+        whole: '#tag,',
+      },
+    },
+    ' ',
+    {
+      type: 'code',
+      unit: {
+        content: 'code',
+        whole: '`code`',
+      },
+    },
+    ' and more',
+  ]);
 });
