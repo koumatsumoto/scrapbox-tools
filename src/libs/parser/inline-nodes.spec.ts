@@ -183,5 +183,32 @@ test('parseInlineText', () => {
     },
   });
 
+  expect(parseInlineText('[https://pass]')).toEqual({
+    type: 'urlLink',
+    unit: {
+      whole: '[https://pass]',
+      content: 'https://pass',
+      link: 'https://pass',
+    },
+  });
+  expect(parseInlineText('[https://pass title]')).toEqual({
+    type: 'urlLink',
+    unit: {
+      whole: '[https://pass title]',
+      content: 'https://pass title',
+      link: 'https://pass',
+      title: 'title',
+    },
+  });
+  expect(parseInlineText('[title https://pass]')).toEqual({
+    type: 'urlLink',
+    unit: {
+      content: 'title https://pass',
+      link: 'https://pass',
+      title: 'title',
+      whole: '[title https://pass]',
+    },
+  });
+
   expect(parseInlineText('text')).toEqual('text');
 });

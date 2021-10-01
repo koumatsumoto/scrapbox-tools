@@ -62,6 +62,13 @@ export type InlineNode =
       };
     }
   | {
+      type: 'url';
+      unit: {
+        whole: string;
+        content: string;
+      };
+    }
+  | {
       type: 'link';
       unit: {
         whole: string;
@@ -80,6 +87,8 @@ export type InlineNode =
       };
     };
 
+// TODO(feat): support url node
+// TODO(feat): support urlLink node
 const inlineNodesRegexp = new RegExp(
   [
     '(?<quote>^(?<quoteTag>> )(?<quoteContent>\\S+))',
@@ -89,6 +98,8 @@ const inlineNodesRegexp = new RegExp(
     '(?<decoFormula>\\[(?<decoFormulaContent>\\$ (?<formula>.+?))\\])',
     '(?<icon>\\[(\\/(?<iconProject>\\S+?)\\/)?(?<iconContent>(?<iconPage>\\S+)?\\.icon)\\])',
     '(?<code>`(?<codeContent>.*?)`)',
+    '(?<urlLinkB>\\[(?<urlLinkBContent>(?<!https?:)(?<urlLinkBTitle>\\S+)\\s+(?<urlLinkBLink>https?://\\S+))\\])',
+    '(?<urlLinkA>\\[(?<urlLinkAContent>(?<urlLinkALink>https?://\\S+)(?:\\s+(?<urlLinkATitle>\\S+))?)\\])',
     '(?<link>\\[(?<linkContent>(?:/(?<linkProject>\\S|[^/]+)/)?(?<linkPage>\\S+?))\\])',
     '(?<text>.+(?!(?:#\\S+)|(?:`.*?`)|(?:\\[.+?\\])))',
   ].join('|'),
@@ -115,6 +126,14 @@ type ParseInlineNodesResult = {
   iconPage?: string;
   code?: string;
   codeContent?: string;
+  urlLinkA?: string;
+  urlLinkAContent?: string;
+  urlLinkALink?: string;
+  urlLinkATitle?: string;
+  urlLinkB?: string;
+  urlLinkBContent?: string;
+  urlLinkBLink?: string;
+  urlLinkBTitle?: string;
   link?: string;
   linkContent?: string;
   linkProject?: string;
@@ -210,7 +229,6 @@ export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
           };
         }
         case typeof match.link === 'string': {
-          // TODO(feat): support urlLink
           return {
             type: 'link',
             unit: {
@@ -218,6 +236,28 @@ export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
               content: match.linkContent,
               page: match.linkPage,
               project: match.linkProject,
+            },
+          };
+        }
+        case typeof match.urlLinkA === 'string': {
+          return {
+            type: 'urlLink',
+            unit: {
+              whole: match.urlLinkA,
+              content: match.urlLinkAContent,
+              link: match.urlLinkALink,
+              title: match.urlLinkATitle,
+            },
+          };
+        }
+        case typeof match.urlLinkB === 'string': {
+          return {
+            type: 'urlLink',
+            unit: {
+              whole: match.urlLinkB,
+              content: match.urlLinkBContent,
+              link: match.urlLinkBLink,
+              title: match.urlLinkBTitle,
             },
           };
         }
