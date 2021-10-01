@@ -7,7 +7,6 @@ export type ParseResult = {
   // sx custom fields
   indent: number;
   empty: boolean;
-  number: number;
 } & (
   | {
       title: true;
@@ -51,9 +50,6 @@ export const parseLines = <T extends { text: string }>(lines: T[]): (ParseResult
     lines.map((line) => ({ ...line, ...parseBlockNode(line.text) })),
     (curr, prev, next, index) => {
       const data = { ...curr } as Partial<ParseResult>;
-
-      // add line number
-      data.number = index + 1;
 
       // add title
       if (index === 0) {
