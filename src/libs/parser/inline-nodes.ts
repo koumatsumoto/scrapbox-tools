@@ -87,8 +87,6 @@ export type InlineNode =
       };
     };
 
-// TODO(feat): support url node
-// TODO(feat): support urlLink node
 const inlineNodesRegexp = new RegExp(
   [
     '(?<quote>^(?<quoteTag>> )(?<quoteContent>\\S+))',
@@ -101,6 +99,7 @@ const inlineNodesRegexp = new RegExp(
     '(?<urlLinkB>\\[(?<urlLinkBContent>(?<!https?:)(?<urlLinkBTitle>\\S+)\\s+(?<urlLinkBLink>https?://\\S+))\\])',
     '(?<urlLinkA>\\[(?<urlLinkAContent>(?<urlLinkALink>https?://\\S+)(?:\\s+(?<urlLinkATitle>\\S+))?)\\])',
     '(?<link>\\[(?<linkContent>(?:/(?<linkProject>\\S|[^/]+)/)?(?<linkPage>\\S+?))\\])',
+    '(?<url>https?://\\S+)',
     '(?<text>.+(?!(?:#\\S+)|(?:`.*?`)|(?:\\[.+?\\])))',
   ].join('|'),
   'gu',
@@ -138,6 +137,7 @@ type ParseInlineNodesResult = {
   linkContent?: string;
   linkProject?: string;
   linkPage?: string;
+  url?: string;
   text?: string;
 };
 
@@ -258,6 +258,15 @@ export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
               content: match.urlLinkBContent,
               link: match.urlLinkBLink,
               title: match.urlLinkBTitle,
+            },
+          };
+        }
+        case typeof match.url === 'string': {
+          return {
+            type: 'url',
+            unit: {
+              whole: match.url,
+              content: match.url,
             },
           };
         }

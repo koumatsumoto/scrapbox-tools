@@ -210,5 +210,20 @@ test('parseInlineText', () => {
     },
   });
 
+  expect(parseInlineText('http://pass')).toEqual({
+    type: 'url',
+    unit: {
+      content: 'http://pass',
+      whole: 'http://pass',
+    },
+  });
+  expect(parseInlineText('https://pass')).toEqual({
+    type: 'url',
+    unit: {
+      content: 'https://pass',
+      whole: 'https://pass',
+    },
+  });
+
   expect(parseInlineText('text')).toEqual('text');
 });
