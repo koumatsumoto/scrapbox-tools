@@ -69,6 +69,13 @@ export type InlineNode =
       };
     }
   | {
+      type: 'gyazo';
+      unit: {
+        whole: string;
+        content: string;
+      };
+    }
+  | {
       type: 'link';
       unit: {
         whole: string;
@@ -96,6 +103,7 @@ const inlineNodesRegexp = new RegExp(
     '(?<decoFormula>\\[(?<decoFormulaContent>\\$ (?<formula>.+?))\\])',
     '(?<icon>\\[(\\/(?<iconProject>\\S+?)\\/)?(?<iconContent>(?<iconPage>\\S+)?\\.icon)\\])',
     '(?<code>`(?<codeContent>.*?)`)',
+    '(?<gyazo>\\[(?<gyazoContent>https?://i\\.gyazo\\.com/\\S+)\\])',
     '(?<urlLinkB>\\[(?<urlLinkBContent>(?<!https?:)(?<urlLinkBTitle>\\S+)\\s+(?<urlLinkBLink>https?://\\S+))\\])',
     '(?<urlLinkA>\\[(?<urlLinkAContent>(?<urlLinkALink>https?://\\S+)(?:\\s+(?<urlLinkATitle>\\S+))?)\\])',
     '(?<link>\\[(?<linkContent>(?:/(?<linkProject>\\S|[^/]+)/)?(?<linkPage>\\S+?))\\])',
@@ -138,6 +146,8 @@ type ParseInlineNodesResult = {
   linkProject?: string;
   linkPage?: string;
   url?: string;
+  gyazo?: string;
+  gyazoContent?: string;
   text?: string;
 };
 
@@ -258,6 +268,15 @@ export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
               content: match.urlLinkBContent,
               link: match.urlLinkBLink,
               title: match.urlLinkBTitle,
+            },
+          };
+        }
+        case typeof match.gyazo === 'string': {
+          return {
+            type: 'gyazo',
+            unit: {
+              whole: match.gyazo,
+              content: match.gyazoContent,
             },
           };
         }

@@ -156,6 +156,14 @@ test('parseInlineText', () => {
     },
   });
 
+  expect(parseInlineText('[https://i.gyazo.com/image.png]')).toEqual({
+    type: 'gyazo',
+    unit: {
+      whole: '[https://i.gyazo.com/image.png]',
+      content: 'https://i.gyazo.com/image.png',
+    },
+  });
+
   expect(parseInlineText('[link]')).toEqual({
     type: 'link',
     unit: {
