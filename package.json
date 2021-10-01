@@ -18,6 +18,7 @@
   "scripts": {
     "build": "tsc --noEmit && rollup --config",
     "check": "npm-run-all --parallel format lint --serial diff --parallel build test",
+    "dev:link": "npm run prepack && npm link",
     "diff": "git diff --exit-code --name-only ./",
     "format": "prettier --write --ignore-path=.gitignore ./",
     "lint": "eslint --ext=.ts --fix src",
