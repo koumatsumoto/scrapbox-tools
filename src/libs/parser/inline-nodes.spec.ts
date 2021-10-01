@@ -1,7 +1,7 @@
-import { parseInlineText } from './inline-nodes';
+import { parseInlineNodes } from './inline-nodes';
 
-test('parseInlineText', () => {
-  expect(parseInlineText('> quote')).toEqual({
+test('parseInlineNodes', () => {
+  expect(parseInlineNodes('> quote')).toEqual({
     type: 'quote',
     unit: {
       content: 'quote',
@@ -10,7 +10,7 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('#tag')).toEqual({
+  expect(parseInlineNodes('#tag')).toEqual({
     type: 'hashTag',
     unit: {
       content: 'tag',
@@ -19,7 +19,7 @@ test('parseInlineText', () => {
       whole: '#tag',
     },
   });
-  expect(parseInlineText('##tag')).toEqual({
+  expect(parseInlineNodes('##tag')).toEqual({
     type: 'hashTag',
     unit: {
       content: '#tag',
@@ -29,7 +29,7 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('[* strong][**  more stronger][/ italic][*/ strong and italic][- strike][_ underline]')).toEqual([
+  expect(parseInlineNodes('[* strong][**  more stronger][/ italic][*/ strong and italic][- strike][_ underline]')).toEqual([
     {
       type: 'deco',
       unit: {
@@ -104,7 +104,7 @@ test('parseInlineText', () => {
     },
   ]);
 
-  expect(parseInlineText('[$ formula]')).toEqual({
+  expect(parseInlineNodes('[$ formula]')).toEqual({
     type: 'deco-formula',
     unit: {
       content: '$ formula',
@@ -113,7 +113,7 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('[[bold]]')).toEqual({
+  expect(parseInlineNodes('[[bold]]')).toEqual({
     type: 'strong',
     unit: {
       content: 'bold',
@@ -121,7 +121,7 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('[/icons/hr.icon]')).toEqual({
+  expect(parseInlineNodes('[/icons/hr.icon]')).toEqual({
     type: 'icon',
     unit: {
       content: 'hr.icon',
@@ -131,7 +131,7 @@ test('parseInlineText', () => {
       whole: '[/icons/hr.icon]',
     },
   });
-  expect(parseInlineText('[user.icon]')).toEqual({
+  expect(parseInlineNodes('[user.icon]')).toEqual({
     type: 'icon',
     unit: {
       content: 'user.icon',
@@ -141,14 +141,14 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('`code`')).toEqual({
+  expect(parseInlineNodes('`code`')).toEqual({
     type: 'code',
     unit: {
       content: 'code',
       whole: '`code`',
     },
   });
-  expect(parseInlineText('``')).toEqual({
+  expect(parseInlineNodes('``')).toEqual({
     type: 'code',
     unit: {
       content: '',
@@ -156,7 +156,7 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('[https://i.gyazo.com/image.png]')).toEqual({
+  expect(parseInlineNodes('[https://i.gyazo.com/image.png]')).toEqual({
     type: 'gyazo',
     unit: {
       whole: '[https://i.gyazo.com/image.png]',
@@ -164,7 +164,7 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('[link]')).toEqual({
+  expect(parseInlineNodes('[link]')).toEqual({
     type: 'link',
     unit: {
       whole: '[link]',
@@ -172,7 +172,7 @@ test('parseInlineText', () => {
       page: 'link',
     },
   });
-  expect(parseInlineText('[/project/page]')).toEqual({
+  expect(parseInlineNodes('[/project/page]')).toEqual({
     type: 'link',
     unit: {
       whole: '[/project/page]',
@@ -181,7 +181,7 @@ test('parseInlineText', () => {
       project: 'project',
     },
   });
-  expect(parseInlineText('[/a/b/c/]')).toEqual({
+  expect(parseInlineNodes('[/a/b/c/]')).toEqual({
     type: 'link',
     unit: {
       whole: '[/a/b/c/]',
@@ -191,7 +191,7 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('[https://pass]')).toEqual({
+  expect(parseInlineNodes('[https://pass]')).toEqual({
     type: 'urlLink',
     unit: {
       whole: '[https://pass]',
@@ -199,7 +199,7 @@ test('parseInlineText', () => {
       link: 'https://pass',
     },
   });
-  expect(parseInlineText('[https://pass title]')).toEqual({
+  expect(parseInlineNodes('[https://pass title]')).toEqual({
     type: 'urlLink',
     unit: {
       whole: '[https://pass title]',
@@ -208,7 +208,7 @@ test('parseInlineText', () => {
       title: 'title',
     },
   });
-  expect(parseInlineText('[title https://pass]')).toEqual({
+  expect(parseInlineNodes('[title https://pass]')).toEqual({
     type: 'urlLink',
     unit: {
       content: 'title https://pass',
@@ -218,14 +218,14 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('http://pass')).toEqual({
+  expect(parseInlineNodes('http://pass')).toEqual({
     type: 'url',
     unit: {
       content: 'http://pass',
       whole: 'http://pass',
     },
   });
-  expect(parseInlineText('https://pass')).toEqual({
+  expect(parseInlineNodes('https://pass')).toEqual({
     type: 'url',
     unit: {
       content: 'https://pass',
@@ -233,5 +233,5 @@ test('parseInlineText', () => {
     },
   });
 
-  expect(parseInlineText('text')).toEqual('text');
+  expect(parseInlineNodes('text')).toEqual('text');
 });

@@ -3,62 +3,62 @@ export type InlineNode =
   | {
       type: 'quote';
       unit: {
+        whole: string;
         content: string;
         tag: string;
-        whole: string;
       };
     }
   | {
       type: 'hashTag';
       unit: {
         content: string;
-        page: string;
-        tag: '#';
         whole: string;
+        tag: '#';
+        page: string;
       };
     }
   | {
       type: 'strong';
       unit: {
-        content: string;
         whole: string;
+        content: string;
       };
     }
   | {
       type: 'deco';
       unit: {
+        whole: string;
         content: string;
         deco: string;
+        strong: number;
         italic: boolean;
         strike: boolean;
         underline: boolean;
-        strong: number;
-        whole: string;
       };
     }
   | {
       type: 'deco-formula';
       unit: {
+        whole: string;
         content: string;
         formula: string;
-        whole: string;
       };
     }
   | {
       type: 'icon';
       unit: {
+        whole: string;
         content: string;
         project: string;
         page: string;
-        size: 1;
-        whole: string;
+        size: number;
       };
     }
   | {
       type: 'code';
       unit: {
-        content: string;
         whole: string;
+        content: string;
       };
     }
   | {
@@ -113,7 +113,7 @@ const inlineNodesRegexp = new RegExp(
   'gu',
 );
 
-type ParseInlineNodesResult = {
+type ParseResult = {
   quote?: string;
   quoteTag?: string;
   quoteContent?: string;
@@ -151,13 +151,13 @@ type ParseInlineNodesResult = {
   text?: string;
 };
 
-export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
+export const parseInlineNodes = (text: string): InlineNode | InlineNode[] => {
   if (text === '') {
     return '';
   }
 
   const nodes = [...text.matchAll(inlineNodesRegexp)]
-    .map((match) => (match.groups ?? {}) as ParseInlineNodesResult)
+    .map((match) => (match.groups ?? {}) as ParseResult)
     .map((match) => {
       switch (true) {
         case typeof match.text === 'string': {
@@ -224,7 +224,7 @@ export const parseInlineText = (text: string): InlineNode | InlineNode[] => {
               content: match.iconContent,
               project: match.iconProject,
               page: match.iconPage,
-              size: 1, // TODO(feat): currently not supported
+              size: 1, // TODO(feat): not supported
               whole: match.icon,
             },
           };
