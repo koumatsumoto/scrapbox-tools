@@ -9,7 +9,10 @@ describe('RestApiClient', () => {
   const expectedHttpOptions = { headers: { Cookie: 'connect.sid=auth-token in cookie' } };
 
   beforeEach(() => {
-    http = { get: jest.fn(() => Promise.resolve(dummyResponse)) };
+    http = {
+      get: jest.fn(() => Promise.resolve(dummyResponse)),
+      post: jest.fn(() => Promise.resolve(dummyResponse)),
+    };
     api = new RestApi(token, http);
   });
 

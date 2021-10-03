@@ -5,6 +5,7 @@ export const fetch = isBrowser() ? globalThis.fetch.bind(window) : (require('nod
 
 export type HttpClient = {
   get<T>(url: string, options?: Partial<{ headers: Record<string, string> }>): Promise<T>;
+  post<T>(url: string, body: string, options?: Partial<{ headers: Record<string, string> }>): Promise<T>;
 };
 
 export class DefaultHttpClient implements HttpClient {
@@ -12,6 +13,12 @@ export class DefaultHttpClient implements HttpClient {
 
   async get<T>(url: string, options: Partial<{ headers: Record<string, string> }> = {}) {
     const result = await this.fetchFn(url, options);
+
+    return (await result.json()) as Promise<T>;
+  }
+
+  async post<T>(url: string, body: string, options: Partial<{ headers: Record<string, string> }> = {}) {
+    const result = await this.fetchFn(url, { ...options, method: 'post', body });
 
     return (await result.json()) as Promise<T>;
   }
