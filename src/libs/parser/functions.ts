@@ -1,3 +1,5 @@
+import { ParseResult } from './parser';
+
 export const isString = (value: unknown): value is string => typeof value === 'string';
 
 export const pairwise = <T>(array: T[]): [] | [[null, T], ...[T, T][]] => {
@@ -26,4 +28,50 @@ export const threewiseMap = <T, U>(array: T[], project: (value: T, prev: U | und
   }
 
   return mapped;
+};
+
+export const extractTags = (nodes: ParseResult['nodes']): string[] => {
+  if (nodes == undefined) {
+    return [];
+  } else if (typeof nodes === 'string') {
+    return [];
+  } else if (Array.isArray(nodes)) {
+    return nodes.flatMap(extractTags);
+  } else if (nodes.type === 'indent') {
+    return extractTags(nodes.children);
+  } else if (nodes.type === 'hashTag') {
+    return [nodes.unit.content]; // hash stripped
+  } else {
+    return [];
+  }
+};
+
+export const extractLinks = (nodes: ParseResult['nodes']): string[] => {
+  if (nodes == undefined) {
+    return [];
+  } else if (typeof nodes === 'string') {
+    return [];
+  } else if (Array.isArray(nodes)) {
+    return nodes.flatMap(extractLinks);
+  } else if (nodes.type === 'indent') {
+    return extractLinks(nodes.children);
+  } else if (nodes.type === 'link') {
+    return [nodes.unit.content]; // [] stripped
+  } else {
+    return [];
+  }
+};
+
+export const extractTexts = (nodes: ParseResult['nodes']): string[] => {
+  if (nodes == undefined) {
+    return [];
+  } else if (typeof nodes === 'string') {
+    return [nodes];
+  } else if (Array.isArray(nodes)) {
+    return nodes.flatMap(extractTexts);
+  } else if (nodes.type === 'indent') {
+    return extractTexts(nodes.children);
+  } else {
+    return [];
+  }
 };
